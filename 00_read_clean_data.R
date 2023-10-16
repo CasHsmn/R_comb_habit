@@ -14,8 +14,9 @@ library(mousetrap)
 library(diptest)
 library(e1071)
 library(ltm)
-install.packages("ltm")
+library(psych)
 
+select <- dplyr::select
 
 # Set WD
 wd <- list()
@@ -47,17 +48,18 @@ table(df$Q8...104)
 
 df <- raw_data %>% # filter no food handling, previews, non consent, failed att check
   filter(is.na(Q2_6) & Status == 0 & consent != 0 & (Q1...29 == 4 & (att != 4 | att != 5))) %>% 
-  select(!c(Status, StartDate,EndDate,Progress,RecordedDate,ResponseId, DistributionChannel, Finished))
+  select(!c(Status, StartDate,EndDate,Progress,RecordedDate,ResponseId, DistributionChannel, Finished)) %>%
+  rowid_to_column(., "ID")
 
-df <- rowid_to_column(df, "ID")
+df[,c("CAP_3", "CAP_5")] <- 8 - df[,c("CAP_3", "CAP_5")] # reverse score CAP3 and CAP5
 
 # CARELESS RESPONDING CHECK
 # Check intra-rater-variability (IRV) - SD across responses
-{irv <- df %>% 
+{irv <- df %>%  # Remove responses with very similar answers
     select(CAP_1:aut_mot_1_4 & !Q1...29) %>% 
     irv(., na.rm=TRUE)
 irv <- as.data.frame(irv)
-irv <- rowid_to_column(irv, "ID")}
+irv <- rowid_to_column(irv, "ID")
 
 irv_q1 <- quantile(irv$irv, 0.25, na.rm=TRUE)
 irv_q3 <- quantile(irv$irv, 0.75, na.rm=TRUE)
@@ -68,20 +70,29 @@ upper_bound <- irv_q3 + 1.5 * irv_iqr
 outliers_rows <- irv %>% filter(irv < lower_bound | irv > upper_bound)
 
 df <- df %>% 
-  anti_join(outliers_rows, by="ID")
+  anti_join(outliers_rows, by="ID")}
 
 careless_long <- df %>% 
   select(CAP_1:aut_mot_1_4 & !Q1...29) %>% 
-  longstring(avg=T)
+  longstring(avg = TRUE)
 
-Boxplot(careless_long)
+Boxplot(careless_long$avgstr)
 
-df %>% 
-  select(CAP_1:CAP_5) %>% 
-  cor(use="pairwise.complete.obs")
+# Check missing values
+missing <- df %>% 
+  select(ID, PROLIFIC_PID, CAP_1:Q45_4 & !Q1...29 & !CAP_DO_1:CAP_DO_5 & !OPP_DO_1:OPP_DO_4)
 
-df %>% 
-  select(CAP_1:CAP_5) %>% 
-  cronbach.alpha(.)
+incomplete <- missing[!complete.cases(missing), ]
 
-?cronbach.alpha
+missdata <- missing %>% 
+  filter(rowSums(is.na(missing)) > 5)
+
+rowSums(is.na(missdata))
+
+View(df[386,])
+
+incomplete <- df %>% 
+  select(is.na())
+
+incomplete <- df[!complete.cases(df), ]
+
