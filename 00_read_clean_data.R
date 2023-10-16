@@ -1,0 +1,87 @@
+
+
+# Initiate packages
+library(dplyr)
+library(qualtRics)
+library(car)
+library(tibble)
+library(tidyr)
+library(careless)
+library(ggplot2)
+library(table1)
+library(LaplacesDemon)
+library(mousetrap)
+library(diptest)
+library(e1071)
+library(ltm)
+install.packages("ltm")
+
+
+# Set WD
+wd <- list()
+wd$data   <- "C:/MyData/paper 1/2_habit_comb_food/data/"
+wd$output <- "C:MyData/paper 1/2_habit_comb_food/output/"
+
+# LOAD RAW DATA
+raw_data <- read_survey(paste0(wd$data, "Food_habit_COM-B-EN_16+October+2023_10.08.csv"))
+
+# DATA CLEANING
+dataframe <- raw_data %>% 
+  select(!c(StartDate,EndDate,Progress,RecordedDate,ResponseId)) %>% 
+  filter(Status == 0 & consent != 0 & (Q1...29 ==4 & (att != 4 | att != 5)) & Q2_6 != 1)
+
+exclude <- dataframe %>% # People whose submission can be rejected for failing both attention checks
+  select(PROLIFIC_PID, Q1...29, att, UserLanguage) %>% 
+  filter(Q1...29 != 4 & (att == 4 | att == 5))
+
+noninvolvement <- dataframe %>% # people who are not involved in any food handling
+  filter(Q2_6 != 1) 
+
+nonconsent <- dataframe %>% 
+  filter(consent != 1)
+
+Boxplot(df$`Duration (in seconds)`) # Some people took very long
+
+table(dataframe$UserLanguage) # Quite a few people may have changed their language manually, may
+table(df$Q8...104)
+
+df <- raw_data %>% # filter no food handling, previews, non consent, failed att check
+  filter(is.na(Q2_6) & Status == 0 & consent != 0 & (Q1...29 == 4 & (att != 4 | att != 5))) %>% 
+  select(!c(Status, StartDate,EndDate,Progress,RecordedDate,ResponseId, DistributionChannel, Finished))
+
+df <- rowid_to_column(df, "ID")
+
+# CARELESS RESPONDING CHECK
+# Check intra-rater-variability (IRV) - SD across responses
+{irv <- df %>% 
+    select(CAP_1:aut_mot_1_4 & !Q1...29) %>% 
+    irv(., na.rm=TRUE)
+irv <- as.data.frame(irv)
+irv <- rowid_to_column(irv, "ID")}
+
+irv_q1 <- quantile(irv$irv, 0.25, na.rm=TRUE)
+irv_q3 <- quantile(irv$irv, 0.75, na.rm=TRUE)
+irv_iqr <- irv_q3 - irv_q1
+
+lower_bound <- irv_q1 - 1.5 * irv_iqr
+upper_bound <- irv_q3 + 1.5 * irv_iqr
+outliers_rows <- irv %>% filter(irv < lower_bound | irv > upper_bound)
+
+df <- df %>% 
+  anti_join(outliers_rows, by="ID")
+
+careless_long <- df %>% 
+  select(CAP_1:aut_mot_1_4 & !Q1...29) %>% 
+  longstring(avg=T)
+
+Boxplot(careless_long)
+
+df %>% 
+  select(CAP_1:CAP_5) %>% 
+  cor(use="pairwise.complete.obs")
+
+df %>% 
+  select(CAP_1:CAP_5) %>% 
+  cronbach.alpha(.)
+
+?cronbach.alpha
