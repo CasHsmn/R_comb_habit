@@ -26,6 +26,7 @@ select <- dplyr::select
 wd <- list()
 wd$data   <- "C:/MyData/paper 1/2_habit_comb_food/data/"
 wd$output <- "C:MyData/paper 1/2_habit_comb_food/output/"
+?
 
 # LOAD RAW DATA
 raw_data <- read_survey(paste0(wd$data, "Food_habit_COM-B-EN_16+October+2023_10.08.csv"))
