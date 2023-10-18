@@ -223,7 +223,7 @@ ggplot(fw_summ_long, aes(x = reorder(Label, -Value), y = Value, fill = Label)) +
 
 ### Grams of wasted food by category
 ```{r}
-#| label: FW grams
+#| label: fw-grams
 #| echo: false
 
 fw_num <- df %>% 
