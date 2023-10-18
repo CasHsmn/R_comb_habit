@@ -17,6 +17,7 @@ library(ltm)
 library(table1)
 library(psych)
 library(knitr)
+library(usethis)
 
 select <- dplyr::select
 
