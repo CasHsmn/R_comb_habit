@@ -18,15 +18,17 @@ library(table1)
 library(psych)
 library(knitr)
 library(usethis)
+library(data.table)
+library(QuantPsyc)
+
+install.packages("QuantPsyc")
 
 select <- dplyr::select
 
-?table1
 # Set WD
 wd <- list()
 wd$data   <- "C:/MyData/paper 1/2_habit_comb_food/data/"
 wd$output <- "C:MyData/paper 1/2_habit_comb_food/output/"
-?
 
 # LOAD RAW DATA
 raw_data <- read_survey(paste0(wd$data, "Food_habit_COM-B-EN_16+October+2023_10.08.csv"))
@@ -37,7 +39,7 @@ raw_data <- read_survey(paste0(wd$data, "Food_habit_COM-B-EN_16+October+2023_10.
   select(!c(Status, StartDate,EndDate,Progress,RecordedDate,ResponseId, DistributionChannel, Finished)) %>%
   rowid_to_column(., "ID")
 
-df[,c("CAP_3", "CAP_5")] <- 8 - df[,c("CAP_3", "CAP_5")] # reverse score CAP3 and CAP5
+df[,c("CAP_3", "CAP_5", "ref_mot_2_5")] <- 8 - df[,c("CAP_3", "CAP_5", "ref_mot_2_5")] # reverse score CAP3 and CAP5
 
 # rename and labels socdem
 df <- df %>% 
@@ -88,10 +90,7 @@ label(df$gender)   <- "Gender"
 label(df$edu)    <- "Highest education level"
 label(df$income) <- "Net monthly household income"
 label(df$employ)   <- "Employment status"
-label(df$fw_total) <- "Total food waste"
-units(df$fw_total) <-  "g"
 }
-table1(~ gender + age + adult + child + edu + employ + income + fw_total | UserLanguage, data=df, overall=c(left="Total"))
 
 #### PROLIFIC REJECTION ####
 # exclude <- dataframe %>% # People whose submission can be rejected for failing both attention checks
@@ -104,9 +103,9 @@ table1(~ gender + age + adult + child + edu + employ + income + fw_total | UserL
 # nonconsent <- dataframe %>% 
 #   filter(consent != 1)
 
-Boxplot(df$`Duration (in seconds)`) # Some people took very long
+# Boxplot(df$`Duration (in seconds)`) # Some people took very long
 
-table(dataframe$UserLanguage) # Quite a few people may have changed their language manually, may
+# table(dataframe$UserLanguage) # Quite a few people may have changed their language manually, may
 
 # CARELESS RESPONDING CHECK
 # Check intra-rater-variability (IRV) - SD across responses
@@ -127,28 +126,24 @@ outliers_rows <- irv %>% filter(irv < lower_bound | irv > upper_bound)
 df <- df %>% 
   anti_join(outliers_rows, by="ID")}
 
-careless_long <- df %>% 
-  select(CAP_1:aut_mot_1_4 & !Q1...29) %>% 
-  longstring()
+# careless_long <- df %>% 
+#   select(CAP_1:aut_mot_1_4 & !Q1...29) %>% 
+#   longstring()
 
-Boxplot(careless_long)
+# Boxplot(careless_long)
 
 # Check missing values
-missing <- df %>% 
-  select(ID, PROLIFIC_PID, CAP_1:Q45_4 & !Q1...29 & !CAP_DO_1:CAP_DO_5 & !OPP_DO_1:OPP_DO_4)
-
-
-incomplete <- missing[!complete.cases(missing), ]
-
-missdata <- missing %>% 
-  filter(rowSums(is.na(missing)) > 5)
-
-rowSums(is.na(missdata))
-
-View(df[445,])
-
-incomplete <- df %>% 
-  select(is.na())
-
-incomplete <- df[!complete.cases(df), ]
+# missing <- df %>% 
+#   select(ID, PROLIFIC_PID, CAP_1:Q45_4 & !Q1...29 & !CAP_DO_1:CAP_DO_5 & !OPP_DO_1:OPP_DO_4)
+# 
+# 
+# incomplete <- missing[!complete.cases(missing), ]
+# 
+# missdata <- missing %>% 
+#   filter(rowSums(is.na(missing)) > 5)
+# 
+# incomplete <- df %>% 
+#   select(is.na())
+# 
+# incomplete <- df[!complete.cases(df), ]
 
