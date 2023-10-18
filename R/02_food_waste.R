@@ -114,10 +114,6 @@ units(df$fw_total) <-  "g"
 }
 
 ##### fw quantification ####
-
-fw <- df %>% 
-  select(Q1_28:Q15)
-
 fw_num <- df %>% 
   select(Q14:Q15)
 
@@ -125,10 +121,15 @@ fw_summ_num <- fw_num %>%
   summarise(across(everything(), ~sum(., na.rm=TRUE)))
 
 fw_cat <- df %>% 
-  select(Q1_28:Q1_31)
+  select(UserLanguage, Q1_28:Q1_31)
 
 fw_summ <- fw_cat %>% 
-  summarise(across(everything(), ~sum(. == 1, na.rm = TRUE))) %>% 
+  summarise(across(Q1_28:Q1_31, ~sum(. == 1, na.rm = TRUE))) %>%
+  arrange(desc(.))
+
+fw_summ_na <- fw_cat %>% 
+  group_by(UserLanguage) %>% 
+  summarise(across(Q1_28:Q1_31, ~sum(. == 1, na.rm = TRUE))) %>%
   arrange(desc(.))
 
 # Convert the dataframe to a long format
@@ -147,14 +148,10 @@ amount_food_label <- data.frame(
     "Meat (substitute), fish", "Sandwich fillings", "Bread",
     "Dairy", "Eggs", "Condiments and sauces"))
 
-
+# Create bar graph for waste by product category
 fw_summ_long <- pivot_longer(fw_summ, everything(), names_to = "Variable", values_to = "Value") %>% 
   left_join(food_label, by="Variable")
 
-fw_total_long <- pivot_longer(fw_summ_num, everything(), names_to = "Variable", values_to = "Value") %>% 
-  left_join(amount_food_label, by="Variable")
-
-# Create bar graph for waste by product category
 ggplot(fw_summ_long, aes(x = reorder(Label, -Value), y = Value, fill = Label)) +
   geom_bar(stat = "identity") +
   labs(x = "Food Categories", y = "Grams of waste") +
@@ -162,48 +159,19 @@ ggplot(fw_summ_long, aes(x = reorder(Label, -Value), y = Value, fill = Label)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   guides(fill="none")
 
+fw_summ__na_long <- pivot_longer(fw_summ_na, everything(), names_to = "Variable", values_to = "Value") %>% 
+  left_join(food_label, by="Variable")
+
 
 #### Food total
-food_totals <- data.frame(
-  Food = colnames(fw_num),
-  Count = colSums(fw_num, na.rm = TRUE)
-)
+fw_total_long <- pivot_longer(fw_summ_num, everything(), names_to = "Variable", values_to = "Value") %>% 
+  left_join(amount_food_label, by="Variable")
 
 ggplot(data = fw_total_long, aes(x = reorder(Label, -Value), y = Value, fill = Label)) +
   geom_bar(stat = "identity") +
   labs(title = "Grams of wasted food by category", x = "Food Category", y = "Grams of waste") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  guides(fill="none")
-
-
-label(fw_summ$Q1_28)   <- "Cooked Food"
-label(fw_summ$Q1_17) <- "Vegetables"
-label(fw_summ$Q1_18) <- "Fruit"
-label(fw_summ$Q1_19) <- "Potato"
-label(fw_summ$Q1_22)   <- "Meat (substitute), fish"
-label(fw_summ$Q1_23) <- "Sandwich fillings"
-label(fw_summ$Q1_24) <- "Bread"
-label(fw_summ$Q1_26) <- "Dairy"
-label(fw_summ$Q1_27)   <- "Eggs"
-label(fw_summ$Q1_29) <- "Condiments and sauces"
-label(fw_summ$Q1_31) <- "None of the above"
-
-
-label(df$Q14)   <- "Cooked Food"
-label(df$Q3...88) <- "Vegetables"
-label(df$Q4...89) <- "Fruit"
-label(df$Q5...90) <- "Potato"
-label(df$Q8...91)   <- "Meat (substitute), fish"
-label(df$Q9) <- "Sandwich fillings"
-label(df$Q10) <- "Bread"
-label(df$Q12) <- "Dairy"
-label(df$Q13)   <- "Eggs"
-label(df$Q15) <- "Condiments and sauces"
-
-
-colnames(df)
-
-summary(dfc$fw_total
+  guides(fill="none"
 
 

@@ -255,6 +255,8 @@ ggplot(data = fw_total_long, aes(x = reorder(Label, -Value), y = Value, fill = L
 
 ```{r}
 #| echo:false
+#| label: comb-scales
+
 kable(list(
   df %>% 
     select(ref_mot_1_1:ref_mot_2_7) %>% 

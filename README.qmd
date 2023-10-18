@@ -1,5 +1,5 @@
 ---
-title: "readme"
+title: "R scripts Food Waste determinants"
 format: gfm
 editor: visual
 ---
