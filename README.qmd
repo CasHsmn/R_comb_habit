@@ -15,3 +15,9 @@ This repository contains the R scripts used for analysing the Prolific data coll
 -   output contains output like plots
 
 -   prelim_output.html is a file showing some preliminary analysis, with related quarto MD in the file of the same name.
+
+## Author
+
+Cas Huisman, Wageningen University & Research.
+
+cas.huisman\@wur.nl

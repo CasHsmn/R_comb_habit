@@ -1,0 +1,23 @@
+# readme
+
+## Intro
+
+This repository contains the R scripts used for analysing the Prolific
+data collected from October 13th 2023 to October 16th 2023. It is survey
+data regarding determinants of food waste, self-reported food waste and
+habitual behaviours.
+
+## Contents
+
+- R folder contains all the R scripts
+
+- output contains output like plots
+
+- prelim_output.html is a file showing some preliminary analysis, with
+  related quarto MD in the file of the same name.
+
+## Author
+
+Cas Huisman, Wageningen University & Research.
+
+cas.huisman@wur.nl
