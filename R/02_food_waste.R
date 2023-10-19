@@ -115,10 +115,13 @@ units(df$fw_total) <-  "g"
 
 ##### fw quantification ####
 fw_num <- df %>% 
-  select(Q14:Q15)
+  select(UserLanguage, Q14:Q15)
 
 fw_summ_num <- fw_num %>% 
   summarise(across(everything(), ~sum(., na.rm=TRUE)))
+
+fw_mean_num <- fw_num %>% 
+  summarise(across(everything(), ~mean(., na.rm=TRUE)))
 
 fw_cat <- df %>% 
   select(UserLanguage, Q1_28:Q1_31)
@@ -127,9 +130,9 @@ fw_summ <- fw_cat %>%
   summarise(across(Q1_28:Q1_31, ~sum(. == 1, na.rm = TRUE))) %>%
   arrange(desc(.))
 
-fw_summ_na <- fw_cat %>% 
+fw_na_mean <- fw_num %>% 
   group_by(UserLanguage) %>% 
-  summarise(across(Q1_28:Q1_31, ~sum(. == 1, na.rm = TRUE))) %>%
+  summarise(across(Q14:Q15, ~mean(., na.rm = TRUE))) %>%
   arrange(desc(.))
 
 # Convert the dataframe to a long format
@@ -148,7 +151,7 @@ amount_food_label <- data.frame(
     "Meat (substitute), fish", "Sandwich fillings", "Bread",
     "Dairy", "Eggs", "Condiments and sauces"))
 
-# Create bar graph for waste by product category
+# Frequency of type of food wasted
 fw_summ_long <- pivot_longer(fw_summ, everything(), names_to = "Variable", values_to = "Value") %>% 
   left_join(food_label, by="Variable")
 
@@ -163,7 +166,7 @@ fw_summ__na_long <- pivot_longer(fw_summ_na, everything(), names_to = "Variable"
   left_join(food_label, by="Variable")
 
 
-#### Food total
+#### Grams of food wasted by category
 fw_total_long <- pivot_longer(fw_summ_num, everything(), names_to = "Variable", values_to = "Value") %>% 
   left_join(amount_food_label, by="Variable")
 
@@ -172,6 +175,39 @@ ggplot(data = fw_total_long, aes(x = reorder(Label, -Value), y = Value, fill = L
   labs(title = "Grams of wasted food by category", x = "Food Category", y = "Grams of waste") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  guides(fill="none"
+  guides(fill="none")
 
+fw_total_long_avg <- pivot_longer(fw_mean_num, everything(), names_to = "Variable", values_to = "Value") %>% 
+  left_join(amount_food_label, by="Variable")
 
+ggplot(data = fw_total_long_avg, aes(x = reorder(Label, -Value), y = Value, fill = Label)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Average Grams of Wasted Food by Category", x = "Food Category", y = "Average Grams of Waste") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  guides(fill = "none")
+
+# by country
+fw_total_long_avg_na <- pivot_longer(fw_na_mean, Q14:Q15, names_to = "Variable", values_to = "Value") %>% 
+  left_join(amount_food_label, by="Variable")
+
+na_names <- c("DE" = "Austria",
+              "EL" = "Greece",
+              "EN-GB" = "United Kingdom",
+              "ES-ES" = "Spain",
+              "NL" = "The Netherlands",
+              "SV" = "Sweden")
+
+View(na_names)
+
+ggplot(data = fw_total_long_avg_na, aes(x = reorder(Label, -Value), y = Value, fill = UserLanguage)) +
+  geom_bar(stat = "identity", position="dodge") +
+  labs(title = "Average Grams of Wasted Food by Category", x = "Food Category", y = "Average Grams of Waste") +
+  theme_minimal() +
+  coord_flip() + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  guides(fill = guide_legend(title = "Country"))+
+  scale_fill_manual(labels = na_names, values = c("#264653", "#2a9d8f", "#8ab17d", "#e9c46a", "#f4a261", "#e76f51"))
+
+values = c("#618943", "#82AA57", "#9EBC63", "#C5D86D", "#F2EFBB", "#F9F7DC")
+values = c("#264653", "#2a9d8f", "#8ab17d", "#e9c46a", "#f4a261", "#e76f51")

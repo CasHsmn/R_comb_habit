@@ -12,15 +12,15 @@ comb <- na.omit(comb)
 ##### Create var for COM-B components
 {
 df <- df %>% 
-  mutate(psycap = rowSums(select(.,CAP_1:CAP_5)))
+  mutate(psycap = rowMeans(select(.,CAP_1:CAP_5)))
 df <- df %>% 
-  mutate(phyopp = rowSums(select(.,OPP_1:OPP_2)))
+  mutate(phyopp = rowMeans(select(.,OPP_1:OPP_2)))
 df <- df %>% 
-  mutate(socopp = rowSums(select(.,OPP_3:OPP_4)))
+  mutate(socopp = rowMeans(select(.,OPP_3:OPP_4)))
 df <- df %>% 
-  mutate(refmot = rowSums(select(.,ref_mot_1_1:ref_mot_2_7)))
+  mutate(refmot = rowMeans(select(.,ref_mot_1_1:ref_mot_2_7)))
 df <- df %>% 
-  mutate(autmot = rowSums(select(.,aut_mot_1_1:aut_mot_1_4)))
+  mutate(autmot = rowMeans(select(.,aut_mot_1_1:aut_mot_1_4)))
 }
 
 
@@ -78,6 +78,18 @@ comb <- comb %>% mutate(psycap = rowMeans(select(., starts_with("CAP_"))),
 comb_fw = lm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, data = dfc)
 summary(comb_fw)
 
+ggplot(dfc)+
+  geom_smooth(aes(x=psycap, y=fw_total), method="lm", se=FALSE, color="red")+
+  geom_point(aes(x=psycap, y = fw_total), colour="red")+
+  geom_smooth(aes(x=socopp, y=fw_total),  method="lm", se=FALSE, color="blue")+
+  geom_point(aes(x=socopp, y = fw_total), colour="blue")+
+  geom_smooth(aes(x=refmot, y=fw_total),  method="lm", se=FALSE, color="green")+
+  geom_point(aes(x=refmot, y = fw_total), colour="green")
+
+hist(df$fw_total)
+Boxplot(df$fw_total)
+
+summary(df$psycap)
 
 hist.comb <- ggplot(df, aes(phyopp)) + geom_histogram(aes(y=..density..), colour="black", fill="white")
 hist.comb + stat_function(fun=dnorm, args=list(mean = mean(df$phyopp, na.rm=TRUE), sd=sd(df$phyopp, na.rm=TRUE)), colour="black", size=1)
@@ -85,8 +97,10 @@ hist.comb + stat_function(fun=dnorm, args=list(mean = mean(df$phyopp, na.rm=TRUE
 qqplot.comb <- ggplot(dfc, aes(sample=phyopp))+stat_qq()+ stat_qq_line()
 qqplot.comb
 
+colnames(df)
+
 dfc <-  df %>% 
-  select(ID, PROLIFIC_PID, CAP_1:Q45_4 & !Q1...29 & !CAP_DO_1:CAP_DO_5 & !OPP_DO_1:OPP_DO_4, fw_total:psycap)
+  select(ID, PROLIFIC_PID, CAP_1:Q45_4 & !Q1...29 & !CAP_DO_1:CAP_DO_5 & !OPP_DO_1:OPP_DO_4, fw_total:autmot)
 
 colnames(df)
 

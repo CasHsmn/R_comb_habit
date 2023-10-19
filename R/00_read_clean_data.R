@@ -20,6 +20,7 @@ library(knitr)
 library(usethis)
 library(data.table)
 library(QuantPsyc)
+library(censReg)
 
 install.packages("QuantPsyc")
 
@@ -90,6 +91,30 @@ label(df$gender)   <- "Gender"
 label(df$edu)    <- "Highest education level"
 label(df$income) <- "Net monthly household income"
 label(df$employ)   <- "Employment status"
+
+label(df$Q1_28)   <- "Cooked Food"
+label(df$Q1_17) <- "Vegetables"
+label(df$Q1_18) <- "Fruit"
+label(df$Q1_19) <- "Potato"
+label(df$Q1_22)   <- "Meat (substitute), fish"
+label(df$Q1_23) <- "Sandwich fillings"
+label(df$Q1_24) <- "Bread"
+label(df$Q1_26) <- "Dairy"
+label(df$Q1_27)   <- "Eggs"
+label(df$Q1_29) <- "Condiments and sauces"
+label(df$Q1_31) <- "None of the above"
+
+
+label(df$Q14)   <- "Cooked Food"
+label(df$Q3...88) <- "Vegetables"
+label(df$Q4...89) <- "Fruit"
+label(df$Q5...90) <- "Potato"
+label(df$Q8...91)   <- "Meat (substitute), fish"
+label(df$Q9) <- "Sandwich fillings"
+label(df$Q10) <- "Bread"
+label(df$Q12) <- "Dairy"
+label(df$Q13)   <- "Eggs"
+label(df$Q15) <- "Condiments and sauces"
 }
 
 #### PROLIFIC REJECTION ####
