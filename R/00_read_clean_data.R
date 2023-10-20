@@ -21,8 +21,13 @@ library(usethis)
 library(data.table)
 library(QuantPsyc)
 library(censReg)
+library(plotmath)
+library(corrplot)
+library(VGAM)
+library(AER)
+library(broom)
 
-install.packages("QuantPsyc")
+install.packages("AER")
 
 select <- dplyr::select
 

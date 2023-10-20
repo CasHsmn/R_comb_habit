@@ -1,6 +1,6 @@
 ---
 title: "COM-B Food Waste Determinants"
-format: html
+format: htmlqua
 editor: visual
 ---
 
@@ -281,6 +281,7 @@ ggplot(data = fw_total_long_avg_na, aes(x = reorder(Label, Value), y = Value, fi
 ```
 
 ## COM-B Descriptives
+
 ```{r}
 #| echo: false
 #| label: COM-B descriptives
@@ -377,7 +378,6 @@ kable(df %>%
         cor(use="pairwise.complete.obs"), digits=2)
 
 ```
-
 
 ```{r}
 #| label: prelim analysis

@@ -4,11 +4,11 @@ colnames(df)
 hist(df$int_b1)
 hist(df$freq_b1)
 
-df <- df %>% 
+dfc <- dfc %>% 
   mutate(stock_hs = rowMeans(select(., hs_b1_1:hs_b1_4), na.rm=TRUE))
-df <- df %>% 
+dfc <- dfc %>% 
   mutate(left_hs = rowMeans(select(., Q40_1:Q40_4), na.rm=TRUE))
-df <- df %>% 
+dfc <- dfc %>% 
   mutate(sense_hs = rowMeans(select(., Q45_1:Q45_4), na.rm=TRUE))
 
 
@@ -40,7 +40,13 @@ df %>%
   cor(use="pairwise.complete.obs") %>% 
   alpha()
 
+fw_habit_lm <- lm(fw_total ~ stock_hs + left_hs + sense_hs, data = dfc)
+fw_habit_tobit <- censReg(fw_total ~ stock_hs + left_hs + sense_hs, data = dfc)
+summary(fw_habit_tobit)
+summary(fw_habit_lm)
+anova(fw_habit_lm, fw_habit_tobit)
+coef(stock_fw_tobit)
 
-
-
-
+logLik(fw_habit_lm)
+logLik(fw_habit_tobit)
+vcov(stock_fw_tobit)
