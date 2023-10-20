@@ -16,6 +16,13 @@ library(tibble)
 library(knitr)
 library(tidyr)
 library(ggplot2)
+library(psych)
+library(corrplot)
+library(censReg)
+library(VGAM)
+library(kableExtra)
+library(broom)
+library(AER)
 ```
 
 ```{r}
@@ -194,6 +201,7 @@ table1(~ gender + age + adult + child + edu + employ + income + fw_total | UserL
 #| label: fw-desc
 #| echo: false
 
+#setup dataframes
 fw_cat <- df %>% 
   select(Q1_28:Q1_31)
 
@@ -201,36 +209,30 @@ fw_summ <- fw_cat %>%
   summarise(across(everything(), ~sum(. == 1, na.rm = TRUE))) %>% 
   arrange(desc(.))
 
-# Convert the dataframe to a long format
+fw_num <- df %>% 
+  select(UserLanguage, Q14:Q15)
+
+fw_num[is.na(fw_num)] <- 0
+
+fw_na_mean <- fw_num %>% 
+  group_by(UserLanguage) %>% 
+  summarise(across(Q14:Q15, ~mean(., na.rm = TRUE))) %>%
+  arrange(desc(.))
+
+na_names <- c("DE" = "Austria",
+              "EL" = "Greece",
+              "EN-GB" = "United Kingdom",
+              "ES-ES" = "Spain",
+              "NL" = "The Netherlands",
+              "SV" = "Sweden")
+
+# Create labels
 food_label <- data.frame(
   Variable = c("Q1_28", "Q1_17", "Q1_18", "Q1_19", "Q1_22", "Q1_23", "Q1_24", "Q1_26", "Q1_27", "Q1_29", "Q1_31"),
   Label = c(
     "Cooked Food", "Vegetables", "Fruit", "Potato",
     "Meat (substitute), fish", "Sandwich fillings", "Bread",
     "Dairy", "Eggs", "Condiments and sauces", "None of the above"))
-
-fw_summ_long <- pivot_longer(fw_summ, everything(), names_to = "Variable", values_to = "Value") %>% 
-  left_join(food_label, by="Variable")
-
-# Create bar graph for waste by product category
-ggplot(fw_summ_long, aes(x = reorder(Label, -Value), y = Value, fill = Label)) +
-  geom_bar(stat = "identity") +
-  labs(x = "Food Categories", y = "Number of people who have wasted") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  guides(fill="none")
-```
-
-### Grams of wasted food by category
-```{r}
-#| label: fw-grams
-#| echo: false
-
-fw_num <- df %>% 
-  select(Q14:Q15)
-
-fw_summ_num <- fw_num %>% 
-  summarise(across(everything(), ~sum(., na.rm=TRUE)))
 
 amount_food_label <- data.frame(
   Variable = c("Q14", "Q3...88", "Q4...89", "Q5...90", "Q8...91", "Q9", "Q10", "Q12", "Q13", "Q15"),
@@ -239,30 +241,161 @@ amount_food_label <- data.frame(
     "Meat (substitute), fish", "Sandwich fillings", "Bread",
     "Dairy", "Eggs", "Condiments and sauces"))
 
-fw_total_long <- pivot_longer(fw_summ_num, everything(), names_to = "Variable", values_to = "Value") %>% 
+fw_summ_long <- pivot_longer(fw_summ, everything(), names_to = "Variable", values_to = "Value") %>% 
+  left_join(food_label, by="Variable")
+
+# Food waste distribution
+ggplot(df, aes(x=fw_total))+
+  geom_histogram(binwidth=60, color="#e9ecef", fill = "#8ab17d", position = 'identity') +
+  labs(fill="", x = "Food Waste (g)")
+
+# mean waste by country
+fw_mean_na <- df %>% 
+  group_by(UserLanguage) %>% 
+  summarise(mean_waste = mean(fw_total))
+
+ggplot(fw_mean_na, aes(x = UserLanguage, y = mean_waste, fill = UserLanguage)) +
+  geom_bar(stat = "identity") +
+  scale_x_discrete(labels=na_names)+
+  coord_flip()+
+  labs(title = "Mean Grams of Wasted Food by Country", x = "Country", y = "Mean Grams of Waste") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  guides(fill = "none") +
+  scale_fill_manual(labels = na_names, values = c("#264653", "#2a9d8f", "#8ab17d", "#e9c46a", "#f4a261", "#e76f51"))
+
+
+# Waste per country
+fw_total_long_avg_na <- pivot_longer(fw_na_mean, Q14:Q15, names_to = "Variable", values_to = "Value") %>% 
   left_join(amount_food_label, by="Variable")
 
-ggplot(data = fw_total_long, aes(x = reorder(Label, -Value), y = Value, fill = Label)) +
-  geom_bar(stat = "identity") +
-  labs(title = "Grams of wasted food by category", x = "Food Category", y = "Grams of waste") +
+
+ggplot(data = fw_total_long_avg_na, aes(x = reorder(Label, Value), y = Value, fill = UserLanguage)) +
+  geom_bar(stat = "identity", position="dodge") +
+  labs(title = "Average Grams of Wasted Food by Category", x = "Food Category", y = "Average Grams of Waste") +
   theme_minimal() +
+  coord_flip() + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  guides(fill="none")
+  guides(fill = guide_legend(title = "Country"))+
+  scale_fill_manual(labels = na_names, values = c("#264653", "#2a9d8f", "#8ab17d", "#e9c46a", "#f4a261", "#e76f51"))
+```
+
+## COM-B Descriptives
+```{r}
+#| echo: false
+#| label: COM-B descriptives
+#| warning: false
+
+{
+df <- df %>% 
+  mutate(psycap = rowMeans(select(.,CAP_1:CAP_5)))
+df <- df %>% 
+  mutate(phyopp = rowMeans(select(.,OPP_1:OPP_2)))
+df <- df %>% 
+  mutate(socopp = rowMeans(select(.,OPP_3:OPP_4)))
+df <- df %>% 
+  mutate(refmot = rowMeans(select(.,ref_mot_1_1:ref_mot_2_7)))
+df <- df %>% 
+  mutate(autmot = rowMeans(select(.,aut_mot_1_1:aut_mot_1_4)))
+}
+
+comb_overall <- df %>% 
+  select(psycap:autmot)
+
+comb_summary <- comb_overall %>% 
+  describe() %>%
+  select(mean, sd, median, n)
+
+capalpha <- df %>% 
+  select(CAP_1:CAP_5) %>% 
+  alpha(na.rm=TRUE)
+
+phyoppalp <- df %>% 
+  select(OPP_1:OPP_2) %>% 
+  alpha(na.rm=TRUE)
+
+socoppalp <- df %>% 
+  select(OPP_3:OPP_4) %>% 
+  alpha(na.rm=TRUE)
+
+refmotalp <- df %>% 
+  select(ref_mot_1_1:ref_mot_2_7) %>% 
+  alpha(na.rm=TRUE)
+
+autmotalp <- df %>% 
+  select(aut_mot_1_1:aut_mot_1_4) %>% 
+  alpha(na.rm=TRUE) 
+
+comb_summary$alpha <- c(capalpha$total$raw_alpha, phyoppalp$total$raw_alpha, socoppalp$total$raw_alpha, refmotalp$total$raw_alpha, autmotalp$total$raw_alpha)
+
+rownames(comb_summary) <- c("Psychological Capability (5 items)", "Physical Opportunity (2 items)", "Social Opportunity (2 items)", "Reflective Motivation (15 items)", "Automatic Motivation (4 items)")
+
+kable(comb_summary, digits=2, col.names = c("M", "SD", "Median", "n", "Cronbach's Alpha"))
+
+comb_long <- df %>% 
+  select(psycap:autmot, fw_total, UserLanguage) %>% 
+  pivot_longer(
+    cols=c(psycap, socopp, phyopp, refmot, autmot),
+    names_to = "Component",
+    values_to = "Rating"
+  )
+
+comb_labels <- c(
+  "psycap" = "Psychological Capability",
+  "socopp" = "Social Opportunity",
+  "phyopp" = "Physical Opportunity",
+  "refmot" = "Reflective Motivation",
+  "autmot" = "Automatic Motivation"
+)
+
+ggplot(comb_long, aes(x = Rating, y = fw_total, color = Component)) +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_point() +
+  labs(title = "Regression Lines for Predictors vs. fw_total",
+       x = "Predictor Variable",
+       y = "fw_total") +
+  facet_wrap(~Component, labeller=labeller(Component = comb_labels))+
+  guides(color="none")+
+  theme_minimal()
 
 ```
 
 ## Scale reliability
 
 ```{r}
-#| echo:false
-#| label: comb-scales
+#| echo: false
+#| label: combscale
+refmotcor <- df %>% 
+  select(ref_mot_1_1:ref_mot_2_7) %>% 
+  cor(use="pairwise.complete.obs")
 
-kable(list(
-  df %>% 
-    select(ref_mot_1_1:ref_mot_2_7) %>% 
-    cor(use="pairwise.complete.obs"),
-  df %>% 
+
+corrplot(refmotcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
+
+kable(df %>% 
         select(aut_mot_1_1:aut_mot_1_4) %>% 
-        cor(use="pairwise.complete.obs")), digits=2)
+        cor(use="pairwise.complete.obs"), digits=2)
+
+```
+
+
+```{r}
+#| label: prelim analysis
+
+fit_lm <- lm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, data=df) 
+
+fit_lm %>% 
+#fw_comb_tobit <- vglm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, tobit(), data=df) %>% 
+  tidy() %>% 
+  kable(digits = 2, caption = "Linear model summary")
+logLik(fit_lm)
+
+fit <- censReg(fw_total ~ psycap + socopp + phyopp + refmot + autmot, data=df)
+
+kable(coef(summary(fit)), digits = 2, caption = "Tobit model summary")
+logLik(fit)
+
+teststat <- -2 * (logLik(fit)-logLik(fit_lm))
+pchisq(teststat, df=1, lower.tail=FALSE)
 
 ```
