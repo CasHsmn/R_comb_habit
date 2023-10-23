@@ -94,27 +94,27 @@ sauce <- function(data, col_name){
     ))
 }
 
-head(df[Q14:Q15])
 colnames(df)
 
 df <- df %>% 
   serving_spoon(Q14) %>% 
-  serving_spoon(Q3...88) %>% 
-  serving_spoon(Q5...90) %>% 
-  fruit_piece(Q4...89) %>% 
-  portion(Q8...91) %>% 
+  serving_spoon(veg) %>% 
+  serving_spoon(pot) %>% 
+  fruit_piece(fruit) %>% 
+  portion(meat) %>% 
   sandwich_portion(Q9) %>% 
   bread(Q10) %>% 
   dairy_portion(Q12) %>% 
   egg(Q13) %>% 
   sauce(Q15)
 
-df <- df %>% 
+dfc <- df %>% 
   mutate(fw_total = rowSums(select(., Q14:Q15), na.rm=TRUE))
 
 label(df$fw_total) <- "Total food waste"
 units(df$fw_total) <-  "g"
 }
+
 
 ##### fw quantification ####
 fw_num <- df %>% 
@@ -155,6 +155,17 @@ amount_food_label <- data.frame(
     "Cooked Food", "Vegetables", "Fruit", "Potato",
     "Meat (substitute), fish", "Sandwich fillings", "Bread",
     "Dairy", "Eggs", "Condiments and sauces"))
+
+# Distribution food waste
+ggplot(df, aes(x=fw_total))+
+  geom_histogram(binwidth=60, color="#e9ecef", fill = "#8ab17d", position = 'identity') +
+  labs(fill="", x = "Food Waste (g)")
+
+df$fw_total_log <- log(df$fw_total + 1)
+
+ggplot(df, aes(x=fw_total_log))+
+  geom_histogram(binwidth = .2, color="#e9ecef", fill = "#8ab17d", position = 'identity') +
+  labs(fill="", x = "Food Waste (g)")
 
 # Frequency of type of food wasted
 fw_summ_long <- pivot_longer(fw_summ, everything(), names_to = "Variable", values_to = "Value") %>% 

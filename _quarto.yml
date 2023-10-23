@@ -8,9 +8,10 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - about.qmd
       - prelim_output.qmd
-
+    tools:
+      - icon: github
+        href: https://github.com/CasHsmn/R_comb_habit
 format:
   html:
     theme: cosmo

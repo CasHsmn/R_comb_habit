@@ -23,6 +23,7 @@ library(VGAM)
 library(kableExtra)
 library(broom)
 library(AER)
+library(patchwork)
 ```
 
 ```{r}
@@ -198,7 +199,7 @@ table1(~ gender + age + adult + child + edu + employ + income + fw_total | UserL
 ## Food waste descriptives
 
 ```{r}
-#| label: fw-desc
+#| label: fw-dist
 #| echo: false
 
 #setup dataframes
@@ -245,9 +246,25 @@ fw_summ_long <- pivot_longer(fw_summ, everything(), names_to = "Variable", value
   left_join(food_label, by="Variable")
 
 # Food waste distribution
-ggplot(df, aes(x=fw_total))+
+hist1 <- ggplot(df, aes(x=fw_total))+
   geom_histogram(binwidth=60, color="#e9ecef", fill = "#8ab17d", position = 'identity') +
-  labs(fill="", x = "Food Waste (g)")
+  labs(fill="", x = "Food Waste (g)", title = "Food waste distribution")
+
+df$fw_total_log <- log(df$fw_total + 1)
+
+hist2 <- ggplot(df, aes(x=fw_total_log))+
+  geom_histogram(binwidth = .2, color="#e9ecef", fill = "#8ab17d", position = 'identity') +
+  labs(fill="", x = "Food Waste (g)", title="Log transformed FW distribution")
+
+hist1 + hist2 
+```
+
+I will move forward with the log-transformed data.
+
+```{r}
+#| label: fw-desc
+#| echo: false
+
 
 # mean waste by country
 fw_mean_na <- df %>% 
@@ -366,23 +383,34 @@ ggplot(comb_long, aes(x = Rating, y = fw_total, color = Component)) +
 ```{r}
 #| echo: false
 #| label: combscale
+
+capcor <- df %>% 
+  select(CAP_1:CAP_4) %>% 
+  cor(use="pairwise.complete.obs")
 refmotcor <- df %>% 
   select(ref_mot_1_1:ref_mot_2_7) %>% 
   cor(use="pairwise.complete.obs")
-
+autmotcor <- df %>% 
+  select(aut_mot_1_1:aut_mot_1_4) %>% 
+  cor(use="pairwise.complete.obs")
 
 corrplot(refmotcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
-
-kable(df %>% 
-        select(aut_mot_1_1:aut_mot_1_4) %>% 
-        cor(use="pairwise.complete.obs"), digits=2)
+corrplot(capcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
+corrplot(autmotcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
 
 ```
 
+correlation for social opportunity items (injunctive and descriptive norm) is `r round(cor(df$OPP_3, df$OPP_4), digits=2)` and for physical opportunity (time and physical resources) `r round(cor(df$OPP_1, df$OPP_2), digits=2)`.
+
+I will treat the physical opportunity and social opportunity items as separate constructs.
+
+## Fitting Tobit model
+
 ```{r}
 #| label: prelim analysis
+fit_lm_nonlog <- lm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, data=df) 
 
-fit_lm <- lm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, data=df) 
+fit_lm <- lm(fw_total_log ~ psycap + socopp + phyopp + refmot + autmot, data=df) 
 
 fit_lm %>% 
 #fw_comb_tobit <- vglm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, tobit(), data=df) %>% 
@@ -390,7 +418,7 @@ fit_lm %>%
   kable(digits = 2, caption = "Linear model summary")
 logLik(fit_lm)
 
-fit <- censReg(fw_total ~ psycap + socopp + phyopp + refmot + autmot, data=df)
+fit <- censReg(fw_total_log ~ psycap + socopp + phyopp + refmot + autmot, data=df)
 
 kable(coef(summary(fit)), digits = 2, caption = "Tobit model summary")
 logLik(fit)

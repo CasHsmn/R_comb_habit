@@ -53,7 +53,7 @@
     "href": "prelim_output.html#food-waste-descriptives",
     "title": "COM-B Food Waste Determinants",
     "section": "Food waste descriptives",
-    "text": "Food waste descriptives"
+    "text": "Food waste descriptives\n\n\n\n\n\nI will move forward with the log-transformed data."
   },
   {
     "objectID": "prelim_output.html#com-b-descriptives",
@@ -67,6 +67,13 @@
     "href": "prelim_output.html#scale-reliability",
     "title": "COM-B Food Waste Determinants",
     "section": "Scale reliability",
-    "text": "Scale reliability\n\n\n\n\n\n\n\n\n\naut_mot_1_1\naut_mot_1_2\naut_mot_1_3\naut_mot_1_4\n\n\n\n\naut_mot_1_1\n1.00\n0.43\n0.17\n0.44\n\n\naut_mot_1_2\n0.43\n1.00\n0.26\n0.51\n\n\naut_mot_1_3\n0.17\n0.26\n1.00\n0.39\n\n\naut_mot_1_4\n0.44\n0.51\n0.39\n1.00\n\n\n\n\n\n\n\n\nfit_lm &lt;- lm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, data=df) \n\nfit_lm %&gt;% \n#fw_comb_tobit &lt;- vglm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, tobit(), data=df) %&gt;% \n  tidy() %&gt;% \n  kable(digits = 2, caption = \"Linear model summary\")\n\n\nLinear model summary\n\n\nterm\nestimate\nstd.error\nstatistic\np.value\n\n\n\n\n(Intercept)\n1378.74\n124.59\n11.07\n0.00\n\n\npsycap\n-71.69\n21.94\n-3.27\n0.00\n\n\nsocopp\n28.01\n14.42\n1.94\n0.05\n\n\nphyopp\n-23.98\n20.30\n-1.18\n0.24\n\n\nrefmot\n-187.81\n36.81\n-5.10\n0.00\n\n\nautmot\n53.29\n25.52\n2.09\n0.04\n\n\n\n\n\n\nlogLik(fit_lm)\n\n'log Lik.' -4065.981 (df=7)\n\nfit &lt;- censReg(fw_total ~ psycap + socopp + phyopp + refmot + autmot, data=df)\n\nkable(coef(summary(fit)), digits = 2, caption = \"Tobit model summary\")\n\n\nTobit model summary\n\n\n\nEstimate\nStd. error\nt value\nPr(&gt; t)\n\n\n\n\n(Intercept)\n1628.08\n156.70\n10.39\n0.00\n\n\npsycap\n-85.00\n27.58\n-3.08\n0.00\n\n\nsocopp\n32.84\n18.23\n1.80\n0.07\n\n\nphyopp\n-32.83\n25.24\n-1.30\n0.19\n\n\nrefmot\n-245.51\n46.19\n-5.31\n0.00\n\n\nautmot\n67.47\n32.07\n2.10\n0.04\n\n\nlogSigma\n6.09\n0.04\n170.31\n0.00\n\n\n\n\n\n\nlogLik(fit)\n\n'log Lik.' -3264.522 (df=7)\n\nteststat &lt;- -2 * (logLik(fit)-logLik(fit_lm))\npchisq(teststat, df=1, lower.tail=FALSE)\n\n'log Lik.' 1 (df=7)"
+    "text": "Scale reliability\n\n\n\n\n\n\n\n\n\n\n\ncorrelation for social opportunity items (injunctive and descriptive norm) is 0.41 and for physical opportunity (time and physical resources) 0.46.\nI will treat the physical opportunity and social opportunity items as separate constructs."
+  },
+  {
+    "objectID": "prelim_output.html#fitting-tobit-model",
+    "href": "prelim_output.html#fitting-tobit-model",
+    "title": "COM-B Food Waste Determinants",
+    "section": "Fitting Tobit model",
+    "text": "Fitting Tobit model\n\nfit_lm_nonlog &lt;- lm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, data=df) \n\nfit_lm &lt;- lm(fw_total_log ~ psycap + socopp + phyopp + refmot + autmot, data=df) \n\nfit_lm %&gt;% \n#fw_comb_tobit &lt;- vglm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, tobit(), data=df) %&gt;% \n  tidy() %&gt;% \n  kable(digits = 2, caption = \"Linear model summary\")\n\n\nLinear model summary\n\n\nterm\nestimate\nstd.error\nstatistic\np.value\n\n\n\n\n(Intercept)\n10.44\n0.82\n12.78\n0.00\n\n\npsycap\n-0.25\n0.14\n-1.74\n0.08\n\n\nsocopp\n0.09\n0.09\n0.91\n0.36\n\n\nphyopp\n-0.12\n0.13\n-0.93\n0.35\n\n\nrefmot\n-1.14\n0.24\n-4.74\n0.00\n\n\nautmot\n0.25\n0.17\n1.51\n0.13\n\n\n\n\n\n\nlogLik(fit_lm)\n\n'log Lik.' -1270.892 (df=7)\n\nfit &lt;- censReg(fw_total_log ~ psycap + socopp + phyopp + refmot + autmot, data=df)\n\nkable(coef(summary(fit)), digits = 2, caption = \"Tobit model summary\")\n\n\nTobit model summary\n\n\n\nEstimate\nStd. error\nt value\nPr(&gt; t)\n\n\n\n\n(Intercept)\n11.58\n1.07\n10.82\n0.00\n\n\npsycap\n-0.30\n0.19\n-1.59\n0.11\n\n\nsocopp\n0.10\n0.12\n0.81\n0.42\n\n\nphyopp\n-0.16\n0.17\n-0.94\n0.35\n\n\nrefmot\n-1.42\n0.32\n-4.49\n0.00\n\n\nautmot\n0.31\n0.22\n1.43\n0.15\n\n\nlogSigma\n1.12\n0.04\n29.92\n0.00\n\n\n\n\n\n\nlogLik(fit)\n\n'log Lik.' -1215.68 (df=7)\n\nteststat &lt;- -2 * (logLik(fit)-logLik(fit_lm))\npchisq(teststat, df=1, lower.tail=FALSE)\n\n'log Lik.' 1 (df=7)"
   }
 ]

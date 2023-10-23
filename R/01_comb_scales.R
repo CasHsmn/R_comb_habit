@@ -53,9 +53,31 @@ refmotalp <- df %>%
   alpha(na.rm=TRUE)
 
 autmotalp <- df %>% 
-  select(aut_mot_1_1:aut_mot_1_4) %>% 
+  select(aut_mot_1_1:aut_mot_1_2) %>% 
   alpha(na.rm=TRUE) 
 
+capcor <- df %>% 
+  select(CAP_1:CAP_4) %>% 
+  cor(use="pairwise.complete.obs")
+phyoppcor <- df %>% 
+  select(OPP_1:OPP_2) %>% 
+  cor(use="pairwise.complete.obs")
+df %>% 
+  select(OPP_3:OPP_4) %>% 
+  cor(use="pairwise.complete.obs")
+refmotcor <- df %>% 
+  select(ref_mot_1_1:ref_mot_2_7) %>% 
+  cor(use="pairwise.complete.obs")
+autmotcor <- df %>% 
+  select(aut_mot_1_1:aut_mot_1_4) %>% 
+  cor(use="pairwise.complete.obs")
+
+
+refcorplot <- corrplot(refmotcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
+capcorplot <- corrplot(capcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
+socoppcorplot <- corrplot(socoppcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
+phyoppcorplot <- corrplot(phyoppcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
+autmotcorplot <- corrplot(autmotcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
 
 comb_summary$alpha <- c(capalpha$total$raw_alpha, phyoppalp$total$raw_alpha, socoppalp$total$raw_alpha, refmotalp$total$raw_alpha, autmotalp$total$raw_alpha)
 
@@ -275,7 +297,7 @@ qqplot.comb
 
 
 dfc <-  df %>% 
-  select(ID, PROLIFIC_PID, CAP_1:Q45_4 & !Q1...29 & !CAP_DO_1:CAP_DO_5 & !OPP_DO_1:OPP_DO_4, age:income & !Q7_7_TEXT, fw_total:autmot)
+  select(ID, PROLIFIC_PID, CAP_1:Q45_4 & !att_1, age:income & !Q7_7_TEXT, fw_total:autmot)
 
 
 colnames(dfc)
@@ -349,4 +371,18 @@ lmcoeff <- coef(summary(comb_fw))
 
 lm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, data=df) %>% 
   tidy()
-     
+
+summary(lm(fw_total_log ~ psycap + socopp + phyopp + refmot + autmot, data=df))
+censReg(fw_total_log ~ psycap + socopp + phyopp + refmot + autmot, data=df)
+summary(censReg(fw_total ~ psycap + socopp + phyopp + refmot + autmot, data=df))
+tobit_log_fw <- AER::tobit(fw_total_log ~ psycap + socopp + phyopp + refmot + autmot, data=dfc)
+
+plot(lm(fw_total_log ~ psycap + socopp + phyopp + refmot + autmot, data=df))
+
+
+dfc$restob <- resid(tobit_log_fw)
+
+plot(fitted(tobit_log_fw), dfc$restob)
+qqnorm(dfc$restob)
+
+df$restob

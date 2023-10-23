@@ -26,8 +26,11 @@ library(corrplot)
 library(VGAM)
 library(AER)
 library(broom)
+library(mice)
+library(patchwork)
+library(corrplot)
 
-install.packages("AER")
+install.packages("patchwork")
 
 select <- dplyr::select
 
@@ -37,25 +40,30 @@ wd$data   <- "C:/MyData/paper 1/2_habit_comb_food/data/"
 wd$output <- "C:MyData/paper 1/2_habit_comb_food/output/"
 
 # LOAD RAW DATA
-raw_data <- read_survey(paste0(wd$data, "Food_habit_COM-B-EN_16+October+2023_10.08.csv"))
+raw_data <- read_survey(paste0(wd$data, "data_food_habit_comb.csv"))
 
+colnames(raw_data)
+
+head(c(raw_data$CAP_3, raw_data$CAP_5, raw_data$ref_mot_2_5))
 # DATA CLEANING
 {df <- raw_data %>% # filter no food handling, previews, non consent, failed att check
-  filter(is.na(Q2_6) & Status == 0 & consent != 0 & (Q1...29 == 4 & (att != 4 | att != 5))) %>% 
+  filter(is.na(Q2_6) & Status == 0 & consent != 0 & (att_1 == 4 & (att != 4 | att != 5))) %>% 
   select(!c(Status, StartDate,EndDate,Progress,RecordedDate,ResponseId, DistributionChannel, Finished)) %>%
   rowid_to_column(., "ID")
 
-df[,c("CAP_3", "CAP_5", "ref_mot_2_5")] <- 8 - df[,c("CAP_3", "CAP_5", "ref_mot_2_5")] # reverse score CAP3 and CAP5
+  colnames(df)
+  
+df[,c("CAP_3", "CAP_5", "ref_mot_2_5")] <- 8 - df[,c("CAP_3", "CAP_5", "ref_mot_2_5")] # reverse scores
 
 # rename and labels socdem
 df <- df %>% 
-  rename(gender = Q3...98,
+  rename(gender = gen,
          age = Q2,
-         adult = Q4...99,
-         child = Q5...100,
+         adult = adu,
+         child = ch,
          edu = Q6,
          employ = Q7,
-         income = Q8...104)
+         income = inc)
 
 df$gender <- factor(df$gender, levels=c(1,2,3,4), labels=c("Male", "Female", "Non-binary/third-gender", "Prefer not to say"))
 
@@ -111,10 +119,10 @@ label(df$Q1_31) <- "None of the above"
 
 
 label(df$Q14)   <- "Cooked Food"
-label(df$Q3...88) <- "Vegetables"
-label(df$Q4...89) <- "Fruit"
-label(df$Q5...90) <- "Potato"
-label(df$Q8...91)   <- "Meat (substitute), fish"
+label(df$veg) <- "Vegetables"
+label(df$fruit) <- "Fruit"
+label(df$pot) <- "Potato"
+label(df$meat)   <- "Meat (substitute), fish"
 label(df$Q9) <- "Sandwich fillings"
 label(df$Q10) <- "Bread"
 label(df$Q12) <- "Dairy"
@@ -123,9 +131,9 @@ label(df$Q15) <- "Condiments and sauces"
 }
 
 #### PROLIFIC REJECTION ####
-# exclude <- dataframe %>% # People whose submission can be rejected for failing both attention checks
-#   select(PROLIFIC_PID, Q1...29, att, UserLanguage) %>% 
-#   filter(Q1...29 != 4 & (att == 4 | att == 5))
+# exclude <- raw_data %>% # People whose submission can be rejected for failing both attention checks
+#   select(PROLIFIC_PID, Q1...24, att, UserLanguage) %>% 
+#   filter(Q1...24 != 4 & (att == 4 | att == 5))
 # 
 # noninvolvement <- dataframe %>% # people who are not involved in any food handling
 #   filter(Q2_6 != 1) 
@@ -140,7 +148,7 @@ label(df$Q15) <- "Condiments and sauces"
 # CARELESS RESPONDING CHECK
 # Check intra-rater-variability (IRV) - SD across responses
 {irv <- df %>%  # Remove responses with very similar answers
-    select(CAP_1:aut_mot_1_4 & !Q1...29) %>% 
+    select(CAP_1:aut_mot_1_4 & !att_1) %>% 
     irv(., na.rm=TRUE)
 irv <- as.data.frame(irv)
 irv <- rowid_to_column(irv, "ID")
@@ -153,27 +161,41 @@ lower_bound <- irv_q1 - 1.5 * irv_iqr
 upper_bound <- irv_q3 + 1.5 * irv_iqr
 outliers_rows <- irv %>% filter(irv < lower_bound | irv > upper_bound)
 
+Boxplot(irv$irv)
+
+View(df[383,])
+
 df <- df %>% 
-  anti_join(outliers_rows, by="ID")}
+ anti_join(outliers_rows, by="ID")}
 
-# careless_long <- df %>% 
-#   select(CAP_1:aut_mot_1_4 & !Q1...29) %>% 
-#   longstring()
-
+#  careless_long <- df %>% 
+#    select(CAP_1:aut_mot_1_4 & !att_1) %>% 
+#    longstring()
+# View(careless_long)
+# 
+# careless_long <- rowid_to_column(careless_long, "ID")
 # Boxplot(careless_long)
+# careless_long <- careless_long %>% 
+#   left_join(irv, by = "ID")
 
 # Check missing values
-# missing <- df %>% 
-#   select(ID, PROLIFIC_PID, CAP_1:Q45_4 & !Q1...29 & !CAP_DO_1:CAP_DO_5 & !OPP_DO_1:OPP_DO_4)
+#  missing <- df %>% 
+#    select(ID, PID, CAP_1:Q45_4 & !att_1)
+# # 
+# # 
+#  incomplete <- missing[!complete.cases(missing), ]
+# # 
+#  missdata <- missing %>% 
+#    filter(rowSums(is.na(missing)) > 5)
+# # 
+# incomplete <- missing %>% 
+#    select(is.na())
 # 
-# 
-# incomplete <- missing[!complete.cases(missing), ]
-# 
-# missdata <- missing %>% 
-#   filter(rowSums(is.na(missing)) > 5)
-# 
-# incomplete <- df %>% 
-#   select(is.na())
-# 
-# incomplete <- df[!complete.cases(df), ]
+# which(is.na(missing))
+# # 
+#  incomplete <- df[!complete.cases(df), ]
 
+ impdata <- mice(missing, m=5, maxit=50, meth='pmm', seed=500) # impute some missing values because people have clicked NA when looking for the highest point on the scale
+
+ dfimp <- complete(impdata, 1) 
+ 

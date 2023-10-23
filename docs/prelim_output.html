@@ -120,15 +120,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html" rel="" target="">
- <span class="menu-text">About</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link active" href="./prelim_output.html" rel="" target="" aria-current="page">
  <span class="menu-text">COM-B Food Waste Determinants</span></a>
   </li>  
 </ul>
             <div class="quarto-navbar-tools ms-auto">
+    <a href="https://github.com/CasHsmn/R_comb_habit" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
 </div>
           </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
@@ -147,6 +144,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#food-waste-descriptives" id="toc-food-waste-descriptives" class="nav-link" data-scroll-target="#food-waste-descriptives">Food waste descriptives</a></li>
   <li><a href="#com-b-descriptives" id="toc-com-b-descriptives" class="nav-link" data-scroll-target="#com-b-descriptives">COM-B Descriptives</a></li>
   <li><a href="#scale-reliability" id="toc-scale-reliability" class="nav-link" data-scroll-target="#scale-reliability">Scale reliability</a></li>
+  <li><a href="#fitting-tobit-model" id="toc-fitting-tobit-model" class="nav-link" data-scroll-target="#fitting-tobit-model">Fitting Tobit model</a></li>
   </ul>
 </nav>
     </div>
@@ -739,13 +737,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="food-waste-descriptives">Food waste descriptives</h2>
 <div class="cell">
 <div class="cell-output-display">
+<p><img src="prelim_output_files/figure-html/fw-dist-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>I will move forward with the log-transformed data.</p>
+<div class="cell">
+<div class="cell-output-display">
 <p><img src="prelim_output_files/figure-html/fw-desc-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
 <p><img src="prelim_output_files/figure-html/fw-desc-2.png" class="img-fluid" width="672"></p>
-</div>
-<div class="cell-output-display">
-<p><img src="prelim_output_files/figure-html/fw-desc-3.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -822,58 +823,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><img src="prelim_output_files/figure-html/combscale-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
-<table data-quarto-postprocess="true" class="table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">aut_mot_1_1</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">aut_mot_1_2</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">aut_mot_1_3</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">aut_mot_1_4</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">aut_mot_1_1</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.43</td>
-<td style="text-align: right;">0.17</td>
-<td style="text-align: right;">0.44</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">aut_mot_1_2</td>
-<td style="text-align: right;">0.43</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.26</td>
-<td style="text-align: right;">0.51</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">aut_mot_1_3</td>
-<td style="text-align: right;">0.17</td>
-<td style="text-align: right;">0.26</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.39</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">aut_mot_1_4</td>
-<td style="text-align: right;">0.44</td>
-<td style="text-align: right;">0.51</td>
-<td style="text-align: right;">0.39</td>
-<td style="text-align: right;">1.00</td>
-</tr>
-</tbody>
-</table>
-
-
+<p><img src="prelim_output_files/figure-html/combscale-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="prelim_output_files/figure-html/combscale-3.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>correlation for social opportunity items (injunctive and descriptive norm) is 0.41 and for physical opportunity (time and physical resources) 0.46.</p>
+<p>I will treat the physical opportunity and social opportunity items as separate constructs.</p>
+</section>
+<section id="fitting-tobit-model" class="level2">
+<h2 class="anchored" data-anchor-id="fitting-tobit-model">Fitting Tobit model</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>fit_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(fw_total <span class="sc">~</span> psycap <span class="sc">+</span> socopp <span class="sc">+</span> phyopp <span class="sc">+</span> refmot <span class="sc">+</span> autmot, <span class="at">data=</span>df) </span>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>fit_lm_nonlog <span class="ot">&lt;-</span> <span class="fu">lm</span>(fw_total <span class="sc">~</span> psycap <span class="sc">+</span> socopp <span class="sc">+</span> phyopp <span class="sc">+</span> refmot <span class="sc">+</span> autmot, <span class="at">data=</span>df) </span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>fit_lm <span class="sc">%&gt;%</span> </span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#fw_comb_tobit &lt;- vglm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, tobit(), data=df) %&gt;% </span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>, <span class="at">caption =</span> <span class="st">"Linear model summary"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>fit_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(fw_total_log <span class="sc">~</span> psycap <span class="sc">+</span> socopp <span class="sc">+</span> phyopp <span class="sc">+</span> refmot <span class="sc">+</span> autmot, <span class="at">data=</span>df) </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>fit_lm <span class="sc">%&gt;%</span> </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#fw_comb_tobit &lt;- vglm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, tobit(), data=df) %&gt;% </span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>, <span class="at">caption =</span> <span class="st">"Linear model summary"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table data-quarto-postprocess="true" class="table table-sm table-striped small">
 <caption>Linear model summary</caption>
@@ -889,45 +858,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">1378.74</td>
-<td style="text-align: right;">124.59</td>
-<td style="text-align: right;">11.07</td>
+<td style="text-align: right;">10.44</td>
+<td style="text-align: right;">0.82</td>
+<td style="text-align: right;">12.78</td>
 <td style="text-align: right;">0.00</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">psycap</td>
-<td style="text-align: right;">-71.69</td>
-<td style="text-align: right;">21.94</td>
-<td style="text-align: right;">-3.27</td>
-<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.25</td>
+<td style="text-align: right;">0.14</td>
+<td style="text-align: right;">-1.74</td>
+<td style="text-align: right;">0.08</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">socopp</td>
-<td style="text-align: right;">28.01</td>
-<td style="text-align: right;">14.42</td>
-<td style="text-align: right;">1.94</td>
-<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.09</td>
+<td style="text-align: right;">0.09</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">0.36</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">phyopp</td>
-<td style="text-align: right;">-23.98</td>
-<td style="text-align: right;">20.30</td>
-<td style="text-align: right;">-1.18</td>
-<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">-0.12</td>
+<td style="text-align: right;">0.13</td>
+<td style="text-align: right;">-0.93</td>
+<td style="text-align: right;">0.35</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">refmot</td>
-<td style="text-align: right;">-187.81</td>
-<td style="text-align: right;">36.81</td>
-<td style="text-align: right;">-5.10</td>
+<td style="text-align: right;">-1.14</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">-4.74</td>
 <td style="text-align: right;">0.00</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">autmot</td>
-<td style="text-align: right;">53.29</td>
-<td style="text-align: right;">25.52</td>
-<td style="text-align: right;">2.09</td>
-<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.25</td>
+<td style="text-align: right;">0.17</td>
+<td style="text-align: right;">1.51</td>
+<td style="text-align: right;">0.13</td>
 </tr>
 </tbody>
 </table>
@@ -936,9 +905,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">logLik</span>(fit_lm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>'log Lik.' -4065.981 (df=7)</code></pre>
+<pre><code>'log Lik.' -1270.892 (df=7)</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">censReg</span>(fw_total <span class="sc">~</span> psycap <span class="sc">+</span> socopp <span class="sc">+</span> phyopp <span class="sc">+</span> refmot <span class="sc">+</span> autmot, <span class="at">data=</span>df)</span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">censReg</span>(fw_total_log <span class="sc">~</span> psycap <span class="sc">+</span> socopp <span class="sc">+</span> phyopp <span class="sc">+</span> refmot <span class="sc">+</span> autmot, <span class="at">data=</span>df)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">coef</span>(<span class="fu">summary</span>(fit)), <span class="at">digits =</span> <span class="dv">2</span>, <span class="at">caption =</span> <span class="st">"Tobit model summary"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -956,51 +925,51 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">1628.08</td>
-<td style="text-align: right;">156.70</td>
-<td style="text-align: right;">10.39</td>
+<td style="text-align: right;">11.58</td>
+<td style="text-align: right;">1.07</td>
+<td style="text-align: right;">10.82</td>
 <td style="text-align: right;">0.00</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">psycap</td>
-<td style="text-align: right;">-85.00</td>
-<td style="text-align: right;">27.58</td>
-<td style="text-align: right;">-3.08</td>
-<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.30</td>
+<td style="text-align: right;">0.19</td>
+<td style="text-align: right;">-1.59</td>
+<td style="text-align: right;">0.11</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">socopp</td>
-<td style="text-align: right;">32.84</td>
-<td style="text-align: right;">18.23</td>
-<td style="text-align: right;">1.80</td>
-<td style="text-align: right;">0.07</td>
+<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0.81</td>
+<td style="text-align: right;">0.42</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">phyopp</td>
-<td style="text-align: right;">-32.83</td>
-<td style="text-align: right;">25.24</td>
-<td style="text-align: right;">-1.30</td>
-<td style="text-align: right;">0.19</td>
+<td style="text-align: right;">-0.16</td>
+<td style="text-align: right;">0.17</td>
+<td style="text-align: right;">-0.94</td>
+<td style="text-align: right;">0.35</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">refmot</td>
-<td style="text-align: right;">-245.51</td>
-<td style="text-align: right;">46.19</td>
-<td style="text-align: right;">-5.31</td>
+<td style="text-align: right;">-1.42</td>
+<td style="text-align: right;">0.32</td>
+<td style="text-align: right;">-4.49</td>
 <td style="text-align: right;">0.00</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">autmot</td>
-<td style="text-align: right;">67.47</td>
-<td style="text-align: right;">32.07</td>
-<td style="text-align: right;">2.10</td>
-<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.31</td>
+<td style="text-align: right;">0.22</td>
+<td style="text-align: right;">1.43</td>
+<td style="text-align: right;">0.15</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">logSigma</td>
-<td style="text-align: right;">6.09</td>
+<td style="text-align: right;">1.12</td>
 <td style="text-align: right;">0.04</td>
-<td style="text-align: right;">170.31</td>
+<td style="text-align: right;">29.92</td>
 <td style="text-align: right;">0.00</td>
 </tr>
 </tbody>
@@ -1010,7 +979,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">logLik</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>'log Lik.' -3264.522 (df=7)</code></pre>
+<pre><code>'log Lik.' -1215.68 (df=7)</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>teststat <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span> <span class="sc">*</span> (<span class="fu">logLik</span>(fit)<span class="sc">-</span><span class="fu">logLik</span>(fit_lm))</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pchisq</span>(teststat, <span class="at">df=</span><span class="dv">1</span>, <span class="at">lower.tail=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
