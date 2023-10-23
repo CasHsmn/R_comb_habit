@@ -3,7 +3,7 @@ project:
   output-dir: docs
 
 website:
-  title: "Docs"
+  title: "R Analysis"
   navbar:
     left:
       - href: index.qmd
@@ -13,8 +13,8 @@ website:
 format:
   html:
     theme: cosmo
-    css: styles.css
     toc: true
+
 
 
 

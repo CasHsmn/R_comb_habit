@@ -1,6 +1,6 @@
 ---
 title: "COM-B Food Waste Determinants"
-format: htmlqua
+format: html
 editor: visual
 ---
 
