@@ -1,40 +1,82 @@
-# SCALE ANALYSIS
-
-# Descriptives of each COM-B scale
-comb <- df %>% 
-  select(CAP_1:aut_mot_1_4 & !Q1...29 & !CAP_DO_1:CAP_DO_5 & !OPP_DO_1:OPP_DO_4)
-
-comb <- df %>% 
-  select(CAP_1:aut_mot_1_4, !Q1...29, !CAP_DO_1:CAP_DO_5, !OPP_DO_1:OPP_DO_4)
-
-comb <- na.omit(comb)
+# COM-B SCALE ANALYSIS
 
 ##### Create var for COM-B components
 {
-dfc <- dfc %>% 
+df <- df %>% 
   mutate(psycap = rowMeans(select(.,CAP_1:CAP_5)))
-dfc <- dfc %>% 
+df <- df %>% 
   mutate(phyopp = rowMeans(select(.,OPP_1:OPP_2)))
-dfc <- dfc %>% 
+df <- df %>% 
   mutate(socopp = rowMeans(select(.,OPP_3:OPP_4)))
-dfc <- dfc %>% 
+df <- df %>% 
   mutate(refmot = rowMeans(select(.,ref_mot_1_1:ref_mot_2_7)))
-dfc <- dfc %>% 
+df <- df %>% 
   mutate(autmot = rowMeans(select(.,aut_mot_1_1:aut_mot_1_4)))
 }
 
-comb_overall <- dfc %>% 
+# table COM-B construct descriptives -----
+# Capability
+comb_overall <- df %>% 
   select(psycap:autmot)
 
-mean(df$psycap, na.rm=TRUE)
-summary(df$psycap)
-describe(df$psycap)
-describe(df$phyopp)
+cap_summary <- df %>%
+  select(CAP_1:CAP_5) %>% 
+  describe() %>% 
+  select(n, mean, sd)
+
+capall_summary <- df %>% 
+  select(psycap) %>% 
+  describe(na.rm=T) %>% 
+  select(n, mean, sd)
+
+capall_summary <- describe(df$psycap) %>% 
+  select(n, mean, sd)
+
+cap_summary <- bind_rows(cap_summary, capall_summary)
+
+cap_summary$item <- c("I have the skills to handle food to avoid food waste in my household", "I know what I can do to avoid wasting food in my household", "Avoiding food waste is not something I think about", "I have a plan how I can avoid wasting food", "I have too many things on my mind other than avoiding food waste", "Total")
+
+capFlexOverall <- flextable(cap_summary, col_keys=c("item", "n", "mean", "sd")) %>% 
+  colformat_double(j=c(3,4),digits=2) %>% 
+  set_header_labels(item = "Item", mean = "M", sd = "SD") %>% 
+  bold(i=6) %>% 
+  hline(i=5)
+
+# Opportunity
+opp_summary <- df %>%
+  select(OPP_1:OPP_4) %>% 
+  describe() %>% 
+  select(n, mean, sd)
+
+socoppoppall_summary <- describe(df$socopp) %>% 
+  select(n, mean, sd)
+phyoppoppall_summary <- describe(df$phyopp) %>% 
+  select(n, mean, sd)
+
+opp_summary <- bind_rows(opp_summary, socoppoppall_summary, phyoppoppall_summary)
+
+opp_summary$item <- c("I have time to take actions to avoid wasting food", 
+                      "I have sufficient resources to avoid wasting food, such as storage containers, storage space, a fridge and freezer", 
+                      "People who are important to me think I should avoid wasting food", 
+                      "Most of my friends avoid wasting food",
+                      "Social Opportunity",
+                      "Physical Opportunity")
+
+oppFlexOverall <- flextable(opp_summary, col_keys=c("item", "n", "mean", "sd")) %>% 
+  colformat_double(j=c(3:4),digits=2) %>% 
+  set_header_labels(item = "Item", mean = "M", sd = "SD") %>% 
+  bold(i=6) %>% 
+  hline(i=5)
+
+save_as_docx("Capability table" = capFlexOverall, "Opportunity table" = oppFlexOverall, path = paste0(wd$output, "combTable.docx"))
+  
+
 
 comb_summary <- comb_overall %>% 
   describe() %>%
   select(mean, sd, median, n)
 
+# calculate cornbach's alpha's
 
 capalpha <- df %>% 
   select(CAP_1:CAP_5) %>% 
@@ -56,14 +98,21 @@ autmotalp <- df %>%
   select(aut_mot_1_1:aut_mot_1_2) %>% 
   alpha(na.rm=TRUE) 
 
+# add alphas to summary table
+rownames(comb_summary) <- c("Psychological Capability (5 items)", "Physical Opportunity (2 items)", "Social Opportunity (2 items)", "Reflective Motivation (15 items)", "Automatic Motivation (4 items)")
+
+comb_summary$alpha <- c(capalpha$total$raw_alpha, phyoppalp$total$raw_alpha, socoppalp$total$raw_alpha, refmotalp$total$raw_alpha, autmotalp$total$raw_alpha)
+
+
+# correlation matrices ----
 capcor <- df %>% 
   select(CAP_1:CAP_4) %>% 
   cor(use="pairwise.complete.obs")
 phyoppcor <- df %>% 
-  select(OPP_1:OPP_2) %>% 
+  select(OPP_1, OPP_2) %>% 
   cor(use="pairwise.complete.obs")
 df %>% 
-  select(OPP_3:OPP_4) %>% 
+  select(OPP_3, OPP_4) %>% 
   cor(use="pairwise.complete.obs")
 refmotcor <- df %>% 
   select(ref_mot_1_1:ref_mot_2_7) %>% 
@@ -75,15 +124,9 @@ autmotcor <- df %>%
 
 refcorplot <- corrplot(refmotcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
 capcorplot <- corrplot(capcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
-socoppcorplot <- corrplot(socoppcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
-phyoppcorplot <- corrplot(phyoppcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
 autmotcorplot <- corrplot(autmotcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
 
-comb_summary$alpha <- c(capalpha$total$raw_alpha, phyoppalp$total$raw_alpha, socoppalp$total$raw_alpha, refmotalp$total$raw_alpha, autmotalp$total$raw_alpha)
-
-rownames(comb_summary) <- c("Psychological Capability (5 items)", "Physical Opportunity (2 items)", "Social Opportunity (2 items)", "Reflective Motivation (15 items)", "Automatic Motivation (4 items)")
-
-fa(df[, ref_mot_1_1:ref_mot_2_7])
+# factor analyses of COM-b constructs
 
 df %>% 
   select(ref_mot_1_1:ref_mot_2_7) %>% 
@@ -95,22 +138,6 @@ df %>%
 
 ev_refmot <- fa_refmot$values
 
-plot(1:length(ev_refmot), ev_refmot, type = "b", xlab = "Factor Number", ylab = "Eigenvalue", main = "Scree Plot")
-
-alpha <- data.frame()
-
-
-refmotcor <- df %>% 
-  select(ref_mot_1_1:ref_mot_2_7) %>% 
-  cor(use="pairwise.complete.obs")
-
-View(refmotcor)
-
-refmotcorp <- df %>% 
-  select(ref_mot_1_1:ref_mot_2_7) %>% 
-  cor.mtest(conf.level = .95)
-
-refmotcorp <- cor.test()
 
 corrplot(refmotcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", p.mat=refmotcorp$p, sig.level=.05, insig="blank", number.cex = .7)
 
@@ -129,15 +156,8 @@ df %>%
   select(psycap, phyopp, socopp, refmot, autmot) %>% 
   cor(use="pairwise.complete.obs")
 
-
-?cor
-
-
-
 alpha <- df %>% 
   select()
-
-?pull
 
 comb <- comb %>% mutate(psycap = rowMeans(select(., starts_with("CAP_"))),
                           socopp = rowMeans(select(., c(OPP_3:OPP_4))),
@@ -151,8 +171,8 @@ plot(comb_fw)
 
 
 
-comb_fw = lm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, data = dfc)
-colnames(dfc)
+comb_fw = lm(fw_totl ~ psycap + socopp + phyopp + refmot + autmot, data = dfc)
+colnames(df)
 socdem_fw = lm(fw_total ~ gender + adult + child + income + age, data=dfc)
 full_fw = lm(fw_total ~ gender + adult + child + income + age + psycap + socopp + phyopp + refmot + autmot, data = dfc)
 anova(full_fw)
@@ -172,25 +192,8 @@ tobit_fw_comb <- censReg(fw_total ~ psycap + socopp + phyopp + refmot + autmot, 
 fw_comb_tobit <- vglm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, tobit(), data=df)
 fw_soc_tobit <- vglm(fw_total ~ gender + adult + child + income + age, tobit(), data=df)
 
-tidy.tobit <- function(x, ...) {
-  class(x) <- "survreg"
-  tidy(x, ...)
-}
-
-rm(tidy.tobit)
-
 fit <- tobit(fw_total ~ psycap + socopp + phyopp + refmot + autmot, data=df)
 fit %>%  summary(tidy)
-
-class(fit)
-
-class(fit) <- "survreg"
-
-fit %>% 
-  tidy()
-
-pchisq(2*(logLik(fw_comb_tobit)-logLik(fw_soc_tobit)), df=2, lower.tail=FALSE)
-summary(fw_comb_tobit)
 
 dfc$yhat <- fitted(fw_comb_tobit)[,1]
 dfc$rr <- resid(fw_comb_tobit, type="response")
@@ -208,12 +211,6 @@ with(dfc, {
   plot(fw_total, rp, main = "Actual vs Pearson Residuals")
   plot(fw_total, yhat, main = "Actual vs Fitted")
 })
-??tidy
-
-(r <- with(dfc, cor(yhat, fw_total)))
-
-coeffs(tobit_fw_comb)
-table(tobit_fw_comb)
 
 Coefficients(fw_comb_tobit)
 summary(fw_comb_tobit)

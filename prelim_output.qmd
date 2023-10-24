@@ -408,6 +408,8 @@ I will treat the physical opportunity and social opportunity items as separate c
 
 ```{r}
 #| label: prelim analysis
+#| echo: false
+
 fit_lm_nonlog <- lm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, data=df) 
 
 fit_lm <- lm(fw_total_log ~ psycap + socopp + phyopp + refmot + autmot, data=df) 
@@ -415,15 +417,22 @@ fit_lm <- lm(fw_total_log ~ psycap + socopp + phyopp + refmot + autmot, data=df)
 fit_lm %>% 
 #fw_comb_tobit <- vglm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, tobit(), data=df) %>% 
   tidy() %>% 
+  kable(digits = 2, caption = "Log-Linear model summary")
+
+fit_lm_nonlog %>% 
+#fw_comb_tobit <- vglm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, tobit(), data=df) %>% 
+  tidy() %>% 
   kable(digits = 2, caption = "Linear model summary")
-logLik(fit_lm)
+
+filtered_df <- df %>% filter(fw_total_log != 0)
+fit_lm_filter <- lm(fw_total_log ~ psycap + socopp + phyopp + refmot + autmot, data = filtered_df)
+fit_lm_filter %>% 
+#fw_comb_tobit <- vglm(fw_total ~ psycap + socopp + phyopp + refmot + autmot, tobit(), data=df) %>% 
+  tidy() %>% 
+  kable(digits = 2, caption = "Log-Linear model summary (excluding non-wasters)")
 
 fit <- censReg(fw_total_log ~ psycap + socopp + phyopp + refmot + autmot, data=df)
 
-kable(coef(summary(fit)), digits = 2, caption = "Tobit model summary")
-logLik(fit)
-
-teststat <- -2 * (logLik(fit)-logLik(fit_lm))
-pchisq(teststat, df=1, lower.tail=FALSE)
+kable(coef(summary(fit)), digits = 2, caption = "Tobit model summary (Log transformed)")
 
 ```

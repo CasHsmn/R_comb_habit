@@ -108,7 +108,7 @@ df <- df %>%
   egg(Q13) %>% 
   sauce(Q15)
 
-dfc <- df %>% 
+df <- df %>% 
   mutate(fw_total = rowSums(select(., Q14:Q15), na.rm=TRUE))
 
 label(df$fw_total) <- "Total food waste"

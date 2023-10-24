@@ -17,6 +17,7 @@ library(ltm)
 library(table1)
 library(psych)
 library(knitr)
+library(kableExtra)
 library(usethis)
 library(data.table)
 library(QuantPsyc)
@@ -29,15 +30,16 @@ library(broom)
 library(mice)
 library(patchwork)
 library(corrplot)
+library(flextable)
+library(officer)
 
-install.packages("patchwork")
 
 select <- dplyr::select
 
 # Set WD
 wd <- list()
 wd$data   <- "C:/MyData/paper 1/2_habit_comb_food/data/"
-wd$output <- "C:MyData/paper 1/2_habit_comb_food/output/"
+wd$output <- "C:/MyData/paper 1/2_habit_comb_food/output/"
 
 # LOAD RAW DATA
 raw_data <- read_survey(paste0(wd$data, "data_food_habit_comb.csv"))
@@ -50,8 +52,6 @@ head(c(raw_data$CAP_3, raw_data$CAP_5, raw_data$ref_mot_2_5))
   filter(is.na(Q2_6) & Status == 0 & consent != 0 & (att_1 == 4 & (att != 4 | att != 5))) %>% 
   select(!c(Status, StartDate,EndDate,Progress,RecordedDate,ResponseId, DistributionChannel, Finished)) %>%
   rowid_to_column(., "ID")
-
-  colnames(df)
   
 df[,c("CAP_3", "CAP_5", "ref_mot_2_5")] <- 8 - df[,c("CAP_3", "CAP_5", "ref_mot_2_5")] # reverse scores
 
@@ -130,6 +130,7 @@ label(df$Q13)   <- "Eggs"
 label(df$Q15) <- "Condiments and sauces"
 }
 
+
 #### PROLIFIC REJECTION ####
 # exclude <- raw_data %>% # People whose submission can be rejected for failing both attention checks
 #   select(PROLIFIC_PID, Q1...24, att, UserLanguage) %>% 
@@ -161,10 +162,6 @@ lower_bound <- irv_q1 - 1.5 * irv_iqr
 upper_bound <- irv_q3 + 1.5 * irv_iqr
 outliers_rows <- irv %>% filter(irv < lower_bound | irv > upper_bound)
 
-Boxplot(irv$irv)
-
-View(df[383,])
-
 df <- df %>% 
  anti_join(outliers_rows, by="ID")}
 
@@ -195,6 +192,8 @@ df <- df %>%
 # # 
 #  incomplete <- df[!complete.cases(df), ]
 
+# IMPUTATION - missing values sometimes by mistake 
+colnames(df)
  impdata <- mice(missing, m=5, maxit=50, meth='pmm', seed=500) # impute some missing values because people have clicked NA when looking for the highest point on the scale
 
  dfimp <- complete(impdata, 1) 
