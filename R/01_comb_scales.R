@@ -9,6 +9,8 @@ df <- df %>%
 df <- df %>% 
   mutate(socopp = rowMeans(select(.,OPP_3:OPP_4)))
 df <- df %>% 
+  mutate(totopp = rowMeans(select(.,OPP_1:OPP_4)))
+df <- df %>% 
   mutate(refmot = rowMeans(select(.,ref_mot_1_1:ref_mot_2_7)))
 df <- df %>% 
   mutate(autmot = rowMeans(select(.,aut_mot_1_1:aut_mot_1_4)))
@@ -19,10 +21,52 @@ df <- df %>%
 comb_overall <- df %>% 
   select(psycap:autmot)
 
-cap_summary <- df %>%
-  select(CAP_1:CAP_5) %>% 
-  describe() %>% 
-  select(n, mean, sd)
+cap_summ_lang <- df %>%
+  select(CAP_1:CAP_5, Country) 
+
+capSummNa <- describeBy(cap_summ_lang, cap_summ_lang$Country, mat=T)  %>% 
+  select(group1, vars, n, mean, sd, min, max, range) %>% 
+  group_by(group1)
+
+melted_df <- melt(capSummNa, id.vars = c("group1", "vars"))
+
+# Use dcast to pivot the data to the desired format
+result_df <- dcast(melted_df, vars ~ group1 + variable, value.var = "value")
+
+result_df <- result_df[-6,]
+
+
+unique_countries <- unique(gsub("_.*", "", colnames(result_df)[grep("_n", colnames(result_df))]))
+
+
+# Create separate flextables by country
+tables_by_country <- list()
+
+dataframes_by_country <- lapply(unique_countries, function(country) {
+  # Filter the columns relevant to the current country
+  relevant_cols <- grep(paste0(country, "_"), colnames(result_df))
+  relevant_cols <- c(1, relevant_cols)  # Include the 'vars' column
+  sub_df <- result_df[, relevant_cols]
+  
+  # Rename the columns by removing the country prefix
+  new_names <- c("vars", gsub(paste0(country, "_"), "", colnames(sub_df)[-1]))
+  colnames(sub_df) <- new_names
+  
+  return(sub_df)
+})
+names(dataframes_by_country) <- unique_countries
+
+write_xlsx(dataframes_by_country, paste0(wd$output, "capabilityCountry.xlsx"))
+
+result_df <- result_df %>% mutate_at(vars(-vars), funs(round(., 2)))
+
+capCountryFlex <- flextable(result_df) %>% 
+  colformat_double(digits=2)
+save_as_docx(capCountryFlex, path = paste0(wd$output, "capabilityCountry.docx"))
+
+
+write.csv(result_df, paste0(wd$output, "capCountry.csv"), row.names=F)
+
 
 capall_summary <- df %>% 
   select(psycap) %>% 
@@ -34,7 +78,7 @@ capall_summary <- describe(df$psycap) %>%
 
 cap_summary <- bind_rows(cap_summary, capall_summary)
 
-cap_summary$item <- c("I have the skills to handle food to avoid food waste in my household", "I know what I can do to avoid wasting food in my household", "Avoiding food waste is not something I think about", "I have a plan how I can avoid wasting food", "I have too many things on my mind other than avoiding food waste", "Total")
+result_df$vars <- c("I have the skills to handle food to avoid food waste in my household", "I know what I can do to avoid wasting food in my household", "Avoiding food waste is not something I think about", "I have a plan how I can avoid wasting food", "I have too many things on my mind other than avoiding food waste")
 
 capFlexOverall <- flextable(cap_summary, col_keys=c("item", "n", "mean", "sd")) %>% 
   colformat_double(j=c(3,4),digits=2) %>% 

@@ -32,9 +32,12 @@ library(patchwork)
 library(corrplot)
 library(flextable)
 library(officer)
+library(purrr)
+library(reshape2)
+library(writexl)
+library(lmtest)
 
-
-select <- dplyr::select
+ select <- dplyr::select
 
 # Set WD
 wd <- list()
@@ -42,13 +45,26 @@ wd$data   <- "C:/MyData/paper 1/2_habit_comb_food/data/"
 wd$output <- "C:/MyData/paper 1/2_habit_comb_food/output/"
 
 # LOAD RAW DATA
-raw_data <- read_survey(paste0(wd$data, "data_food_habit_comb.csv"))
+{raw_data <- read_survey(paste0(wd$data, "data_food_habit_comb.csv"))
+demUK <- read.csv(paste0(wd$data, "demo_UK.csv")) %>%   select(Participant.id, Country.of.residence)
+demES <- read.csv(paste0(wd$data, "demo_ES.csv")) %>%   select(Participant.id, Country.of.residence)
+demNL <- read.csv(paste0(wd$data, "demo_NL.csv")) %>%   select(Participant.id, Country.of.residence)
+demDE <- read.csv(paste0(wd$data, "demo_DE.csv")) %>%   select(Participant.id, Country.of.residence)
+demEL <- read.csv(paste0(wd$data, "demo_EL.csv")) %>%   select(Participant.id, Country.of.residence)
+demSV <- read.csv(paste0(wd$data, "demo_SV.csv")) %>%   select(Participant.id, Country.of.residence)
 
-colnames(raw_data)
+dfDem <- bind_rows(demUK,demES, demNL, demDE, demEL, demSV) %>% 
+ filter(!Country.of.residence == "CONSENT_REVOKED") 
 
-head(c(raw_data$CAP_3, raw_data$CAP_5, raw_data$ref_mot_2_5))
+dfRaw <- raw_data %>% left_join(dfDem, by = join_by(PROLIFIC_PID == Participant.id))
+
+colnames(dfRaw)[colnames(dfRaw) == "Country.of.residence"] = "Country"
+
+df[324,"Country"] <- "United Kingdom"
+}
+
 # DATA CLEANING
-{df <- raw_data %>% # filter no food handling, previews, non consent, failed att check
+{df <- dfRaw %>% # filter no food handling, previews, non consent, failed att check
   filter(is.na(Q2_6) & Status == 0 & consent != 0 & (att_1 == 4 & (att != 4 | att != 5))) %>% 
   select(!c(Status, StartDate,EndDate,Progress,RecordedDate,ResponseId, DistributionChannel, Finished)) %>%
   rowid_to_column(., "ID")

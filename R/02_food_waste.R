@@ -94,8 +94,6 @@ sauce <- function(data, col_name){
     ))
 }
 
-colnames(df)
-
 df <- df %>% 
   serving_spoon(Q14) %>% 
   serving_spoon(veg) %>% 
@@ -233,7 +231,7 @@ ggplot(df, aes(x = fw_total, y = count)) +
 
 ggplot(data = fw_total_long_avg_na, aes(x = reorder(Label, Value), y = Value, fill = UserLanguage)) +
   geom_bar(stat = "identity", position="dodge") +
-  labs(title = "Average Grams of Wasted Food by Category", x = "Food Category", y = "Average Grams of Waste") +
+  labs(title = "Average Grams of Wasted Food by Category", x = "Food Category", y = "Mean Grams of Waste / week / household") +
   theme_minimal() +
   coord_flip() + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
@@ -248,9 +246,65 @@ fw_mean_na <- df %>%
 
 ggplot(fw_mean_na, aes(x = UserLanguage, y = mean_waste, fill = UserLanguage)) +
   geom_bar(stat = "identity") +
-  labs(title = "Mean Grams of Wasted Food by Country", x = "Country", y = "Mean Grams of Waste") +
+  labs(title = "Mean Grams of Wasted Food per week per household by Country", x = "Country", y = "Mean Grams of Waste / week / household") +
   scale_x_discrete(labels=na_names)+
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   guides(fill = guide_legend(title = "Country")) +
   scale_fill_manual(labels = na_names, values = c("#264653", "#2a9d8f", "#8ab17d", "#e9c46a", "#f4a261", "#e76f51"))
+
+
+df %>% 
+  group_by(Country) %>% 
+  select(Country, Q1_31) %>% 
+  table()
+
+# Specific foods per country
+df <- df %>% 
+  mutate(fw_total = rowSums(select(., Q14:Q15), na.rm=TRUE))
+
+# logistic whether food was wasted
+df$anywaste <- ifelse(!is.na(df$Q1_31), 1, 0)
+
+dfc <-  df %>% 
+  select(ID, PROLIFIC_PID, CAP_1:Q45_4 & !att_1, age:income & !Q7_7_TEXT, fw_total:anywaste, Q12, Country)
+
+colnames(df)
+
+dfc <- dfc[complete.cases(dfc), ]
+df$fw_total_log <- log(df$fw_total + 1)
+
+logifit1 <- glm(anywaste ~ adult + child + age, data=dfc, family="binomial")
+logifit2 <- glm(anywaste ~ adult + child + age + psycap + socopp + phyopp + refmot + autmot, data=dfc, family="binomial")
+
+demFit <- as.data.frame(coef(summary(logifit1)))
+flexDemFit <- flextable(demFit %>% rownames_to_column("term")) %>% colformat_double(digits=2) %>% bold( ~ 5 < 0.05, j=4)
+
+fit2df <- as.data.frame(coef(summary(logifit2)))
+flexFit2 <- flextable(fit2df %>% rownames_to_column(" ")) %>% colformat_double(digits=2)
+
+
+
+
+dfWaste <- dfc %>% filter(fw_total_log != 0)
+
+#lm wasters only
+fitWaste1 <- lm(fw_total_log ~ child + adult + age, data = dfWaste)
+fitWaste2 <- lm(fw_total_log ~ child + adult + age + psycap + socopp + phyopp + refmot + autmot, data = dfWaste)
+
+flexWaste2 <- flextable(tidy(fitWaste2)) %>% 
+  colformat_double(digits=2) %>% 
+  bold( ~p.value < 0.05, j=5)
+
+tobitFit <- censReg(fw_total_log ~ child + adult + age + psycap + socopp + phyopp + refmot + autmot, data=dfc)
+tobitFitdf <- as.data.frame(coef(summary(tobitFit)))
+tobitFlex <- flextable(tobitFitdf %>% rownames_to_column("term")) %>% colformat_double(digits=2)
+
+save_as_docx(`Logistic regression predicting whether people waste or not` = flexFit2, `Linear regression predicting the amount of waste for people who waste` = flexWaste2, `Tobit model predicting food waste` = tobitFlex, path = paste0(wd$output, "model1.docx"))
+colnames(dfWaste)
+
+countryBread <- lm(Q12 ~ Country, data = df)
+countryFW <- lm(fw_total_log ~ Country, data = df)
+summary(countryBread)
+summary(countryFW)
+anova(countryFW)

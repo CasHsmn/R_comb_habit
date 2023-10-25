@@ -193,7 +193,7 @@ Below is some preliminary analysis of the data acquired from the questionnaire o
 #| label: sample table
 #| echo: false
 
-table1(~ gender + age + adult + child + edu + employ + income + fw_total | UserLanguage, data=df, overall=c(left="Total"))
+table1(~ gender + age + adult + child + edu + employ + income + fw_total | Country, data=df, overall=c(left="Total"))
 ```
 
 ## Food waste descriptives
