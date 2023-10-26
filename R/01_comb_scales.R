@@ -112,7 +112,62 @@ oppFlexOverall <- flextable(opp_summary, col_keys=c("item", "n", "mean", "sd")) 
   bold(i=6) %>% 
   hline(i=5)
 
-save_as_docx("Capability table" = capFlexOverall, "Opportunity table" = oppFlexOverall, path = paste0(wd$output, "combTable.docx"))
+# Reflective Motivation
+ref_summary <- df %>%
+  select(ref_mot_1_1:ref_mot_2_7) %>% 
+  describe() %>% 
+  select(n, mean, sd)
+
+refOverall <- describe(df$refmot) %>% 
+  select(n, mean, sd)
+
+
+refmot_summary <- bind_rows(ref_summary, refOverall)
+
+refmot_summary$item <- c("It is my responsibility as a citizen to avoid wasting food", 
+                      "I want to ensure I can always provide enough food for family and guests", 
+                      "I think of myself as an environmentally friendly consumer", 
+                      "Avoiding food waste is effortless for me",
+                      "I am convinced the food waste problem will be solved",
+                      "I try to waste no food at all",
+                      "I intend not to throw away any food",
+                      "Avoiding food waste is a priority for me",
+                      "If I avoid wasting food, it will be good for the environment",
+                      "Food waste is not acceptable because it can be avoided by saving and eating leftovers",
+                      "Wasting food is a waste of my money",
+                      "I don’t want to waste food because I’m afraid other people will think that I’m ungrateful",
+                      "I believe that the risk of becoming ill as a result of avoiding food waste is high",
+                      "I avoid wasting food because food is valuable to me",
+                      "It is immoral to throw away food while other people in the world are starving",
+                      "Overall")
+
+refFlexOverall <- flextable(refmot_summary, col_keys=c("item", "n", "mean", "sd")) %>% 
+  colformat_double(j=c(3:4),digits=2) %>% 
+  set_header_labels(item = "Item", mean = "M", sd = "SD")
+
+# Automatic motivation table
+aut_summary <- df %>%
+  select(aut_mot_1_1:aut_mot_1_4) %>% 
+  describe() %>% 
+  select(n, mean, sd)
+
+autOverall <- describe(df$autmot) %>% 
+  select(n, mean, sd)
+
+
+autmot_summary <- bind_rows(aut_summary, autOverall)
+
+autmot_summary$item <- c("When I avoid wasting food, I feel like I am making a difference", 
+                         "I feel guilty when throwing away food", 
+                         "Avoiding food waste is something I do automatically, without thinking", 
+                         "It is important to avoid wasting food",
+                         "Overall")
+
+autFlexOverall <- flextable(autmot_summary, col_keys=c("item", "n", "mean", "sd")) %>% 
+  colformat_double(j=c(3:4),digits=2) %>% 
+  set_header_labels(item = "Item", mean = "M", sd = "SD")
+
+save_as_docx("Reflective Motivation Table" = refFlexOverall, "Automatic Motivation table" = autFlexOverall, "", path = paste0(wd$output, "combmotTable.docx"))
   
 
 
@@ -134,12 +189,12 @@ socoppalp <- df %>%
   select(OPP_3:OPP_4) %>% 
   alpha(na.rm=TRUE)
 
-refmotalp <- df %>% 
+df %>% 
   select(ref_mot_1_1:ref_mot_2_7) %>% 
   alpha(na.rm=TRUE)
 
-autmotalp <- df %>% 
-  select(aut_mot_1_1:aut_mot_1_2) %>% 
+df %>% 
+  select(aut_mot_1_1:aut_mot_1_4) %>% 
   alpha(na.rm=TRUE) 
 
 # add alphas to summary table

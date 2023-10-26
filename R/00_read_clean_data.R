@@ -22,7 +22,6 @@ library(usethis)
 library(data.table)
 library(QuantPsyc)
 library(censReg)
-library(plotmath)
 library(corrplot)
 library(VGAM)
 library(AER)
@@ -36,6 +35,10 @@ library(purrr)
 library(reshape2)
 library(writexl)
 library(lmtest)
+library(modelsummary)
+library(stats)
+
+install.packages("stats")
 
  select <- dplyr::select
 

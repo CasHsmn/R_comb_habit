@@ -116,15 +116,15 @@ units(df$fw_total) <-  "g"
 
 ##### fw quantification ####
 fw_num <- df %>% 
-  select(UserLanguage, Q14:Q15)
+  select(Country, Q14:Q15)
 
 fw_num[is.na(fw_num)] <- 0
 
 fw_summ_num <- fw_num %>% 
-  summarise(across(everything(), ~sum(., na.rm=TRUE)))
+  summarise(across(Q14:Q15, ~sum(., na.rm=TRUE)))
 
 fw_mean_num <- fw_num %>% 
-  summarise(across(everything(), ~mean(., na.rm=TRUE)))
+  summarise(across(Q14:Q15, ~mean(., na.rm=TRUE)))
 
 fw_cat <- df %>% 
   select(UserLanguage, Q1_28:Q1_31)
@@ -134,9 +134,11 @@ fw_summ <- fw_cat %>%
   arrange(desc(.))
 
 fw_na_mean <- fw_num %>% 
-  group_by(UserLanguage) %>% 
+  group_by(Country) %>% 
   summarise(across(Q14:Q15, ~mean(., na.rm = TRUE))) %>%
   arrange(desc(.))
+
+?across
 
 # Convert the dataframe to a long format
 food_label <- data.frame(
@@ -148,7 +150,7 @@ food_label <- data.frame(
 
 # Convert the dataframe to a long format
 amount_food_label <- data.frame(
-  Variable = c("Q14", "Q3...88", "Q4...89", "Q5...90", "Q8...91", "Q9", "Q10", "Q12", "Q13", "Q15"),
+  Variable = c("Q14", "veg", "fruit", "pot", "meat", "Q9", "Q10", "Q12", "Q13", "Q15"),
   Label = c(
     "Cooked Food", "Vegetables", "Fruit", "Potato",
     "Meat (substitute), fish", "Sandwich fillings", "Bread",
@@ -214,8 +216,8 @@ na_names <- c("DE" = "Austria",
 
 View(na_names)
 
-ggplot(data = fw_total_long_avg_na, aes(x = reorder(Label, Value), y = Value, fill = UserLanguage)) +
-  geom_bar(stat = "identity", position="dodge") +
+fwByCountry <- ggplot(data = fw_total_long_avg_na, aes(x = reorder(Label, Value), y = Value, fill = Country)) +
+  geom_bar(stat = "identity", position = position_dodge2(reverse = T)) +
   labs(title = "Average Grams of Wasted Food by Category", x = "Food Category", y = "Average Grams of Waste") +
   theme_minimal() +
   coord_flip() + 
@@ -229,8 +231,8 @@ values = c("#264653", "#2a9d8f", "#8ab17d", "#e9c46a", "#f4a261", "#e76f51")
 ggplot(df, aes(x = fw_total, y = count)) +
   geom_bar(stat = "identity")
 
-ggplot(data = fw_total_long_avg_na, aes(x = reorder(Label, Value), y = Value, fill = UserLanguage)) +
-  geom_bar(stat = "identity", position="dodge") +
+ggplot(data = fw_total_long_avg_na, aes(x = reorder(Label, Value), y = Value, fill = Country)) +
+  geom_bar(stat = "identity", position=position_dodge2(reverse=TRUE)) +
   labs(title = "Average Grams of Wasted Food by Category", x = "Food Category", y = "Mean Grams of Waste / week / household") +
   theme_minimal() +
   coord_flip() + 
@@ -238,21 +240,27 @@ ggplot(data = fw_total_long_avg_na, aes(x = reorder(Label, Value), y = Value, fi
   guides(fill = guide_legend(title = "Country"))+
   scale_fill_manual(labels = na_names, values = c("#264653", "#2a9d8f", "#8ab17d", "#e9c46a", "#f4a261", "#e76f51"))
 
-# plot of mean waste
+ggsave("fwByCountry.png", plot = fwByCountry)
+
+ plot of mean waste
 
 fw_mean_na <- df %>% 
-  group_by(UserLanguage) %>% 
+  group_by(Country) %>% 
   summarise(mean_waste = mean(fw_total))
 
-ggplot(fw_mean_na, aes(x = UserLanguage, y = mean_waste, fill = UserLanguage)) +
+ggplot(fw_mean_na, aes(x = reorder(Country, desc(Country)), y = mean_waste, fill = Country)) +
   geom_bar(stat = "identity") +
   labs(title = "Mean Grams of Wasted Food per week per household by Country", x = "Country", y = "Mean Grams of Waste / week / household") +
   scale_x_discrete(labels=na_names)+
   theme_minimal() +
+  coord_flip() + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  guides(fill = guide_legend(title = "Country")) +
+  guides(fill = "none") +
   scale_fill_manual(labels = na_names, values = c("#264653", "#2a9d8f", "#8ab17d", "#e9c46a", "#f4a261", "#e76f51"))
 
+ggsave("fwtotalCountry.png")
+
+?scale_x_discrete
 
 df %>% 
   group_by(Country) %>% 
@@ -264,7 +272,7 @@ df <- df %>%
   mutate(fw_total = rowSums(select(., Q14:Q15), na.rm=TRUE))
 
 # logistic whether food was wasted
-df$anywaste <- ifelse(!is.na(df$Q1_31), 1, 0)
+df$anywaste <- ifelse(!is.na(df$Q1_31), 0, 1)
 
 dfc <-  df %>% 
   select(ID, PROLIFIC_PID, CAP_1:Q45_4 & !att_1, age:income & !Q7_7_TEXT, fw_total:anywaste, Q12, Country)
@@ -274,37 +282,160 @@ colnames(df)
 dfc <- dfc[complete.cases(dfc), ]
 df$fw_total_log <- log(df$fw_total + 1)
 
-logifit1 <- glm(anywaste ~ adult + child + age, data=dfc, family="binomial")
-logifit2 <- glm(anywaste ~ adult + child + age + psycap + socopp + phyopp + refmot + autmot, data=dfc, family="binomial")
+logifit1 <- glm(anywaste ~ adult + child + age, data=df, family="binomial")
+summary(logifit1)
+
+logifit2 <- glm(anywaste ~ adult + child + age + psycap + socopp + phyopp + refmot + autmot, data=df, family="binomial")
+coef(summary(logifit2))
+summ(logifit2, confint = TRUE, ci.width = .5)
+
+?summary
+ciLogiFit2 <- data.frame(confint(logifit2)) %>% 
+  round(digits = 2) %>% 
+  unite("95% CI", c(1:2), sep = ", ") 
+
+logiFit2Summ <- (cbind(coef(summary(logifit2)), ciLogiFit2))
+
+?unite
+
+sd(df$age)
 
 demFit <- as.data.frame(coef(summary(logifit1)))
 flexDemFit <- flextable(demFit %>% rownames_to_column("term")) %>% colformat_double(digits=2) %>% bold( ~ 5 < 0.05, j=4)
 
-fit2df <- as.data.frame(coef(summary(logifit2)))
-flexFit2 <- flextable(fit2df %>% rownames_to_column(" ")) %>% colformat_double(digits=2)
+fit2df <- as.data.frame(logiFit2Summ)
+flexFit2 <- flextable(logiFit2Summ %>% rownames_to_column(" ")) %>% colformat_double(digits=2)
 
 
+combCor <- df %>% 
+  select(refmot:socopp & !fw_total:anywaste)
 
+corrplot(combCor, method = "color")
+corrplot(combCor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
 
-dfWaste <- dfc %>% filter(fw_total_log != 0)
+combCorr <- datasummary_correlation(combCor, output = "data.frame")[,2:6]
+combSumm <- datasummary(All(combCor) ~ Mean + SD, data = combCor, add_columns = combCorr, output = "flextable")
+write.csv(combSumm, paste0(wd$output, "combSummary.csv"), quote=F)
+
+save_as_docx(flexFit2, path = paste0(wd$output, "logWaste.docx"))
+
+dfWaste <- df %>% filter(fw_total_log != 0)
 
 #lm wasters only
 fitWaste1 <- lm(fw_total_log ~ child + adult + age, data = dfWaste)
+summary(fitWaste1)
+
 fitWaste2 <- lm(fw_total_log ~ child + adult + age + psycap + socopp + phyopp + refmot + autmot, data = dfWaste)
+summary(fitWaste2)
+flextable(fitWaste2 %>% tidy())
 
-flexWaste2 <- flextable(tidy(fitWaste2)) %>% 
-  colformat_double(digits=2) %>% 
-  bold( ~p.value < 0.05, j=5)
+ciWasteFit2 <- data.frame(confint(fitWaste2)) %>% 
+  round(digits = 2) %>% 
+  unite("95% CI", c(1:2), sep = ", ") 
 
-tobitFit <- censReg(fw_total_log ~ child + adult + age + psycap + socopp + phyopp + refmot + autmot, data=dfc)
+fitWaste2Summ <- (cbind(tidy(fitWaste2), ciWasteFit2))
+
+flexWaste2 <- flextable(fitWaste2Summ) %>% 
+  colformat_double(digits=2)
+
+tobitFit1 <- censReg(fw_total_log ~ child + adult + age, data=df)
+tobitFit2 <- censReg(fw_total_log ~ child + adult + age + psycap + socopp + phyopp + refmot + autmot, data=df)
+summary(tobitFit1)
+summary(tobitFit2)
+
+tobitF <- as.data.frame(coef(summary(tobitFit2)))
+
+tobitFlex <- flextable(tobitF, rownames_to_column("term")) %>% 
+  colformat_double(digits = 2)
+
 tobitFitdf <- as.data.frame(coef(summary(tobitFit)))
-tobitFlex <- flextable(tobitFitdf %>% rownames_to_column("term")) %>% colformat_double(digits=2)
+tobitFlex <- flextable(tobitF %>% rownames_to_column("term")) %>% colformat_double(digits=2)
 
-save_as_docx(`Logistic regression predicting whether people waste or not` = flexFit2, `Linear regression predicting the amount of waste for people who waste` = flexWaste2, `Tobit model predicting food waste` = tobitFlex, path = paste0(wd$output, "model1.docx"))
+
+
+save_as_docx(`Tobit model predicting food waste` = flexWaste2, path = paste0(wd$output, "lmwaste.docx"))
 colnames(dfWaste)
 
 countryBread <- lm(Q12 ~ Country, data = df)
 countryFW <- lm(fw_total_log ~ Country, data = df)
+demFit <- lm(fw_total_log ~ age + income + Country + child + adult + edu + employ, data = df)
+anova(demFit)
+
+confint(fitWaste2)
+confint()
+
 summary(countryBread)
 summary(countryFW)
 anova(countryFW)
+
+countryCAP <- aov(psycap ~ Country, data = df)
+countryPOPP <- aov(phyopp ~ Country, data = df)
+countrySOPP <- aov(socopp ~ Country, data = df)
+countryRMOT <- aov(refmot ~ Country, data = df)
+countryAMOT <- aov(autmot ~ Country, data = df)
+
+TukeyHSD(countrySOPP)
+summary(countryCAP)
+
+
+tidy(anova(countryCAP))
+
+flexCAP <- flextable(data.frame(tidy(anova(countryCAP)))) %>% colformat_double(digits = 2)
+flexPOPP <- flextable(data.frame(tidy(anova(countryPOPP)))) %>% colformat_double(digits = 2)
+flexSOPP <- flextable(data.frame(tidy(anova(countrySOPP)))) %>% colformat_double(digits = 2)
+flexRMOT <- flextable(data.frame(tidy(anova(countryRMOT)))) %>% colformat_double(digits = 2)
+flexAMOT <- flextable(data.frame(tidy(anova(countryAMOT)))) %>% colformat_double(digits = 2)
+
+flexCAPph <- flextable(data.frame(tidy(TukeyHSD(countryCAP)))) %>% colformat_double(digits = 2)
+flexPOPPph <- flextable(data.frame(tidy(TukeyHSD(countryPOPP)))) %>% colformat_double(digits = 2)
+flexSOPPph <- flextable(data.frame(tidy(TukeyHSD(countrySOPP)))) %>% colformat_double(digits = 2)
+flexRMOTph <- flextable(data.frame(tidy(TukeyHSD(countryRMOT)))) %>% colformat_double(digits = 2)
+flexAMOTph <- flextable(data.frame(tidy(TukeyHSD(countryAMOT)))) %>% colformat_double(digits = 2)
+
+flexCAPlm <- flextable(data.frame(tidy(countryCAP))) %>% colformat_double(digits = 2)
+flexPOPPlm <- flextable(data.frame(tidy(countryPOPP))) %>% colformat_double(digits = 2)
+flexSOPPlm <- flextable(data.frame(tidy(countrySOPP))) %>% colformat_double(digits = 2)
+flexRMOTlm <- flextable(data.frame(tidy(countryRMOT))) %>% colformat_double(digits = 2)
+flexAMOTlm <- flextable(data.frame(tidy(countryAMOT))) %>% colformat_double(digits = 2)
+
+plot(TukeyHSD(countryCAP), las = 2)
+
+flexCapM <- flextable(df %>% 
+  group_by(Country) %>% 
+  summarise(mean = mean(psycap, na.rm=T),
+            sd = sd(psycap, na.rm=T))) %>% colformat_double(digits = 2)
+
+flexPOPPM <- flextable(df %>% 
+  group_by(Country) %>% 
+  summarise(mean = mean(phyopp, na.rm=T),
+            sd = sd(phyopp, na.rm=T))) %>% colformat_double(digits = 2)
+
+flexSOPPM <- flextable(df %>% 
+  group_by(Country) %>% 
+  summarise(mean = mean(socopp, na.rm=T),
+            sd = sd(socopp, na.rm=T))) %>% colformat_double(digits = 2)
+
+flexRMOTM <- flextable(df %>% 
+  group_by(Country) %>% 
+  summarise(mean = mean(refmot, na.rm=T),
+            sd = sd(refmot, na.rm=T))) %>% colformat_double(digits = 2)
+
+flexAMOTM <- flextable(df %>% 
+  group_by(Country) %>% 
+  summarise(mean = mean(autmot, na.rm=T),
+            sd = sd(autmot, na.rm=T))) %>% colformat_double(digits = 2)
+                        
+                        
+
+tidy(TukeyHSD(countryCAP))
+
+?plot
+
+save_as_docx(`Capability by country` = flexCAP, flexCAPph, flexCapM,
+             `Physical opportunity by country` = flexPOPP, flexPOPPph, flexPOPPM,
+             `Social opportunity by country` = flexSOPP, flexSOPPph, flexSOPPM,
+             `Reflective motivation by country` = flexRMOT, flexRMOTph, flexRMOTM,
+             `Automatic motivation by country` = flexAMOT, flexAMOTph, flexAMOTM, path = paste0(wd$output, "countryCOMBANOVAnew.docx"))
+
+
+summary(anova(countryCAP))

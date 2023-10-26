@@ -4,17 +4,79 @@ colnames(df)
 hist(df$int_b1)
 hist(df$freq_b1)
 
-dfc <- dfc %>% 
+df <- df %>% 
   mutate(stock_hs = rowMeans(select(., hs_b1_1:hs_b1_4), na.rm=TRUE))
-dfc <- dfc %>% 
+df <- df %>% 
   mutate(left_hs = rowMeans(select(., Q40_1:Q40_4), na.rm=TRUE))
-dfc <- dfc %>% 
+df <- df %>% 
   mutate(sense_hs = rowMeans(select(., Q45_1:Q45_4), na.rm=TRUE))
 
 
 summary(df$stock_hs)
 summary(df$left_hs)
 summary(df$sense_hs)
+
+df$int_b1 <- df$int_b1 - 5
+df$Q38 <- df$Q38 - 5
+df$Q43 <- df$Q43 - 5
+summary(df$freq_b1)
+summary(df$int_b1)
+summary(df$Q38)
+table(df$freq_b1)
+
+behPerftab <- df %>% 
+  select(int_b1, Q38, Q43) %>% 
+  describe() %>% 
+  select(n, mean, sd, median, min, max)
+
+behFreqtab <- df %>% 
+  select(freq_b1, Q37, Q42, Country) %>% 
+  describe() %>% 
+  select(n, mean, sd, median, min, max)
+
+save_as_docx(flextable(behPerftab), flextable(behFreqtab), path = paste0(wd$output, "behaviourSumm.docx"))
+
+behPerfSumm <- describeBy(behPerf[c(1:3)], behFreq$Country) %>% select(n, mean, sd, median, min, max)
+behPerfSumm[['Austria']]
+
+colnames(df)
+
+response_labels <- c("Never", "Rarely", "Sometimes", "Often", "Always")
+
+ggplot(behFreq, aes(x = variable, y = value, fill = as.factor(value))) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = colorRampPalette(c("red", "green"))(5)) +  # Custom color scale
+  labs(x = "Behavior", y = "Frequency", fill = "Response") +
+  scale_x_discrete(labels = c(
+    "freq_b1" = "Check Pantry Before Shopping",
+    "Q37" = "Save Leftovers for Later",
+    "Q42" = "Use Senses to Judge Food"
+  )) +
+  scale_y_continuous(breaks = 1:5, labels = response_labels) +
+  theme_minimal() +
+  theme(legend.position = "top")
+
+ggplot(behFreq, aes(x = variable, y = value, fill = response_labels[value])) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "Behavior", y = "Frequency", fill = "Response") +
+  scale_x_discrete(labels = c(
+    "freq_b1" = "Check Pantry Before Shopping",
+    "Q37" = "Save Leftovers for Later",
+    "Q42" = "Use Senses to Judge Food"
+  )) +
+  scale_y_continuous(breaks = 1:5, labels = response_labels) +
+  theme_minimal() +
+  theme(legend.position = "top") +
+  guides(fill = guide_legend(title = "Response"))
+
+?Boxplot
+
+
+?describeBy
+colnames
+
+table(df$int_b1)
+Boxplot(df$Q38)
 
 ?rowMeans
 
@@ -50,3 +112,13 @@ coef(stock_fw_tobit)
 logLik(fw_habit_lm)
 logLik(fw_habit_tobit)
 vcov(stock_fw_tobit)
+
+View(df$Q7_7_TEXT)
+
+comments <- df %>% 
+  select(open_det) %>% 
+  filter(!is.na(.)) 
+
+write.csv(comments, paste0(wd$output, "openComments.txt"), row.names = F, quote = F)
+
+colnames(df)
