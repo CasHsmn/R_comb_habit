@@ -72,7 +72,7 @@ df[324,"Country"] <- "United Kingdom"
   select(!c(Status, StartDate,EndDate,Progress,RecordedDate,ResponseId, DistributionChannel, Finished)) %>%
   rowid_to_column(., "ID")
   
-df[,c("CAP_3", "CAP_5", "ref_mot_2_5")] <- 8 - df[,c("CAP_3", "CAP_5", "ref_mot_2_5")] # reverse scores
+df[,c("CAP_3", "CAP_5", "ref_mot_1_2", "ref_mot_2_5")] <- 8 - df[,c("CAP_3", "CAP_5", "ref_mot_1_2", "ref_mot_2_5")] # reverse scores
 
 # rename and labels socdem
 df <- df %>% 

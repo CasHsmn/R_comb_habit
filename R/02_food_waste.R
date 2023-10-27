@@ -248,17 +248,23 @@ fw_mean_na <- df %>%
   group_by(Country) %>% 
   summarise(mean_waste = mean(fw_total))
 
+fw_mean_na <- fw_mean_na[-7,]
+
 ggplot(fw_mean_na, aes(x = reorder(Country, desc(Country)), y = mean_waste, fill = Country)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", width = .3, position = position_dodge(.2)) +
   labs(title = "Mean Grams of Wasted Food per week per household by Country", x = "Country", y = "Mean Grams of Waste / week / household") +
   scale_x_discrete(labels=na_names)+
   theme_minimal() +
+  geom_hline(yintercept = 284, color = "blue", linetype = "dashed") +
   coord_flip() + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), aspect.ratio = 1/2) +
   guides(fill = "none") +
   scale_fill_manual(labels = na_names, values = c("#264653", "#2a9d8f", "#8ab17d", "#e9c46a", "#f4a261", "#e76f51"))
 
-ggsave("fwtotalCountry.png")
+  ?geom_hline
+  
+ggsave("fwtotalCountry.png", width = 7, height = 3.5)
+?ggsave
 
 ?scale_x_discrete
 
@@ -328,6 +334,9 @@ summary(fitWaste1)
 fitWaste2 <- lm(fw_total_log ~ child + adult + age + psycap + socopp + phyopp + refmot + autmot, data = dfWaste)
 summary(fitWaste2)
 flextable(fitWaste2 %>% tidy())
+
+plot(fitWaste2 ,3)
+nvcTest(fitWaste2)
 
 ciWasteFit2 <- data.frame(confint(fitWaste2)) %>% 
   round(digits = 2) %>% 

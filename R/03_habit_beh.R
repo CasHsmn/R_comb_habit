@@ -24,40 +24,53 @@ summary(df$int_b1)
 summary(df$Q38)
 table(df$freq_b1)
 
+hsBeh <- df %>% 
+  select(stock_hs, left_hs, sense_hs) %>% 
+  describe() %>% 
+  select(n, mean, sd, median, min, max)
+
 behPerftab <- df %>% 
   select(int_b1, Q38, Q43) %>% 
   describe() %>% 
   select(n, mean, sd, median, min, max)
 
+table()
+
 behFreqtab <- df %>% 
-  select(freq_b1, Q37, Q42, Country) %>% 
+  select(freq_b1, Q37, Q42) %>% 
   describe() %>% 
   select(n, mean, sd, median, min, max)
 
-save_as_docx(flextable(behPerftab), flextable(behFreqtab), path = paste0(wd$output, "behaviourSumm.docx"))
+save_as_docx(flextable(hsBeh), path = paste0(wd$output, "behaviourSumm.docx"))
+
+write.csv(hsBeh, paste0(wd$output, "hsBeh.txt"), quote = F)
+
+?write.csv
 
 behPerfSumm <- describeBy(behPerf[c(1:3)], behFreq$Country) %>% select(n, mean, sd, median, min, max)
 behPerfSumm[['Austria']]
 
 colnames(df)
 
+behFlong <- pivot_longer(behFreqtab, everything())
+?pivot_longer
+
 response_labels <- c("Never", "Rarely", "Sometimes", "Often", "Always")
 
-ggplot(behFreq, aes(x = variable, y = value, fill = as.factor(value))) +
+ggplot(behFlong, aes(x = name, y = as.factor(value), fill = as.factor(value)), label = response_labels) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(values = colorRampPalette(c("red", "green"))(5)) +  # Custom color scale
   labs(x = "Behavior", y = "Frequency", fill = "Response") +
   scale_x_discrete(labels = c(
     "freq_b1" = "Check Pantry Before Shopping",
     "Q37" = "Save Leftovers for Later",
     "Q42" = "Use Senses to Judge Food"
   )) +
-  scale_y_continuous(breaks = 1:5, labels = response_labels) +
   theme_minimal() +
+  geom_text(size = 3, position = position_stack(vjust = .4))+
   theme(legend.position = "top")
 
-ggplot(behFreq, aes(x = variable, y = value, fill = response_labels[value])) +
-  geom_bar(stat = "identity", position = "dodge") +
+ggplot(behFlong, aes(x = name, y = value, fill = as.factor(value))) +
+  geom_bar(stat = "identity") +
   labs(x = "Behavior", y = "Frequency", fill = "Response") +
   scale_x_discrete(labels = c(
     "freq_b1" = "Check Pantry Before Shopping",
