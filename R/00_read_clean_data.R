@@ -38,8 +38,6 @@ library(lmtest)
 library(modelsummary)
 library(stats)
 
-install.packages("stats")
-
  select <- dplyr::select
 
 # Set WD
@@ -49,12 +47,12 @@ wd$output <- "C:/MyData/paper 1/2_habit_comb_food/output/"
 
 # LOAD RAW DATA
 {raw_data <- read_survey(paste0(wd$data, "data_food_habit_comb.csv"))
-demUK <- read.csv(paste0(wd$data, "demo_UK.csv")) %>%   select(Participant.id, Country.of.residence)
-demES <- read.csv(paste0(wd$data, "demo_ES.csv")) %>%   select(Participant.id, Country.of.residence)
-demNL <- read.csv(paste0(wd$data, "demo_NL.csv")) %>%   select(Participant.id, Country.of.residence)
-demDE <- read.csv(paste0(wd$data, "demo_DE.csv")) %>%   select(Participant.id, Country.of.residence)
-demEL <- read.csv(paste0(wd$data, "demo_EL.csv")) %>%   select(Participant.id, Country.of.residence)
-demSV <- read.csv(paste0(wd$data, "demo_SV.csv")) %>%   select(Participant.id, Country.of.residence)
+demUK <- read.csv(paste0(wd$data, "demo_UK.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+demES <- read.csv(paste0(wd$data, "demo_ES.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+demNL <- read.csv(paste0(wd$data, "demo_NL.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+demDE <- read.csv(paste0(wd$data, "demo_DE.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+demEL <- read.csv(paste0(wd$data, "demo_EL.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+demSV <- read.csv(paste0(wd$data, "demo_SV.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
 
 dfDem <- bind_rows(demUK,demES, demNL, demDE, demEL, demSV) %>% 
  filter(!Country.of.residence == "CONSENT_REVOKED") 
@@ -62,8 +60,6 @@ dfDem <- bind_rows(demUK,demES, demNL, demDE, demEL, demSV) %>%
 dfRaw <- raw_data %>% left_join(dfDem, by = join_by(PROLIFIC_PID == Participant.id))
 
 colnames(dfRaw)[colnames(dfRaw) == "Country.of.residence"] = "Country"
-
-df[324,"Country"] <- "United Kingdom"
 }
 
 # DATA CLEANING
@@ -147,8 +143,11 @@ label(df$Q10) <- "Bread"
 label(df$Q12) <- "Dairy"
 label(df$Q13)   <- "Eggs"
 label(df$Q15) <- "Condiments and sauces"
+
+df[327,"Country"] <- "United Kingdom"
 }
 
+table(df$Nationality)
 
 #### PROLIFIC REJECTION ####
 # exclude <- raw_data %>% # People whose submission can be rejected for failing both attention checks
@@ -210,10 +209,3 @@ df <- df %>%
 # which(is.na(missing))
 # # 
 #  incomplete <- df[!complete.cases(df), ]
-
-# IMPUTATION - missing values sometimes by mistake 
-colnames(df)
- impdata <- mice(missing, m=5, maxit=50, meth='pmm', seed=500) # impute some missing values because people have clicked NA when looking for the highest point on the scale
-
- dfimp <- complete(impdata, 1) 
- 

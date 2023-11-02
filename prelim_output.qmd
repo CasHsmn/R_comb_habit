@@ -24,6 +24,7 @@ library(kableExtra)
 library(broom)
 library(AER)
 library(patchwork)
+library(purrr)
 ```
 
 ```{r}
@@ -37,33 +38,105 @@ wd$data   <- "C:/MyData/paper 1/2_habit_comb_food/data/"
 wd$output <- "C:MyData/paper 1/2_habit_comb_food/output/"
 
 # LOAD RAW DATA
-raw_data <- read_survey(paste0(wd$data, "Food_habit_COM-B-EN_16+October+2023_10.08.csv"))
+raw_data <- read_survey(paste0(wd$data, "data_food_habit_comb.csv"))
+demUK <- read.csv(paste0(wd$data, "demo_UK.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+demES <- read.csv(paste0(wd$data, "demo_ES.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+demNL <- read.csv(paste0(wd$data, "demo_NL.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+demDE <- read.csv(paste0(wd$data, "demo_DE.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+demEL <- read.csv(paste0(wd$data, "demo_EL.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+demSV <- read.csv(paste0(wd$data, "demo_SV.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+
+dfDem <- bind_rows(demUK,demES, demNL, demDE, demEL, demSV) %>% 
+ filter(!Country.of.residence == "CONSENT_REVOKED") 
+
+dfRaw <- raw_data %>% left_join(dfDem, by = join_by(PROLIFIC_PID == Participant.id))
+
+colnames(dfRaw)[colnames(dfRaw) == "Country.of.residence"] = "Country"
+
 
 # DATA CLEANING
-{df <- raw_data %>% # filter no food handling, previews, non consent, failed att check
-  filter(is.na(Q2_6) & Status == 0 & consent != 0 & (Q1...29 == 4 & (att != 4 | att != 5))) %>% 
+{df <- dfRaw %>% # filter no food handling, previews, non consent, failed att check
+  filter(is.na(Q2_6) & Status == 0 & consent != 0 & (att_1 == 4 & (att != 4 | att != 5))) %>% 
   select(!c(Status, StartDate,EndDate,Progress,RecordedDate,ResponseId, DistributionChannel, Finished)) %>%
   rowid_to_column(., "ID")
-
-df[,c("CAP_3", "CAP_5", "ref_mot_2_5")] <- 8 - df[,c("CAP_3", "CAP_5", "ref_mot_2_5")] # reverse score CAP3 and CAP5
+  
+df[,c("CAP_3", "CAP_5", "ref_mot_1_2", "ref_mot_2_5")] <- 8 - df[,c("CAP_3", "CAP_5", "ref_mot_1_2", "ref_mot_2_5")] # reverse scores
 
 # rename and labels socdem
 df <- df %>% 
-  rename(gender = Q3...98, age = Q2, adult = Q4...99, child = Q5...100, edu = Q6, employ = Q7,income = Q8...104)
+  rename(gender = gen,
+         age = Q2,
+         adult = adu,
+         child = ch,
+         edu = Q6,
+         employ = Q7,
+         income = inc)
 
 df$gender <- factor(df$gender, levels=c(1,2,3,4), labels=c("Male", "Female", "Non-binary/third-gender", "Prefer not to say"))
 
-df$income <- factor(df$income, levels=c(28:38,55), labels=c("Less than €1,000", "€1,000 - €1,999", "€2,000 - €2,999", "€3,000 - €3,999",  "€4,000 - €4,999","€5,000 - €5,999", "€6,000 - €6,999","€7,000 - €7,999", "€8,000 - €8,999", "€9,000 - €9,999", "€10,000 - €14,999",  "€15,000 or more"))
+df$income <- factor(df$income, levels=c(28:38,55), labels=c("Less than €1,000",
+                                                            "€1,000 - €1,999",
+                                                            "€2,000 - €2,999",
+                                                            "€3,000 - €3,999",
+                                                            "€4,000 - €4,999",
+                                                            "€5,000 - €5,999",
+                                                            "€6,000 - €6,999",
+                                                            "€7,000 - €7,999",
+                                                            "€8,000 - €8,999",
+                                                            "€9,000 - €9,999",
+                                                            "€10,000 - €14,999",
+                                                            "€15,000 or more"))
 
-df$employ <- factor(df$employ, levels=c(10,11,9,12,13,14,15,16,7), labels=c("Employed full-time","Employed part-time","Self employed","Unemployed looking for work","Unemployed not looking for work", "Retired","Student","Inability to work","Other"))
+df$employ <- factor(df$employ, levels=c(10,11,9,12,13,14,15,16,7), labels=c("Employed full-time",
+                                                                            "Employed part-time",
+                                                                            "Self employed",
+                                                                            "Unemployed looking for work",
+                                                                            "Unemployed not looking for work",
+                                                                            "Retired",
+                                                                            "Student",
+                                                                            "Inability to work",
+                                                                            "Other"))
 
-df$edu <- factor(df$edu, levels=c(1,9,10,12,11,13,14,15), labels=c("No formal education","Primary education","Secondary education (GCSE)", "College or vocational qualifications (e.g. BTEC, NVQ)","A-levels or equivalent","Bachelor's degree or equivalent","Master's degree or equivalent","Doctorate or equivalent"))
+df$edu <- factor(df$edu, levels=c(1,9,10,12,11,13,14,15), labels=c("No formal education",
+                                                                   "Primary education",
+                                                                   "Secondary education (GCSE)",
+                                                                   "College or vocational qualifications (e.g. BTEC, NVQ)",
+                                                                   "A-levels or equivalent",
+                                                                   "Bachelor's degree or equivalent",
+                                                                    "Master's degree or equivalent",
+                                                                   "Doctorate or equivalent"))
 
 label(df$age)   <- "Age"
 label(df$gender)   <- "Gender"
 label(df$edu)    <- "Highest education level"
 label(df$income) <- "Net monthly household income"
 label(df$employ)   <- "Employment status"
+
+label(df$Q1_28)   <- "Cooked Food"
+label(df$Q1_17) <- "Vegetables"
+label(df$Q1_18) <- "Fruit"
+label(df$Q1_19) <- "Potato"
+label(df$Q1_22)   <- "Meat (substitute), fish"
+label(df$Q1_23) <- "Sandwich fillings"
+label(df$Q1_24) <- "Bread"
+label(df$Q1_26) <- "Dairy"
+label(df$Q1_27)   <- "Eggs"
+label(df$Q1_29) <- "Condiments and sauces"
+label(df$Q1_31) <- "None of the above"
+
+
+label(df$Q14)   <- "Cooked Food"
+label(df$veg) <- "Vegetables"
+label(df$fruit) <- "Fruit"
+label(df$pot) <- "Potato"
+label(df$meat)   <- "Meat (substitute), fish"
+label(df$Q9) <- "Sandwich fillings"
+label(df$Q10) <- "Bread"
+label(df$Q12) <- "Dairy"
+label(df$Q13)   <- "Eggs"
+label(df$Q15) <- "Condiments and sauces"
+
+df[327,"Country"] <- "United Kingdom"
 }
 ```
 
@@ -170,10 +243,10 @@ sauce <- function(data, col_name){
 
 df <- df %>% 
   serving_spoon(Q14) %>% 
-  serving_spoon(Q3...88) %>% 
-  serving_spoon(Q5...90) %>% 
-  fruit_piece(Q4...89) %>% 
-  portion(Q8...91) %>% 
+  serving_spoon(veg) %>% 
+  serving_spoon(pot) %>% 
+  fruit_piece(fruit) %>% 
+  portion(meat) %>% 
   sandwich_portion(Q9) %>% 
   bread(Q10) %>% 
   dairy_portion(Q12) %>% 
@@ -182,6 +255,11 @@ df <- df %>%
 
 df <- df %>% 
   mutate(fw_total = rowSums(select(., Q14:Q15), na.rm=TRUE))
+
+label(df$fw_total) <- "Total food waste"
+units(df$fw_total) <-  "g"
+
+df$fw_total_log <- log(df$fw_total + 1)
 }
 ```
 
@@ -435,4 +513,18 @@ fit <- censReg(fw_total_log ~ psycap + socopp + phyopp + refmot + autmot, data=d
 
 kable(coef(summary(fit)), digits = 2, caption = "Tobit model summary (Log transformed)")
 
+```
+
+## Linear Regression
+
+```{r}
+
+fitbyCountry <- df %>% 
+  nest(data = -Country) %>% 
+  mutate(tidied = map(map(data, ~ lm(fw_total_log ~ child + adult + age + psycap + socopp + phyopp + refmot + autmot, data = .x)), tidy)) %>% 
+  unnest(tidied) %>% 
+  select(-data, -Country)
+
+kable(fitbyCountry, digits = 2) %>% 
+  pack_rows(index = c("Spain" = 9, "UK" = 9, "The Netherlands" = 9, "Greece" = 9, "Sweden" = 9, "Austria" = 9))
 ```

@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -60,6 +94,8 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 <link href="site_libs/table1-1.0/table1_defaults.css" rel="stylesheet">
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
 
 </head>
@@ -111,6 +147,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#com-b-descriptives" id="toc-com-b-descriptives" class="nav-link" data-scroll-target="#com-b-descriptives">COM-B Descriptives</a></li>
   <li><a href="#scale-reliability" id="toc-scale-reliability" class="nav-link" data-scroll-target="#scale-reliability">Scale reliability</a></li>
   <li><a href="#fitting-tobit-model" id="toc-fitting-tobit-model" class="nav-link" data-scroll-target="#fitting-tobit-model">Fitting Tobit model</a></li>
+  <li><a href="#linear-regression" id="toc-linear-regression" class="nav-link" data-scroll-target="#linear-regression">Linear Regression</a></li>
   </ul>
 </nav>
     </div>
@@ -156,19 +193,19 @@ ul.task-list li input[type="checkbox"] {
 <tr class="header">
 <th class="rowlabel firstrow lastrow" data-quarto-table-cell-role="th"></th>
 <th class="firstrow lastrow" data-quarto-table-cell-role="th"><span class="stratlabel">Total<br>
-<span class="stratn">(N=566)</span></span></th>
-<th class="firstrow lastrow" data-quarto-table-cell-role="th"><span class="stratlabel">DE<br>
-<span class="stratn">(N=66)</span></span></th>
-<th class="firstrow lastrow" data-quarto-table-cell-role="th"><span class="stratlabel">EL<br>
-<span class="stratn">(N=92)</span></span></th>
-<th class="firstrow lastrow" data-quarto-table-cell-role="th"><span class="stratlabel">EN-GB<br>
-<span class="stratn">(N=158)</span></span></th>
-<th class="firstrow lastrow" data-quarto-table-cell-role="th"><span class="stratlabel">ES-ES<br>
-<span class="stratn">(N=91)</span></span></th>
-<th class="firstrow lastrow" data-quarto-table-cell-role="th"><span class="stratlabel">NL<br>
-<span class="stratn">(N=82)</span></span></th>
-<th class="firstrow lastrow" data-quarto-table-cell-role="th"><span class="stratlabel">SV<br>
-<span class="stratn">(N=77)</span></span></th>
+<span class="stratn">(N=590)</span></span></th>
+<th class="firstrow lastrow" data-quarto-table-cell-role="th"><span class="stratlabel">Austria<br>
+<span class="stratn">(N=98)</span></span></th>
+<th class="firstrow lastrow" data-quarto-table-cell-role="th"><span class="stratlabel">Greece<br>
+<span class="stratn">(N=98)</span></span></th>
+<th class="firstrow lastrow" data-quarto-table-cell-role="th"><span class="stratlabel">Netherlands<br>
+<span class="stratn">(N=101)</span></span></th>
+<th class="firstrow lastrow" data-quarto-table-cell-role="th"><span class="stratlabel">Spain<br>
+<span class="stratn">(N=98)</span></span></th>
+<th class="firstrow lastrow" data-quarto-table-cell-role="th"><span class="stratlabel">Sweden<br>
+<span class="stratn">(N=94)</span></span></th>
+<th class="firstrow lastrow" data-quarto-table-cell-role="th"><span class="stratlabel">United Kingdom<br>
+<span class="stratn">(N=101)</span></span></th>
 </tr>
 </thead>
 <tbody>
@@ -184,43 +221,43 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 <tr class="even">
 <td class="rowlabel">Male</td>
-<td>284 (50.2%)</td>
-<td>32 (48.5%)</td>
-<td>55 (59.8%)</td>
-<td>56 (35.4%)</td>
-<td>51 (56.0%)</td>
-<td>46 (56.1%)</td>
-<td>44 (57.1%)</td>
+<td>296 (50.2%)</td>
+<td>45 (45.9%)</td>
+<td>59 (60.2%)</td>
+<td>58 (57.4%)</td>
+<td>55 (56.1%)</td>
+<td>51 (54.3%)</td>
+<td>28 (27.7%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel">Female</td>
-<td>268 (47.3%)</td>
-<td>33 (50.0%)</td>
-<td>33 (35.9%)</td>
-<td>101 (63.9%)</td>
-<td>37 (40.7%)</td>
-<td>33 (40.2%)</td>
-<td>31 (40.3%)</td>
+<td>280 (47.5%)</td>
+<td>52 (53.1%)</td>
+<td>35 (35.7%)</td>
+<td>40 (39.6%)</td>
+<td>40 (40.8%)</td>
+<td>41 (43.6%)</td>
+<td>72 (71.3%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel">Non-binary/third-gender</td>
-<td>10 (1.8%)</td>
-<td>1 (1.5%)</td>
-<td>2 (2.2%)</td>
+<td>10 (1.7%)</td>
+<td>1 (1.0%)</td>
+<td>2 (2.0%)</td>
+<td>3 (3.0%)</td>
+<td>3 (3.1%)</td>
+<td>1 (1.1%)</td>
 <td>0 (0%)</td>
-<td>3 (3.3%)</td>
-<td>3 (3.7%)</td>
-<td>1 (1.3%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel lastrow">Prefer not to say</td>
 <td class="lastrow">4 (0.7%)</td>
 <td class="lastrow">0 (0%)</td>
-<td class="lastrow">2 (2.2%)</td>
-<td class="lastrow">1 (0.6%)</td>
+<td class="lastrow">2 (2.0%)</td>
 <td class="lastrow">0 (0%)</td>
 <td class="lastrow">0 (0%)</td>
-<td class="lastrow">1 (1.3%)</td>
+<td class="lastrow">1 (1.1%)</td>
+<td class="lastrow">1 (1.0%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel firstrow">Age</td>
@@ -234,23 +271,23 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 <tr class="odd">
 <td class="rowlabel">Mean (SD)</td>
-<td>35.6 (11.8)</td>
-<td>30.7 (10.0)</td>
-<td>34.7 (11.0)</td>
-<td>38.9 (13.6)</td>
-<td>38.0 (11.0)</td>
-<td>32.1 (8.85)</td>
-<td>35.3 (11.2)</td>
+<td>35.4 (11.8)</td>
+<td>30.2 (9.30)</td>
+<td>34.4 (10.8)</td>
+<td>31.5 (8.46)</td>
+<td>37.8 (10.9)</td>
+<td>34.3 (10.8)</td>
+<td>44.0 (14.1)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel lastrow">Median [Min, Max]</td>
 <td class="lastrow">33.0 [18.0, 78.0]</td>
-<td class="lastrow">28.5 [18.0, 69.0]</td>
-<td class="lastrow">33.5 [20.0, 67.0]</td>
-<td class="lastrow">36.0 [19.0, 78.0]</td>
-<td class="lastrow">35.0 [21.0, 74.0]</td>
+<td class="lastrow">28.0 [18.0, 69.0]</td>
+<td class="lastrow">32.5 [20.0, 67.0]</td>
 <td class="lastrow">29.0 [19.0, 67.0]</td>
-<td class="lastrow">32.0 [19.0, 67.0]</td>
+<td class="lastrow">35.0 [21.0, 74.0]</td>
+<td class="lastrow">31.5 [19.0, 67.0]</td>
+<td class="lastrow">41.0 [19.0, 78.0]</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel firstrow">How many adults are part of your household? (aged 18 and older)</td>
@@ -264,13 +301,13 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 <tr class="even">
 <td class="rowlabel">Mean (SD)</td>
-<td>2.13 (1.07)</td>
-<td>1.98 (0.969)</td>
-<td>2.32 (1.07)</td>
-<td>2.13 (1.31)</td>
-<td>2.26 (0.929)</td>
-<td>1.98 (0.860)</td>
-<td>2.00 (0.918)</td>
+<td>2.12 (1.06)</td>
+<td>1.99 (0.914)</td>
+<td>2.29 (1.07)</td>
+<td>2.07 (1.40)</td>
+<td>2.23 (0.917)</td>
+<td>2.00 (0.880)</td>
+<td>2.13 (1.06)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel lastrow">Median [Min, Max]</td>
@@ -279,8 +316,8 @@ ul.task-list li input[type="checkbox"] {
 <td class="lastrow">2.00 [0, 6.00]</td>
 <td class="lastrow">2.00 [0, 13.0]</td>
 <td class="lastrow">2.00 [1.00, 5.00]</td>
-<td class="lastrow">2.00 [1.00, 4.00]</td>
 <td class="lastrow">2.00 [0, 4.00]</td>
+<td class="lastrow">2.00 [1.00, 9.00]</td>
 </tr>
 <tr class="even">
 <td class="rowlabel firstrow">How many children are part of your household? (aged under 18)</td>
@@ -294,33 +331,33 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 <tr class="odd">
 <td class="rowlabel">Mean (SD)</td>
-<td>0.385 (0.751)</td>
-<td>0.258 (0.640)</td>
-<td>0.374 (0.770)</td>
-<td>0.459 (0.836)</td>
-<td>0.495 (0.808)</td>
-<td>0.280 (0.614)</td>
-<td>0.338 (0.681)</td>
+<td>0.372 (0.742)</td>
+<td>0.255 (0.631)</td>
+<td>0.340 (0.720)</td>
+<td>0.277 (0.618)</td>
+<td>0.459 (0.789)</td>
+<td>0.319 (0.691)</td>
+<td>0.580 (0.923)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel">Median [Min, Max]</td>
 <td>0 [0, 4.00]</td>
 <td>0 [0, 2.00]</td>
 <td>0 [0, 3.00]</td>
+<td>0 [0, 3.00]</td>
+<td>0 [0, 3.00]</td>
+<td>0 [0, 3.00]</td>
 <td>0 [0, 4.00]</td>
-<td>0 [0, 3.00]</td>
-<td>0 [0, 3.00]</td>
-<td>0 [0, 3.00]</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel lastrow">Missing</td>
-<td class="lastrow">2 (0.4%)</td>
+<td class="lastrow">2 (0.3%)</td>
 <td class="lastrow">0 (0%)</td>
-<td class="lastrow">1 (1.1%)</td>
-<td class="lastrow">1 (0.6%)</td>
-<td class="lastrow">0 (0%)</td>
+<td class="lastrow">1 (1.0%)</td>
 <td class="lastrow">0 (0%)</td>
 <td class="lastrow">0 (0%)</td>
+<td class="lastrow">0 (0%)</td>
+<td class="lastrow">1 (1.0%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel firstrow">Highest education level</td>
@@ -345,72 +382,72 @@ ul.task-list li input[type="checkbox"] {
 <tr class="even">
 <td class="rowlabel">Primary education</td>
 <td>8 (1.4%)</td>
-<td>2 (3.0%)</td>
+<td>2 (2.0%)</td>
+<td>1 (1.0%)</td>
 <td>0 (0%)</td>
-<td>2 (1.3%)</td>
 <td>0 (0%)</td>
-<td>0 (0%)</td>
-<td>4 (5.2%)</td>
+<td>4 (4.3%)</td>
+<td>1 (1.0%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel">Secondary education (GCSE)</td>
-<td>64 (11.3%)</td>
-<td>3 (4.5%)</td>
-<td>11 (12.0%)</td>
-<td>18 (11.4%)</td>
-<td>10 (11.0%)</td>
-<td>5 (6.1%)</td>
-<td>17 (22.1%)</td>
+<td>65 (11.0%)</td>
+<td>5 (5.1%)</td>
+<td>12 (12.2%)</td>
+<td>8 (7.9%)</td>
+<td>11 (11.2%)</td>
+<td>18 (19.1%)</td>
+<td>11 (10.9%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel">College or vocational qualifications (e.g. BTEC, NVQ)</td>
-<td>89 (15.7%)</td>
-<td>28 (42.4%)</td>
-<td>12 (13.0%)</td>
-<td>11 (7.0%)</td>
-<td>10 (11.0%)</td>
-<td>13 (15.9%)</td>
-<td>15 (19.5%)</td>
+<td>97 (16.4%)</td>
+<td>36 (36.7%)</td>
+<td>12 (12.2%)</td>
+<td>13 (12.9%)</td>
+<td>10 (10.2%)</td>
+<td>16 (17.0%)</td>
+<td>10 (9.9%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel">A-levels or equivalent</td>
-<td>55 (9.7%)</td>
-<td>2 (3.0%)</td>
-<td>8 (8.7%)</td>
-<td>11 (7.0%)</td>
-<td>2 (2.2%)</td>
-<td>27 (32.9%)</td>
-<td>5 (6.5%)</td>
+<td>56 (9.5%)</td>
+<td>3 (3.1%)</td>
+<td>8 (8.2%)</td>
+<td>27 (26.7%)</td>
+<td>2 (2.0%)</td>
+<td>5 (5.3%)</td>
+<td>11 (10.9%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel">Bachelor's degree or equivalent</td>
-<td>206 (36.4%)</td>
-<td>18 (27.3%)</td>
-<td>40 (43.5%)</td>
-<td>72 (45.6%)</td>
-<td>39 (42.9%)</td>
-<td>18 (22.0%)</td>
-<td>19 (24.7%)</td>
+<td>209 (35.4%)</td>
+<td>27 (27.6%)</td>
+<td>42 (42.9%)</td>
+<td>27 (26.7%)</td>
+<td>41 (41.8%)</td>
+<td>25 (26.6%)</td>
+<td>47 (46.5%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel">Master's degree or equivalent</td>
-<td>127 (22.4%)</td>
-<td>10 (15.2%)</td>
-<td>19 (20.7%)</td>
-<td>37 (23.4%)</td>
-<td>28 (30.8%)</td>
-<td>18 (22.0%)</td>
-<td>15 (19.5%)</td>
+<td>136 (23.1%)</td>
+<td>20 (20.4%)</td>
+<td>21 (21.4%)</td>
+<td>24 (23.8%)</td>
+<td>31 (31.6%)</td>
+<td>23 (24.5%)</td>
+<td>17 (16.8%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel lastrow">Doctorate or equivalent</td>
-<td class="lastrow">17 (3.0%)</td>
-<td class="lastrow">3 (4.5%)</td>
-<td class="lastrow">2 (2.2%)</td>
-<td class="lastrow">7 (4.4%)</td>
-<td class="lastrow">2 (2.2%)</td>
-<td class="lastrow">1 (1.2%)</td>
-<td class="lastrow">2 (2.6%)</td>
+<td class="lastrow">19 (3.2%)</td>
+<td class="lastrow">5 (5.1%)</td>
+<td class="lastrow">2 (2.0%)</td>
+<td class="lastrow">2 (2.0%)</td>
+<td class="lastrow">3 (3.1%)</td>
+<td class="lastrow">3 (3.2%)</td>
+<td class="lastrow">4 (4.0%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel firstrow">Employment status</td>
@@ -424,103 +461,103 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 <tr class="even">
 <td class="rowlabel">Employed full-time</td>
-<td>262 (46.3%)</td>
-<td>28 (42.4%)</td>
-<td>53 (57.6%)</td>
-<td>64 (40.5%)</td>
-<td>50 (54.9%)</td>
-<td>31 (37.8%)</td>
-<td>36 (46.8%)</td>
+<td>274 (46.4%)</td>
+<td>43 (43.9%)</td>
+<td>55 (56.1%)</td>
+<td>41 (40.6%)</td>
+<td>51 (52.0%)</td>
+<td>43 (45.7%)</td>
+<td>41 (40.6%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel">Employed part-time</td>
-<td>89 (15.7%)</td>
-<td>10 (15.2%)</td>
-<td>8 (8.7%)</td>
-<td>33 (20.9%)</td>
-<td>11 (12.1%)</td>
-<td>18 (22.0%)</td>
-<td>9 (11.7%)</td>
+<td>89 (15.1%)</td>
+<td>11 (11.2%)</td>
+<td>10 (10.2%)</td>
+<td>23 (22.8%)</td>
+<td>14 (14.3%)</td>
+<td>11 (11.7%)</td>
+<td>20 (19.8%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel">Self employed</td>
-<td>47 (8.3%)</td>
-<td>5 (7.6%)</td>
-<td>5 (5.4%)</td>
-<td>12 (7.6%)</td>
-<td>10 (11.0%)</td>
-<td>9 (11.0%)</td>
-<td>6 (7.8%)</td>
+<td>49 (8.3%)</td>
+<td>9 (9.2%)</td>
+<td>7 (7.1%)</td>
+<td>9 (8.9%)</td>
+<td>10 (10.2%)</td>
+<td>6 (6.4%)</td>
+<td>8 (7.9%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel">Unemployed looking for work</td>
-<td>39 (6.9%)</td>
-<td>2 (3.0%)</td>
-<td>4 (4.3%)</td>
-<td>12 (7.6%)</td>
-<td>8 (8.8%)</td>
-<td>6 (7.3%)</td>
-<td>7 (9.1%)</td>
+<td>40 (6.8%)</td>
+<td>4 (4.1%)</td>
+<td>5 (5.1%)</td>
+<td>7 (6.9%)</td>
+<td>9 (9.2%)</td>
+<td>12 (12.8%)</td>
+<td>3 (3.0%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel">Unemployed not looking for work</td>
-<td>16 (2.8%)</td>
-<td>2 (3.0%)</td>
-<td>4 (4.3%)</td>
-<td>6 (3.8%)</td>
-<td>2 (2.2%)</td>
-<td>1 (1.2%)</td>
-<td>1 (1.3%)</td>
+<td>17 (2.9%)</td>
+<td>4 (4.1%)</td>
+<td>4 (4.1%)</td>
+<td>1 (1.0%)</td>
+<td>2 (2.0%)</td>
+<td>1 (1.1%)</td>
+<td>5 (5.0%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel">Retired</td>
-<td>20 (3.5%)</td>
-<td>1 (1.5%)</td>
-<td>2 (2.2%)</td>
-<td>12 (7.6%)</td>
-<td>1 (1.1%)</td>
-<td>1 (1.2%)</td>
-<td>3 (3.9%)</td>
+<td>21 (3.6%)</td>
+<td>1 (1.0%)</td>
+<td>2 (2.0%)</td>
+<td>1 (1.0%)</td>
+<td>1 (1.0%)</td>
+<td>3 (3.2%)</td>
+<td>13 (12.9%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel">Student</td>
-<td>76 (13.4%)</td>
-<td>18 (27.3%)</td>
-<td>13 (14.1%)</td>
-<td>11 (7.0%)</td>
-<td>8 (8.8%)</td>
-<td>14 (17.1%)</td>
-<td>12 (15.6%)</td>
+<td>83 (14.1%)</td>
+<td>26 (26.5%)</td>
+<td>13 (13.3%)</td>
+<td>17 (16.8%)</td>
+<td>10 (10.2%)</td>
+<td>14 (14.9%)</td>
+<td>3 (3.0%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel">Inability to work</td>
 <td>11 (1.9%)</td>
 <td>0 (0%)</td>
-<td>2 (2.2%)</td>
-<td>6 (3.8%)</td>
+<td>2 (2.0%)</td>
+<td>1 (1.0%)</td>
 <td>0 (0%)</td>
-<td>1 (1.2%)</td>
-<td>2 (2.6%)</td>
+<td>2 (2.1%)</td>
+<td>6 (5.9%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel">Other</td>
 <td>4 (0.7%)</td>
 <td>0 (0%)</td>
+<td>0 (0%)</td>
+<td>1 (1.0%)</td>
+<td>0 (0%)</td>
 <td>1 (1.1%)</td>
-<td>2 (1.3%)</td>
-<td>0 (0%)</td>
-<td>1 (1.2%)</td>
-<td>0 (0%)</td>
+<td>2 (2.0%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel lastrow">Missing</td>
-<td class="lastrow">2 (0.4%)</td>
+<td class="lastrow">2 (0.3%)</td>
 <td class="lastrow">0 (0%)</td>
 <td class="lastrow">0 (0%)</td>
 <td class="lastrow">0 (0%)</td>
+<td class="lastrow">1 (1.0%)</td>
 <td class="lastrow">1 (1.1%)</td>
 <td class="lastrow">0 (0%)</td>
-<td class="lastrow">1 (1.3%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel firstrow">Net monthly household income</td>
@@ -534,136 +571,136 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 <tr class="odd">
 <td class="rowlabel">Less than €1,000</td>
-<td>67 (11.8%)</td>
-<td>6 (9.1%)</td>
-<td>19 (20.7%)</td>
-<td>15 (9.5%)</td>
-<td>11 (12.1%)</td>
-<td>12 (14.6%)</td>
-<td>4 (5.2%)</td>
+<td>73 (12.4%)</td>
+<td>12 (12.2%)</td>
+<td>21 (21.4%)</td>
+<td>14 (13.9%)</td>
+<td>13 (13.3%)</td>
+<td>6 (6.4%)</td>
+<td>7 (6.9%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel">€1,000 - €1,999</td>
-<td>130 (23.0%)</td>
-<td>10 (15.2%)</td>
-<td>40 (43.5%)</td>
-<td>28 (17.7%)</td>
-<td>23 (25.3%)</td>
-<td>15 (18.3%)</td>
-<td>14 (18.2%)</td>
+<td>134 (22.7%)</td>
+<td>14 (14.3%)</td>
+<td>42 (42.9%)</td>
+<td>17 (16.8%)</td>
+<td>24 (24.5%)</td>
+<td>16 (17.0%)</td>
+<td>21 (20.8%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel">€2,000 - €2,999</td>
-<td>125 (22.1%)</td>
-<td>12 (18.2%)</td>
-<td>15 (16.3%)</td>
-<td>40 (25.3%)</td>
-<td>25 (27.5%)</td>
-<td>21 (25.6%)</td>
-<td>12 (15.6%)</td>
+<td>131 (22.2%)</td>
+<td>22 (22.4%)</td>
+<td>17 (17.3%)</td>
+<td>24 (23.8%)</td>
+<td>29 (29.6%)</td>
+<td>17 (18.1%)</td>
+<td>22 (21.8%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel">€3,000 - €3,999</td>
-<td>98 (17.3%)</td>
-<td>18 (27.3%)</td>
-<td>7 (7.6%)</td>
-<td>30 (19.0%)</td>
-<td>18 (19.8%)</td>
-<td>10 (12.2%)</td>
-<td>15 (19.5%)</td>
+<td>100 (16.9%)</td>
+<td>22 (22.4%)</td>
+<td>6 (6.1%)</td>
+<td>15 (14.9%)</td>
+<td>18 (18.4%)</td>
+<td>21 (22.3%)</td>
+<td>18 (17.8%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel">€4,000 - €4,999</td>
-<td>45 (8.0%)</td>
-<td>8 (12.1%)</td>
-<td>1 (1.1%)</td>
-<td>11 (7.0%)</td>
-<td>3 (3.3%)</td>
-<td>14 (17.1%)</td>
-<td>8 (10.4%)</td>
+<td>47 (8.0%)</td>
+<td>11 (11.2%)</td>
+<td>1 (1.0%)</td>
+<td>15 (14.9%)</td>
+<td>3 (3.1%)</td>
+<td>8 (8.5%)</td>
+<td>9 (8.9%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel">€5,000 - €5,999</td>
-<td>31 (5.5%)</td>
-<td>2 (3.0%)</td>
-<td>1 (1.1%)</td>
-<td>8 (5.1%)</td>
-<td>4 (4.4%)</td>
-<td>5 (6.1%)</td>
-<td>11 (14.3%)</td>
+<td>33 (5.6%)</td>
+<td>5 (5.1%)</td>
+<td>1 (1.0%)</td>
+<td>7 (6.9%)</td>
+<td>4 (4.1%)</td>
+<td>11 (11.7%)</td>
+<td>5 (5.0%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel">€6,000 - €6,999</td>
-<td>20 (3.5%)</td>
-<td>4 (6.1%)</td>
-<td>1 (1.1%)</td>
-<td>5 (3.2%)</td>
-<td>3 (3.3%)</td>
-<td>2 (2.4%)</td>
-<td>5 (6.5%)</td>
+<td>20 (3.4%)</td>
+<td>4 (4.1%)</td>
+<td>2 (2.0%)</td>
+<td>3 (3.0%)</td>
+<td>3 (3.1%)</td>
+<td>6 (6.4%)</td>
+<td>2 (2.0%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel">€7,000 - €7,999</td>
-<td>9 (1.6%)</td>
+<td>10 (1.7%)</td>
+<td>1 (1.0%)</td>
 <td>0 (0%)</td>
+<td>2 (2.0%)</td>
 <td>0 (0%)</td>
-<td>4 (2.5%)</td>
-<td>0 (0%)</td>
-<td>0 (0%)</td>
-<td>5 (6.5%)</td>
+<td>5 (5.3%)</td>
+<td>2 (2.0%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel">€8,000 - €8,999</td>
-<td>6 (1.1%)</td>
-<td>1 (1.5%)</td>
-<td>1 (1.1%)</td>
+<td>7 (1.2%)</td>
+<td>2 (2.0%)</td>
+<td>1 (1.0%)</td>
 <td>0 (0%)</td>
-<td>2 (2.2%)</td>
+<td>2 (2.0%)</td>
+<td>2 (2.1%)</td>
 <td>0 (0%)</td>
-<td>2 (2.6%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel">€9,000 - €9,999</td>
-<td>5 (0.9%)</td>
-<td>1 (1.5%)</td>
-<td>1 (1.1%)</td>
-<td>2 (1.3%)</td>
-<td>1 (1.1%)</td>
+<td>5 (0.8%)</td>
+<td>1 (1.0%)</td>
+<td>1 (1.0%)</td>
 <td>0 (0%)</td>
+<td>1 (1.0%)</td>
 <td>0 (0%)</td>
+<td>2 (2.0%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel">€10,000 - €14,999</td>
-<td>10 (1.8%)</td>
-<td>3 (4.5%)</td>
-<td>3 (3.3%)</td>
-<td>2 (1.3%)</td>
+<td>10 (1.7%)</td>
+<td>3 (3.1%)</td>
+<td>3 (3.1%)</td>
+<td>3 (3.0%)</td>
 <td>0 (0%)</td>
-<td>2 (2.4%)</td>
 <td>0 (0%)</td>
+<td>1 (1.0%)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel">€15,000 or more</td>
-<td>18 (3.2%)</td>
-<td>1 (1.5%)</td>
-<td>3 (3.3%)</td>
-<td>12 (7.6%)</td>
+<td>18 (3.1%)</td>
+<td>1 (1.0%)</td>
+<td>3 (3.1%)</td>
+<td>1 (1.0%)</td>
+<td>1 (1.0%)</td>
 <td>1 (1.1%)</td>
-<td>1 (1.2%)</td>
-<td>0 (0%)</td>
+<td>11 (10.9%)</td>
 </tr>
 <tr class="odd">
 <td class="rowlabel lastrow">Missing</td>
-<td class="lastrow">2 (0.4%)</td>
+<td class="lastrow">2 (0.3%)</td>
 <td class="lastrow">0 (0%)</td>
 <td class="lastrow">0 (0%)</td>
-<td class="lastrow">1 (0.6%)</td>
 <td class="lastrow">0 (0%)</td>
 <td class="lastrow">0 (0%)</td>
-<td class="lastrow">1 (1.3%)</td>
+<td class="lastrow">1 (1.1%)</td>
+<td class="lastrow">1 (1.0%)</td>
 </tr>
 <tr class="even">
-<td class="rowlabel firstrow">fw_total</td>
+<td class="rowlabel firstrow">Total food waste (g)</td>
 <td class="firstrow"></td>
 <td class="firstrow"></td>
 <td class="firstrow"></td>
@@ -674,23 +711,23 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 <tr class="odd">
 <td class="rowlabel">Mean (SD)</td>
-<td>292 (393)</td>
-<td>269 (330)</td>
-<td>366 (444)</td>
-<td>287 (379)</td>
-<td>255 (395)</td>
-<td>257 (426)</td>
-<td>311 (363)</td>
+<td>293 (389)</td>
+<td>281 (319)</td>
+<td>350 (437)</td>
+<td>267 (409)</td>
+<td>258 (393)</td>
+<td>291 (340)</td>
+<td>314 (420)</td>
 </tr>
 <tr class="even">
 <td class="rowlabel lastrow">Median [Min, Max]</td>
 <td class="lastrow">150 [0, 3020]</td>
-<td class="lastrow">150 [0, 1710]</td>
-<td class="lastrow">230 [0, 2430]</td>
-<td class="lastrow">130 [0, 2170]</td>
+<td class="lastrow">155 [0, 1710]</td>
+<td class="lastrow">208 [0, 2430]</td>
+<td class="lastrow">130 [0, 3020]</td>
 <td class="lastrow">150 [0, 2530]</td>
-<td class="lastrow">125 [0, 3020]</td>
-<td class="lastrow">185 [0, 1680]</td>
+<td class="lastrow">177 [0, 1680]</td>
+<td class="lastrow">150 [0, 2170]</td>
 </tr>
 </tbody>
 </table>
@@ -719,6 +756,11 @@ ul.task-list li input[type="checkbox"] {
 <section id="com-b-descriptives" class="level2">
 <h2 class="anchored" data-anchor-id="com-b-descriptives">COM-B Descriptives</h2>
 <div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Some items ( ref_mot_1_2 ) were negatively correlated with the total scale and 
+probably should be reversed.  
+To do this, run the function again with the 'check.keys=TRUE' option</code></pre>
+</div>
 <div class="cell-output-display">
 <table data-quarto-postprocess="true" class="table table-sm table-striped small">
 <thead>
@@ -734,42 +776,42 @@ ul.task-list li input[type="checkbox"] {
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Psychological Capability (5 items)</td>
-<td style="text-align: right;">5.27</td>
-<td style="text-align: right;">0.92</td>
+<td style="text-align: right;">5.28</td>
+<td style="text-align: right;">0.91</td>
 <td style="text-align: right;">5.40</td>
-<td style="text-align: right;">564</td>
-<td style="text-align: right;">0.72</td>
+<td style="text-align: right;">588</td>
+<td style="text-align: right;">0.71</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Physical Opportunity (2 items)</td>
-<td style="text-align: right;">5.71</td>
+<td style="text-align: right;">5.72</td>
 <td style="text-align: right;">0.97</td>
 <td style="text-align: right;">6.00</td>
-<td style="text-align: right;">566</td>
-<td style="text-align: right;">0.63</td>
+<td style="text-align: right;">589</td>
+<td style="text-align: right;">0.62</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Social Opportunity (2 items)</td>
-<td style="text-align: right;">4.77</td>
+<td style="text-align: right;">4.79</td>
 <td style="text-align: right;">1.18</td>
 <td style="text-align: right;">5.00</td>
-<td style="text-align: right;">566</td>
-<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">590</td>
+<td style="text-align: right;">0.58</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Reflective Motivation (15 items)</td>
-<td style="text-align: right;">5.35</td>
-<td style="text-align: right;">0.72</td>
-<td style="text-align: right;">5.47</td>
-<td style="text-align: right;">560</td>
-<td style="text-align: right;">0.84</td>
+<td style="text-align: right;">5.10</td>
+<td style="text-align: right;">0.67</td>
+<td style="text-align: right;">5.20</td>
+<td style="text-align: right;">584</td>
+<td style="text-align: right;">0.80</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Automatic Motivation (4 items)</td>
 <td style="text-align: right;">5.63</td>
-<td style="text-align: right;">0.93</td>
+<td style="text-align: right;">0.92</td>
 <td style="text-align: right;">5.75</td>
-<td style="text-align: right;">564</td>
+<td style="text-align: right;">588</td>
 <td style="text-align: right;">0.67</td>
 </tr>
 </tbody>
@@ -795,7 +837,7 @@ ul.task-list li input[type="checkbox"] {
 <p><img src="prelim_output_files/figure-html/combscale-3.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>correlation for social opportunity items (injunctive and descriptive norm) is 0.41 and for physical opportunity (time and physical resources) 0.46.</p>
+<p>correlation for social opportunity items (injunctive and descriptive norm) is 0.42 and for physical opportunity (time and physical resources) NA.</p>
 <p>I will treat the physical opportunity and social opportunity items as separate constructs.</p>
 </section>
 <section id="fitting-tobit-model" class="level2">
@@ -816,45 +858,45 @@ ul.task-list li input[type="checkbox"] {
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">10.44</td>
-<td style="text-align: right;">0.82</td>
-<td style="text-align: right;">12.78</td>
+<td style="text-align: right;">10.77</td>
+<td style="text-align: right;">0.80</td>
+<td style="text-align: right;">13.40</td>
 <td style="text-align: right;">0.00</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">psycap</td>
-<td style="text-align: right;">-0.25</td>
+<td style="text-align: right;">-0.21</td>
 <td style="text-align: right;">0.14</td>
-<td style="text-align: right;">-1.74</td>
-<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">-1.49</td>
+<td style="text-align: right;">0.14</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">socopp</td>
+<td style="text-align: right;">0.11</td>
 <td style="text-align: right;">0.09</td>
-<td style="text-align: right;">0.09</td>
-<td style="text-align: right;">0.91</td>
-<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">1.26</td>
+<td style="text-align: right;">0.21</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">phyopp</td>
-<td style="text-align: right;">-0.12</td>
+<td style="text-align: right;">-0.11</td>
 <td style="text-align: right;">0.13</td>
-<td style="text-align: right;">-0.93</td>
-<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">-0.82</td>
+<td style="text-align: right;">0.41</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">refmot</td>
-<td style="text-align: right;">-1.14</td>
+<td style="text-align: right;">-1.40</td>
 <td style="text-align: right;">0.24</td>
-<td style="text-align: right;">-4.74</td>
+<td style="text-align: right;">-5.77</td>
 <td style="text-align: right;">0.00</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">autmot</td>
-<td style="text-align: right;">0.25</td>
-<td style="text-align: right;">0.17</td>
-<td style="text-align: right;">1.51</td>
-<td style="text-align: right;">0.13</td>
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">1.91</td>
+<td style="text-align: right;">0.06</td>
 </tr>
 </tbody>
 </table>
@@ -876,45 +918,45 @@ ul.task-list li input[type="checkbox"] {
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">1378.74</td>
-<td style="text-align: right;">124.59</td>
-<td style="text-align: right;">11.07</td>
+<td style="text-align: right;">1462.46</td>
+<td style="text-align: right;">121.60</td>
+<td style="text-align: right;">12.03</td>
 <td style="text-align: right;">0.00</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">psycap</td>
-<td style="text-align: right;">-71.69</td>
-<td style="text-align: right;">21.94</td>
-<td style="text-align: right;">-3.27</td>
-<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-58.02</td>
+<td style="text-align: right;">21.18</td>
+<td style="text-align: right;">-2.74</td>
+<td style="text-align: right;">0.01</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">socopp</td>
-<td style="text-align: right;">28.01</td>
-<td style="text-align: right;">14.42</td>
-<td style="text-align: right;">1.94</td>
-<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">31.04</td>
+<td style="text-align: right;">13.74</td>
+<td style="text-align: right;">2.26</td>
+<td style="text-align: right;">0.02</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">phyopp</td>
-<td style="text-align: right;">-23.98</td>
-<td style="text-align: right;">20.30</td>
-<td style="text-align: right;">-1.18</td>
-<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">-21.24</td>
+<td style="text-align: right;">19.52</td>
+<td style="text-align: right;">-1.09</td>
+<td style="text-align: right;">0.28</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">refmot</td>
-<td style="text-align: right;">-187.81</td>
-<td style="text-align: right;">36.81</td>
-<td style="text-align: right;">-5.10</td>
+<td style="text-align: right;">-248.54</td>
+<td style="text-align: right;">36.82</td>
+<td style="text-align: right;">-6.75</td>
 <td style="text-align: right;">0.00</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">autmot</td>
-<td style="text-align: right;">53.29</td>
-<td style="text-align: right;">25.52</td>
-<td style="text-align: right;">2.09</td>
-<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">67.43</td>
+<td style="text-align: right;">24.09</td>
+<td style="text-align: right;">2.80</td>
+<td style="text-align: right;">0.01</td>
 </tr>
 </tbody>
 </table>
@@ -936,45 +978,45 @@ ul.task-list li input[type="checkbox"] {
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">8.00</td>
-<td style="text-align: right;">0.40</td>
-<td style="text-align: right;">20.20</td>
+<td style="text-align: right;">8.12</td>
+<td style="text-align: right;">0.39</td>
+<td style="text-align: right;">20.84</td>
 <td style="text-align: right;">0.00</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">psycap</td>
-<td style="text-align: right;">-0.17</td>
+<td style="text-align: right;">-0.13</td>
 <td style="text-align: right;">0.07</td>
-<td style="text-align: right;">-2.43</td>
-<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">-1.93</td>
+<td style="text-align: right;">0.05</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">socopp</td>
-<td style="text-align: right;">0.08</td>
-<td style="text-align: right;">0.05</td>
-<td style="text-align: right;">1.70</td>
 <td style="text-align: right;">0.09</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">2.04</td>
+<td style="text-align: right;">0.04</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">phyopp</td>
-<td style="text-align: right;">-0.05</td>
+<td style="text-align: right;">-0.06</td>
 <td style="text-align: right;">0.06</td>
-<td style="text-align: right;">-0.81</td>
-<td style="text-align: right;">0.42</td>
+<td style="text-align: right;">-0.98</td>
+<td style="text-align: right;">0.33</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">refmot</td>
-<td style="text-align: right;">-0.46</td>
+<td style="text-align: right;">-0.56</td>
 <td style="text-align: right;">0.12</td>
-<td style="text-align: right;">-3.89</td>
+<td style="text-align: right;">-4.76</td>
 <td style="text-align: right;">0.00</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">autmot</td>
-<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0.13</td>
 <td style="text-align: right;">0.08</td>
-<td style="text-align: right;">1.40</td>
-<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">1.70</td>
+<td style="text-align: right;">0.09</td>
 </tr>
 </tbody>
 </table>
@@ -996,52 +1038,478 @@ ul.task-list li input[type="checkbox"] {
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">11.58</td>
-<td style="text-align: right;">1.07</td>
-<td style="text-align: right;">10.82</td>
+<td style="text-align: right;">11.92</td>
+<td style="text-align: right;">1.04</td>
+<td style="text-align: right;">11.42</td>
 <td style="text-align: right;">0.00</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">psycap</td>
-<td style="text-align: right;">-0.30</td>
-<td style="text-align: right;">0.19</td>
-<td style="text-align: right;">-1.59</td>
-<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">-0.25</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">-1.40</td>
+<td style="text-align: right;">0.16</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">socopp</td>
-<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">0.14</td>
 <td style="text-align: right;">0.12</td>
-<td style="text-align: right;">0.81</td>
-<td style="text-align: right;">0.42</td>
+<td style="text-align: right;">1.15</td>
+<td style="text-align: right;">0.25</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">phyopp</td>
-<td style="text-align: right;">-0.16</td>
+<td style="text-align: right;">-0.14</td>
 <td style="text-align: right;">0.17</td>
-<td style="text-align: right;">-0.94</td>
-<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">-0.81</td>
+<td style="text-align: right;">0.42</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">refmot</td>
-<td style="text-align: right;">-1.42</td>
+<td style="text-align: right;">-1.72</td>
 <td style="text-align: right;">0.32</td>
-<td style="text-align: right;">-4.49</td>
+<td style="text-align: right;">-5.45</td>
 <td style="text-align: right;">0.00</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">autmot</td>
-<td style="text-align: right;">0.31</td>
-<td style="text-align: right;">0.22</td>
-<td style="text-align: right;">1.43</td>
-<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">0.38</td>
+<td style="text-align: right;">0.21</td>
+<td style="text-align: right;">1.82</td>
+<td style="text-align: right;">0.07</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">logSigma</td>
-<td style="text-align: right;">1.12</td>
+<td style="text-align: right;">1.10</td>
 <td style="text-align: right;">0.04</td>
-<td style="text-align: right;">29.92</td>
+<td style="text-align: right;">30.12</td>
 <td style="text-align: right;">0.00</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</section>
+<section id="linear-regression" class="level2">
+<h2 class="anchored" data-anchor-id="linear-regression">Linear Regression</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fitbyCountry <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nest</span>(<span class="at">data =</span> <span class="sc">-</span>Country) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tidied =</span> <span class="fu">map</span>(<span class="fu">map</span>(data, <span class="sc">~</span> <span class="fu">lm</span>(fw_total_log <span class="sc">~</span> child <span class="sc">+</span> adult <span class="sc">+</span> age <span class="sc">+</span> psycap <span class="sc">+</span> socopp <span class="sc">+</span> phyopp <span class="sc">+</span> refmot <span class="sc">+</span> autmot, <span class="at">data =</span> .x)), tidy)) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(tidied) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>data, <span class="sc">-</span>Country)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(fitbyCountry, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pack_rows</span>(<span class="at">index =</span> <span class="fu">c</span>(<span class="st">"Spain"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"UK"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"The Netherlands"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"Greece"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"Sweden"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"Austria"</span> <span class="ot">=</span> <span class="dv">9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table data-quarto-postprocess="true" class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">estimate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std.error</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd" data-grouplength="9">
+<td colspan="5" style="border-bottom: 1px solid"><strong>Spain</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">(Intercept)</td>
+<td style="text-align: right;">12.49</td>
+<td style="text-align: right;">2.85</td>
+<td style="text-align: right;">4.38</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">child</td>
+<td style="text-align: right;">0.25</td>
+<td style="text-align: right;">0.33</td>
+<td style="text-align: right;">0.76</td>
+<td style="text-align: right;">0.45</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">adult</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">0.28</td>
+<td style="text-align: right;">1.41</td>
+<td style="text-align: right;">0.16</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">age</td>
+<td style="text-align: right;">-0.07</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">-2.82</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">psycap</td>
+<td style="text-align: right;">0.68</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">1.64</td>
+<td style="text-align: right;">0.10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">socopp</td>
+<td style="text-align: right;">-0.47</td>
+<td style="text-align: right;">0.27</td>
+<td style="text-align: right;">-1.70</td>
+<td style="text-align: right;">0.09</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">phyopp</td>
+<td style="text-align: right;">-0.36</td>
+<td style="text-align: right;">0.32</td>
+<td style="text-align: right;">-1.13</td>
+<td style="text-align: right;">0.26</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">refmot</td>
+<td style="text-align: right;">-1.97</td>
+<td style="text-align: right;">0.67</td>
+<td style="text-align: right;">-2.93</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">autmot</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">1.75</td>
+<td style="text-align: right;">0.08</td>
+</tr>
+<tr class="odd" data-grouplength="9">
+<td colspan="5" style="border-bottom: 1px solid"><strong>UK</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">(Intercept)</td>
+<td style="text-align: right;">13.67</td>
+<td style="text-align: right;">2.46</td>
+<td style="text-align: right;">5.55</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">child</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">0.28</td>
+<td style="text-align: right;">0.38</td>
+<td style="text-align: right;">0.70</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">adult</td>
+<td style="text-align: right;">-0.20</td>
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">-0.87</td>
+<td style="text-align: right;">0.39</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">age</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">-1.12</td>
+<td style="text-align: right;">0.27</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">psycap</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">0.32</td>
+<td style="text-align: right;">-0.40</td>
+<td style="text-align: right;">0.69</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">socopp</td>
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">1.29</td>
+<td style="text-align: right;">0.20</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">phyopp</td>
+<td style="text-align: right;">-0.30</td>
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">-0.84</td>
+<td style="text-align: right;">0.40</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">refmot</td>
+<td style="text-align: right;">-2.32</td>
+<td style="text-align: right;">0.60</td>
+<td style="text-align: right;">-3.83</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">autmot</td>
+<td style="text-align: right;">0.80</td>
+<td style="text-align: right;">0.48</td>
+<td style="text-align: right;">1.67</td>
+<td style="text-align: right;">0.10</td>
+</tr>
+<tr class="odd" data-grouplength="9">
+<td colspan="5" style="border-bottom: 1px solid"><strong>The Netherlands</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">(Intercept)</td>
+<td style="text-align: right;">8.60</td>
+<td style="text-align: right;">1.63</td>
+<td style="text-align: right;">5.29</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">child</td>
+<td style="text-align: right;">0.67</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">1.65</td>
+<td style="text-align: right;">0.10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">adult</td>
+<td style="text-align: right;">-0.18</td>
+<td style="text-align: right;">0.17</td>
+<td style="text-align: right;">-1.05</td>
+<td style="text-align: right;">0.30</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">age</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">0.58</td>
+<td style="text-align: right;">0.57</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">psycap</td>
+<td style="text-align: right;">-0.46</td>
+<td style="text-align: right;">0.34</td>
+<td style="text-align: right;">-1.37</td>
+<td style="text-align: right;">0.17</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">socopp</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">0.21</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">0.98</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">phyopp</td>
+<td style="text-align: right;">-0.14</td>
+<td style="text-align: right;">0.31</td>
+<td style="text-align: right;">-0.47</td>
+<td style="text-align: right;">0.64</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">refmot</td>
+<td style="text-align: right;">-0.82</td>
+<td style="text-align: right;">0.51</td>
+<td style="text-align: right;">-1.61</td>
+<td style="text-align: right;">0.11</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">autmot</td>
+<td style="text-align: right;">0.46</td>
+<td style="text-align: right;">0.34</td>
+<td style="text-align: right;">1.33</td>
+<td style="text-align: right;">0.19</td>
+</tr>
+<tr class="odd" data-grouplength="9">
+<td colspan="5" style="border-bottom: 1px solid"><strong>Greece</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">(Intercept)</td>
+<td style="text-align: right;">10.98</td>
+<td style="text-align: right;">2.43</td>
+<td style="text-align: right;">4.52</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">child</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">0.39</td>
+<td style="text-align: right;">-0.09</td>
+<td style="text-align: right;">0.93</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">adult</td>
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">1.25</td>
+<td style="text-align: right;">0.21</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">age</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">-0.52</td>
+<td style="text-align: right;">0.61</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">psycap</td>
+<td style="text-align: right;">-0.25</td>
+<td style="text-align: right;">0.39</td>
+<td style="text-align: right;">-0.65</td>
+<td style="text-align: right;">0.52</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">socopp</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.22</td>
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">0.82</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">phyopp</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.33</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">1.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">refmot</td>
+<td style="text-align: right;">-0.63</td>
+<td style="text-align: right;">0.76</td>
+<td style="text-align: right;">-0.83</td>
+<td style="text-align: right;">0.41</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">autmot</td>
+<td style="text-align: right;">-0.43</td>
+<td style="text-align: right;">0.45</td>
+<td style="text-align: right;">-0.96</td>
+<td style="text-align: right;">0.34</td>
+</tr>
+<tr class="odd" data-grouplength="9">
+<td colspan="5" style="border-bottom: 1px solid"><strong>Sweden</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">(Intercept)</td>
+<td style="text-align: right;">8.42</td>
+<td style="text-align: right;">2.14</td>
+<td style="text-align: right;">3.93</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">child</td>
+<td style="text-align: right;">0.80</td>
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">2.24</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">adult</td>
+<td style="text-align: right;">0.45</td>
+<td style="text-align: right;">0.27</td>
+<td style="text-align: right;">1.64</td>
+<td style="text-align: right;">0.10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">age</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">-1.41</td>
+<td style="text-align: right;">0.16</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">psycap</td>
+<td style="text-align: right;">-0.37</td>
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">-1.02</td>
+<td style="text-align: right;">0.31</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">socopp</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">1.03</td>
+<td style="text-align: right;">0.31</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">phyopp</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">0.32</td>
+<td style="text-align: right;">2.20</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">refmot</td>
+<td style="text-align: right;">-1.74</td>
+<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">-3.03</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">autmot</td>
+<td style="text-align: right;">0.22</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">0.64</td>
+<td style="text-align: right;">0.53</td>
+</tr>
+<tr class="odd" data-grouplength="9">
+<td colspan="5" style="border-bottom: 1px solid"><strong>Austria</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">(Intercept)</td>
+<td style="text-align: right;">9.56</td>
+<td style="text-align: right;">2.26</td>
+<td style="text-align: right;">4.23</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">child</td>
+<td style="text-align: right;">0.38</td>
+<td style="text-align: right;">0.38</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0.32</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">adult</td>
+<td style="text-align: right;">0.31</td>
+<td style="text-align: right;">0.27</td>
+<td style="text-align: right;">1.17</td>
+<td style="text-align: right;">0.25</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">age</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">0.90</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">psycap</td>
+<td style="text-align: right;">-0.29</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">-0.83</td>
+<td style="text-align: right;">0.41</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">socopp</td>
+<td style="text-align: right;">0.19</td>
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">0.83</td>
+<td style="text-align: right;">0.41</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">phyopp</td>
+<td style="text-align: right;">-0.06</td>
+<td style="text-align: right;">0.31</td>
+<td style="text-align: right;">-0.20</td>
+<td style="text-align: right;">0.84</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">refmot</td>
+<td style="text-align: right;">-0.54</td>
+<td style="text-align: right;">0.64</td>
+<td style="text-align: right;">-0.85</td>
+<td style="text-align: right;">0.40</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">autmot</td>
+<td style="text-align: right;">-0.36</td>
+<td style="text-align: right;">0.42</td>
+<td style="text-align: right;">-0.84</td>
+<td style="text-align: right;">0.40</td>
 </tr>
 </tbody>
 </table>

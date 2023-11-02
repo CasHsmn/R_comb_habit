@@ -111,6 +111,8 @@ df <- df %>%
 
 label(df$fw_total) <- "Total food waste"
 units(df$fw_total) <-  "g"
+
+df$fw_total_log <- log(df$fw_total + 1)
 }
 
 
@@ -242,7 +244,7 @@ ggplot(data = fw_total_long_avg_na, aes(x = reorder(Label, Value), y = Value, fi
 
 ggsave("fwByCountry.png", plot = fwByCountry)
 
- plot of mean waste
+# plot of mean waste
 
 fw_mean_na <- df %>% 
   group_by(Country) %>% 
@@ -286,7 +288,7 @@ dfc <-  df %>%
 colnames(df)
 
 dfc <- dfc[complete.cases(dfc), ]
-df$fw_total_log <- log(df$fw_total + 1)
+
 
 logifit1 <- glm(anywaste ~ adult + child + age, data=df, family="binomial")
 summary(logifit1)
@@ -349,6 +351,36 @@ flexWaste2 <- flextable(fitWaste2Summ) %>%
 
 tobitFit1 <- censReg(fw_total_log ~ child + adult + age, data=df)
 tobitFit2 <- censReg(fw_total_log ~ child + adult + age + psycap + socopp + phyopp + refmot + autmot, data=df)
+
+
+fitbyCountry2 <- df %>% 
+  group_by(Country) %>%  
+  group_map(~ tidy(lm(fw_total_log ~ child + adult + age + psycap + socopp + phyopp + refmot + autmot, data = .x)))
+
+fitbyCountry <- df %>% 
+  nest(data = -Country) %>% 
+  mutate(tidied = map(map(data, ~ lm(fw_total_log ~ child + adult + age + psycap + socopp + phyopp + refmot + autmot, data = .x)), tidy)) %>% 
+  unnest(tidied) %>% 
+  select(-data)
+
+?nest
+
+splitFit <- split(fitbyCountry, fitbyCountry$Country)
+
+unnest(fitbyCountry$tidied)
+
+
+tidy(fitbyCountry[[3]][[1]])
+
+?do
+
+summary(tobitCountryFit[[1]])
+summary(tobitCountryFit[[2]][[2]])
+summary(tobitCountryFit[[2]][[3]])
+summary(tobitCountryFit[[2]][[4]])
+summary(tobitCountryFit[[2]][[5]])
+summary(tobitCountryFit[[2]][[6]])
+
 summary(tobitFit1)
 summary(tobitFit2)
 
