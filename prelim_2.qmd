@@ -1,0 +1,21 @@
+---
+title: "Habit COM-B Analysis"
+editor: visual
+---
+# Scale validation
+Remove items:
+* ref_mot_1_2 "I want to ensure I can always provide enough food for family and guests" because it negatively correlates with the other reflective motivation items.
+* ref_mot_2_4 "I don’t want to waste food because I’m afraid other people will think that I’m ungrateful" because alpha is increased if it is removed and it correlates very poorly with overall reflective motivation (item-rest r = 0.12).
+* ref_mot_2_5 "I believe that the risk of becoming ill as a result of avoiding food waste is high" ditto (item-rest r = .01)
+
+Increasing reflective motivation alpha to .87
+
+Factor Analysis to validate the scales is inconsistent
+
+```{r}
+# | label: Factor Analysis
+# | echo: false
+
+comb_pca2 <- principal(combCor, nfactors = 5, rotate="varimax")
+
+print.psych(comb_pca2, cut = .3)

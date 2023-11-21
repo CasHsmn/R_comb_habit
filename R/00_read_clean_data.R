@@ -37,6 +37,9 @@ library(writexl)
 library(lmtest)
 library(modelsummary)
 library(stats)
+library(GPArotation)
+
+install
 
  select <- dplyr::select
 
@@ -62,13 +65,16 @@ dfRaw <- raw_data %>% left_join(dfDem, by = join_by(PROLIFIC_PID == Participant.
 colnames(dfRaw)[colnames(dfRaw) == "Country.of.residence"] = "Country"
 }
 
+
+
+
 # DATA CLEANING
 {df <- dfRaw %>% # filter no food handling, previews, non consent, failed att check
   filter(is.na(Q2_6) & Status == 0 & consent != 0 & (att_1 == 4 & (att != 4 | att != 5))) %>% 
-  select(!c(Status, StartDate,EndDate,Progress,RecordedDate,ResponseId, DistributionChannel, Finished)) %>%
+  select(!c(Status, StartDate,EndDate,Progress,RecordedDate,ResponseId, DistributionChannel, Finished, ref_mot_1_2, ref_mot_2_4, ref_mot_2_5)) %>%
   rowid_to_column(., "ID")
   
-df[,c("CAP_3", "CAP_5", "ref_mot_1_2", "ref_mot_2_5")] <- 8 - df[,c("CAP_3", "CAP_5", "ref_mot_1_2", "ref_mot_2_5")] # reverse scores
+df[,c("CAP_3", "CAP_5")] <- 8 - df[,c("CAP_3", "CAP_5")] # reverse scores
 
 # rename and labels socdem
 df <- df %>% 
@@ -79,6 +85,10 @@ df <- df %>%
          edu = Q6,
          employ = Q7,
          income = inc)
+
+df$int_b1 <- df$int_b1 - 5
+df$Q38 <- df$Q38 - 5
+df$Q43 <- df$Q43 - 5
 
 df$gender <- factor(df$gender, levels=c(1,2,3,4), labels=c("Male", "Female", "Non-binary/third-gender", "Prefer not to say"))
 

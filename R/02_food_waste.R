@@ -363,6 +363,12 @@ fitbyCountry <- df %>%
   unnest(tidied) %>% 
   select(-data)
 
+logfitbyCountry <- df %>% 
+  nest(data = -Country) %>% 
+  mutate(tidied = map(map(data, ~ glm(anywaste ~ child + adult + age + psycap + socopp + phyopp + refmot + autmot, family= "binomial", data = .x)), tidy)) %>% 
+  unnest(tidied) %>% 
+  select(-data)
+
 ?nest
 
 splitFit <- split(fitbyCountry, fitbyCountry$Country)

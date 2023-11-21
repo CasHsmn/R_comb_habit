@@ -12,18 +12,6 @@ df <- df %>%
   mutate(sense_hs = rowMeans(select(., Q45_1:Q45_4), na.rm=TRUE))
 
 
-summary(df$stock_hs)
-summary(df$left_hs)
-summary(df$sense_hs)
-
-df$int_b1 <- df$int_b1 - 5
-df$Q38 <- df$Q38 - 5
-df$Q43 <- df$Q43 - 5
-summary(df$freq_b1)
-summary(df$int_b1)
-summary(df$Q38)
-table(df$freq_b1)
-
 hsBeh <- df %>% 
   select(stock_hs, left_hs, sense_hs) %>% 
   describe() %>% 
@@ -97,10 +85,12 @@ hist(df$stock_hs)
 
 
 stock_fw <- lm(fw_total ~ stock_hs, data=df)
-left_fw <- lm(Q14 ~ left_hs, data=df) # regression of leftover checking and waste of cooked foods
+left_fw <- lm(fw_total ~ left_hs, data=df) # regression of leftover checking and waste of cooked foods
 sense_fw <- lm(fw_total ~ sense_hs, data=df)
 
 summary(left_fw)
+summary(stock_fw)
+summary(sense_fw)
 plot(stock_fw)
 
 abline(stock_fw)
@@ -115,12 +105,24 @@ df %>%
   cor(use="pairwise.complete.obs") %>% 
   alpha()
 
-fw_habit_lm <- lm(fw_total ~ stock_hs + left_hs + sense_hs, data = dfc)
-fw_habit_tobit <- censReg(fw_total ~ stock_hs + left_hs + sense_hs, data = dfc)
+stock_hs_model <- lm(stock_hs ~ psycap + socopp + phyopp + refmot + autmot, data = df)
+left_hs_model <- lm(left_hs ~ psycap + socopp + phyopp + refmot + autmot, data = df)
+sense_hs_model <- lm(sense_hs ~ psycap + socopp + phyopp + refmot + autmot, data = df)
+
+summary(stock_hs_model)
+summary(left_hs_model)
+summary(sense_hs_model)
+
+hist(df$sense_hs)
+
+
+fw_habit_lm <- lm(fw_total ~ stock_hs + left_hs + sense_hs, data = df)
+fw_habit_tobit <- censReg(fw_total ~ stock_hs + left_hs + sense_hs, data = df)
 summary(fw_habit_tobit)
 summary(fw_habit_lm)
 anova(fw_habit_lm, fw_habit_tobit)
 coef(stock_fw_tobit)
+plot(fw_habit_lm)
 
 logLik(fw_habit_lm)
 logLik(fw_habit_tobit)

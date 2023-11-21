@@ -177,15 +177,51 @@ comb_summary <- comb_overall %>%
 
 # calculate cornbach's alpha's
 
-capalpha <- df %>% 
+# Factor analysis of COM-B scale
+comb_items <- df %>% 
+  select(CAP_1:aut_mot_1_4 & !att_1) %>% 
+  drop_na()
+
+combCor <- cor(comb_items)
+round(combCor, 2)
+
+cortest.bartlett(comb_items)
+KMO(comb_items)
+det(combCor)
+
+comb_pca <- principal(combCor, nfactors = 25, rotate="none")
+plot(comb_pca$values, type = "b")
+
+comb_pca2 <- principal(combCor, nfactors = 5, rotate="varimax")
+
+print.psych(comb_pca2, cut = .3)
+
+comb_res <- factor.residuals(combCor, comb_pca2$loadings)
+comb_res <- as.matrix(comb_res[upper.tri(comb_res)])
+large.res <- abs(comb_res) > 0.05
+sum(large.res)/nrow(comb_res)
+sqrt(mean(comb_res^2))
+hist(comb_res)
+
+comb_pca3 <- principal(combCor, nfactors = 4, rotate = "oblimin")
+print.psych(comb_pca3, cut = .3)
+
+comb_fa <- fa(comb_items, nfactors = 4, rotate = "varimax")
+plot(comb_fa$values, type  = "b")
+comb_fa$communalities
+comb_fa
+
+print.psych(comb_fa, cut = .3)
+
+df %>% 
   select(CAP_1:CAP_5) %>% 
   alpha(na.rm=TRUE)
 
-phyoppalp <- df %>% 
+df %>% 
   select(OPP_1:OPP_2) %>% 
   alpha(na.rm=TRUE)
 
-socoppalp <- df %>% 
+df %>% 
   select(OPP_3:OPP_4) %>% 
   alpha(na.rm=TRUE)
 

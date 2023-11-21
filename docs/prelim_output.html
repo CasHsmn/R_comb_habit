@@ -147,6 +147,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#com-b-descriptives" id="toc-com-b-descriptives" class="nav-link" data-scroll-target="#com-b-descriptives">COM-B Descriptives</a></li>
   <li><a href="#scale-reliability" id="toc-scale-reliability" class="nav-link" data-scroll-target="#scale-reliability">Scale reliability</a></li>
   <li><a href="#fitting-tobit-model" id="toc-fitting-tobit-model" class="nav-link" data-scroll-target="#fitting-tobit-model">Fitting Tobit model</a></li>
+  <li><a href="#logistic-regression" id="toc-logistic-regression" class="nav-link" data-scroll-target="#logistic-regression">Logistic Regression</a></li>
   <li><a href="#linear-regression" id="toc-linear-regression" class="nav-link" data-scroll-target="#linear-regression">Linear Regression</a></li>
   </ul>
 </nav>
@@ -1092,17 +1093,500 @@ To do this, run the function again with the 'check.keys=TRUE' option</code></pre
 </div>
 </div>
 </section>
+<section id="logistic-regression" class="level2">
+<h2 class="anchored" data-anchor-id="logistic-regression">Logistic Regression</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>anywaste <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="sc">!</span><span class="fu">is.na</span>(df<span class="sc">$</span>Q1_31), <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>logfitbyCountry <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nest</span>(<span class="at">data =</span> <span class="sc">-</span>Country) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tidied =</span> <span class="fu">map</span>(<span class="fu">map</span>(data, <span class="sc">~</span> <span class="fu">glm</span>(anywaste <span class="sc">~</span> child <span class="sc">+</span> adult <span class="sc">+</span> age <span class="sc">+</span> psycap <span class="sc">+</span> socopp <span class="sc">+</span> phyopp <span class="sc">+</span> refmot <span class="sc">+</span> autmot, <span class="at">family=</span> <span class="st">"binomial"</span>, <span class="at">data =</span> .x)), tidy)) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(tidied) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>data)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(logfitbyCountry, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pack_rows</span>(<span class="at">index =</span> <span class="fu">c</span>(<span class="st">"Spain"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"UK"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"The Netherlands"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"Greece"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"Sweden"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"Austria"</span> <span class="ot">=</span> <span class="dv">9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table data-quarto-postprocess="true" class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Country</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">estimate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std.error</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd" data-grouplength="9">
+<td colspan="6" style="border-bottom: 1px solid"><strong>Spain</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Spain</td>
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">6.76</td>
+<td style="text-align: right;">3.02</td>
+<td style="text-align: right;">2.24</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Spain</td>
+<td style="text-align: left;">child</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">0.68</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Spain</td>
+<td style="text-align: left;">adult</td>
+<td style="text-align: right;">0.29</td>
+<td style="text-align: right;">0.29</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">0.32</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Spain</td>
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">-0.06</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">-2.55</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Spain</td>
+<td style="text-align: left;">psycap</td>
+<td style="text-align: right;">0.50</td>
+<td style="text-align: right;">0.39</td>
+<td style="text-align: right;">1.29</td>
+<td style="text-align: right;">0.20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Spain</td>
+<td style="text-align: left;">socopp</td>
+<td style="text-align: right;">-0.41</td>
+<td style="text-align: right;">0.28</td>
+<td style="text-align: right;">-1.47</td>
+<td style="text-align: right;">0.14</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Spain</td>
+<td style="text-align: left;">phyopp</td>
+<td style="text-align: right;">-0.23</td>
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">-0.63</td>
+<td style="text-align: right;">0.53</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Spain</td>
+<td style="text-align: left;">refmot</td>
+<td style="text-align: right;">-1.22</td>
+<td style="text-align: right;">0.72</td>
+<td style="text-align: right;">-1.70</td>
+<td style="text-align: right;">0.09</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Spain</td>
+<td style="text-align: left;">autmot</td>
+<td style="text-align: right;">0.51</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">1.29</td>
+<td style="text-align: right;">0.20</td>
+</tr>
+<tr class="odd" data-grouplength="9">
+<td colspan="6" style="border-bottom: 1px solid"><strong>UK</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">United Kingdom</td>
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">8.35</td>
+<td style="text-align: right;">2.91</td>
+<td style="text-align: right;">2.87</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">United Kingdom</td>
+<td style="text-align: left;">child</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">0.52</td>
+<td style="text-align: right;">0.60</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">United Kingdom</td>
+<td style="text-align: left;">adult</td>
+<td style="text-align: right;">-0.19</td>
+<td style="text-align: right;">0.22</td>
+<td style="text-align: right;">-0.87</td>
+<td style="text-align: right;">0.38</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">United Kingdom</td>
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">-0.42</td>
+<td style="text-align: right;">0.67</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">United Kingdom</td>
+<td style="text-align: left;">psycap</td>
+<td style="text-align: right;">-0.17</td>
+<td style="text-align: right;">0.32</td>
+<td style="text-align: right;">-0.54</td>
+<td style="text-align: right;">0.59</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">United Kingdom</td>
+<td style="text-align: left;">socopp</td>
+<td style="text-align: right;">0.26</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">1.07</td>
+<td style="text-align: right;">0.28</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">United Kingdom</td>
+<td style="text-align: left;">phyopp</td>
+<td style="text-align: right;">-0.12</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">-0.29</td>
+<td style="text-align: right;">0.77</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">United Kingdom</td>
+<td style="text-align: left;">refmot</td>
+<td style="text-align: right;">-1.72</td>
+<td style="text-align: right;">0.68</td>
+<td style="text-align: right;">-2.53</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">United Kingdom</td>
+<td style="text-align: left;">autmot</td>
+<td style="text-align: right;">0.49</td>
+<td style="text-align: right;">0.51</td>
+<td style="text-align: right;">0.97</td>
+<td style="text-align: right;">0.33</td>
+</tr>
+<tr class="odd" data-grouplength="9">
+<td colspan="6" style="border-bottom: 1px solid"><strong>The Netherlands</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Netherlands</td>
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">6.46</td>
+<td style="text-align: right;">2.39</td>
+<td style="text-align: right;">2.71</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Netherlands</td>
+<td style="text-align: left;">child</td>
+<td style="text-align: right;">0.50</td>
+<td style="text-align: right;">0.56</td>
+<td style="text-align: right;">0.88</td>
+<td style="text-align: right;">0.38</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Netherlands</td>
+<td style="text-align: left;">adult</td>
+<td style="text-align: right;">-0.18</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">-1.02</td>
+<td style="text-align: right;">0.31</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Netherlands</td>
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">0.72</td>
+<td style="text-align: right;">0.47</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Netherlands</td>
+<td style="text-align: left;">psycap</td>
+<td style="text-align: right;">-0.45</td>
+<td style="text-align: right;">0.43</td>
+<td style="text-align: right;">-1.05</td>
+<td style="text-align: right;">0.30</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Netherlands</td>
+<td style="text-align: left;">socopp</td>
+<td style="text-align: right;">-0.16</td>
+<td style="text-align: right;">0.25</td>
+<td style="text-align: right;">-0.63</td>
+<td style="text-align: right;">0.53</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Netherlands</td>
+<td style="text-align: left;">phyopp</td>
+<td style="text-align: right;">-0.21</td>
+<td style="text-align: right;">0.43</td>
+<td style="text-align: right;">-0.50</td>
+<td style="text-align: right;">0.62</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Netherlands</td>
+<td style="text-align: left;">refmot</td>
+<td style="text-align: right;">-0.62</td>
+<td style="text-align: right;">0.65</td>
+<td style="text-align: right;">-0.96</td>
+<td style="text-align: right;">0.34</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Netherlands</td>
+<td style="text-align: left;">autmot</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">0.84</td>
+<td style="text-align: right;">0.40</td>
+</tr>
+<tr class="odd" data-grouplength="9">
+<td colspan="6" style="border-bottom: 1px solid"><strong>Greece</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Greece</td>
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">9.29</td>
+<td style="text-align: right;">3.14</td>
+<td style="text-align: right;">2.96</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Greece</td>
+<td style="text-align: left;">child</td>
+<td style="text-align: right;">-0.11</td>
+<td style="text-align: right;">0.38</td>
+<td style="text-align: right;">-0.29</td>
+<td style="text-align: right;">0.77</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Greece</td>
+<td style="text-align: left;">adult</td>
+<td style="text-align: right;">0.14</td>
+<td style="text-align: right;">0.27</td>
+<td style="text-align: right;">0.53</td>
+<td style="text-align: right;">0.59</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Greece</td>
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">-0.82</td>
+<td style="text-align: right;">0.41</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Greece</td>
+<td style="text-align: left;">psycap</td>
+<td style="text-align: right;">-0.14</td>
+<td style="text-align: right;">0.42</td>
+<td style="text-align: right;">-0.35</td>
+<td style="text-align: right;">0.73</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Greece</td>
+<td style="text-align: left;">socopp</td>
+<td style="text-align: right;">0.13</td>
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">0.59</td>
+<td style="text-align: right;">0.56</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Greece</td>
+<td style="text-align: left;">phyopp</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: right;">0.37</td>
+<td style="text-align: right;">-0.12</td>
+<td style="text-align: right;">0.91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Greece</td>
+<td style="text-align: left;">refmot</td>
+<td style="text-align: right;">-0.43</td>
+<td style="text-align: right;">0.85</td>
+<td style="text-align: right;">-0.50</td>
+<td style="text-align: right;">0.62</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Greece</td>
+<td style="text-align: left;">autmot</td>
+<td style="text-align: right;">-0.82</td>
+<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">-1.43</td>
+<td style="text-align: right;">0.15</td>
+</tr>
+<tr class="odd" data-grouplength="9">
+<td colspan="6" style="border-bottom: 1px solid"><strong>Sweden</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Sweden</td>
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">3.28</td>
+<td style="text-align: right;">2.70</td>
+<td style="text-align: right;">1.21</td>
+<td style="text-align: right;">0.22</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Sweden</td>
+<td style="text-align: left;">child</td>
+<td style="text-align: right;">1.80</td>
+<td style="text-align: right;">1.05</td>
+<td style="text-align: right;">1.72</td>
+<td style="text-align: right;">0.09</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Sweden</td>
+<td style="text-align: left;">adult</td>
+<td style="text-align: right;">0.68</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">1.66</td>
+<td style="text-align: right;">0.10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Sweden</td>
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">-0.06</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">-1.97</td>
+<td style="text-align: right;">0.05</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Sweden</td>
+<td style="text-align: left;">psycap</td>
+<td style="text-align: right;">-0.20</td>
+<td style="text-align: right;">0.43</td>
+<td style="text-align: right;">-0.46</td>
+<td style="text-align: right;">0.65</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Sweden</td>
+<td style="text-align: left;">socopp</td>
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">1.01</td>
+<td style="text-align: right;">0.31</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Sweden</td>
+<td style="text-align: left;">phyopp</td>
+<td style="text-align: right;">0.67</td>
+<td style="text-align: right;">0.42</td>
+<td style="text-align: right;">1.61</td>
+<td style="text-align: right;">0.11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Sweden</td>
+<td style="text-align: left;">refmot</td>
+<td style="text-align: right;">-1.40</td>
+<td style="text-align: right;">0.83</td>
+<td style="text-align: right;">-1.68</td>
+<td style="text-align: right;">0.09</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Sweden</td>
+<td style="text-align: left;">autmot</td>
+<td style="text-align: right;">0.28</td>
+<td style="text-align: right;">0.47</td>
+<td style="text-align: right;">0.59</td>
+<td style="text-align: right;">0.55</td>
+</tr>
+<tr class="odd" data-grouplength="9">
+<td colspan="6" style="border-bottom: 1px solid"><strong>Austria</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Austria</td>
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">7.02</td>
+<td style="text-align: right;">3.16</td>
+<td style="text-align: right;">2.22</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Austria</td>
+<td style="text-align: left;">child</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">0.46</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">0.73</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Austria</td>
+<td style="text-align: left;">adult</td>
+<td style="text-align: right;">0.29</td>
+<td style="text-align: right;">0.37</td>
+<td style="text-align: right;">0.79</td>
+<td style="text-align: right;">0.43</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Austria</td>
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">-0.63</td>
+<td style="text-align: right;">0.53</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Austria</td>
+<td style="text-align: left;">psycap</td>
+<td style="text-align: right;">-0.25</td>
+<td style="text-align: right;">0.47</td>
+<td style="text-align: right;">-0.53</td>
+<td style="text-align: right;">0.59</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Austria</td>
+<td style="text-align: left;">socopp</td>
+<td style="text-align: right;">0.13</td>
+<td style="text-align: right;">0.28</td>
+<td style="text-align: right;">0.46</td>
+<td style="text-align: right;">0.65</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Austria</td>
+<td style="text-align: left;">phyopp</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">0.39</td>
+<td style="text-align: right;">0.29</td>
+<td style="text-align: right;">0.77</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Austria</td>
+<td style="text-align: left;">refmot</td>
+<td style="text-align: right;">-0.43</td>
+<td style="text-align: right;">0.84</td>
+<td style="text-align: right;">-0.51</td>
+<td style="text-align: right;">0.61</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Austria</td>
+<td style="text-align: left;">autmot</td>
+<td style="text-align: right;">-0.55</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">-0.89</td>
+<td style="text-align: right;">0.37</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</section>
 <section id="linear-regression" class="level2">
 <h2 class="anchored" data-anchor-id="linear-regression">Linear Regression</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fitbyCountry <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nest</span>(<span class="at">data =</span> <span class="sc">-</span>Country) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tidied =</span> <span class="fu">map</span>(<span class="fu">map</span>(data, <span class="sc">~</span> <span class="fu">lm</span>(fw_total_log <span class="sc">~</span> child <span class="sc">+</span> adult <span class="sc">+</span> age <span class="sc">+</span> psycap <span class="sc">+</span> socopp <span class="sc">+</span> phyopp <span class="sc">+</span> refmot <span class="sc">+</span> autmot, <span class="at">data =</span> .x)), tidy)) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(tidied) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>data, <span class="sc">-</span>Country)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(fitbyCountry, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pack_rows</span>(<span class="at">index =</span> <span class="fu">c</span>(<span class="st">"Spain"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"UK"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"The Netherlands"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"Greece"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"Sweden"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"Austria"</span> <span class="ot">=</span> <span class="dv">9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>fitbyCountry <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nest</span>(<span class="at">data =</span> <span class="sc">-</span>Country) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tidied =</span> <span class="fu">map</span>(<span class="fu">map</span>(data, <span class="sc">~</span> <span class="fu">lm</span>(fw_total_log <span class="sc">~</span> child <span class="sc">+</span> adult <span class="sc">+</span> age <span class="sc">+</span> psycap <span class="sc">+</span> socopp <span class="sc">+</span> phyopp <span class="sc">+</span> refmot <span class="sc">+</span> autmot, <span class="at">data =</span> .x)), tidy)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(tidied) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>data, <span class="sc">-</span>Country)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(fitbyCountry, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pack_rows</span>(<span class="at">index =</span> <span class="fu">c</span>(<span class="st">"Spain"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"UK"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"The Netherlands"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"Greece"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"Sweden"</span> <span class="ot">=</span> <span class="dv">9</span>, <span class="st">"Austria"</span> <span class="ot">=</span> <span class="dv">9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table data-quarto-postprocess="true" class="table table-sm table-striped small">
 <thead>

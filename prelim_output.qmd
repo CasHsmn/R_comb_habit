@@ -515,6 +515,20 @@ kable(coef(summary(fit)), digits = 2, caption = "Tobit model summary (Log transf
 
 ```
 
+## Logistic Regression
+```{r}
+df$anywaste <- ifelse(!is.na(df$Q1_31), 0, 1)
+
+logfitbyCountry <- df %>% 
+  nest(data = -Country) %>% 
+  mutate(tidied = map(map(data, ~ glm(anywaste ~ child + adult + age + psycap + socopp + phyopp + refmot + autmot, family= "binomial", data = .x)), tidy)) %>% 
+  unnest(tidied) %>% 
+  select(-data)
+
+kable(logfitbyCountry, digits = 2) %>% 
+    pack_rows(index = c("Spain" = 9, "UK" = 9, "The Netherlands" = 9, "Greece" = 9, "Sweden" = 9, "Austria" = 9))
+```
+
 ## Linear Regression
 
 ```{r}
