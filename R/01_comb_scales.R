@@ -183,7 +183,7 @@ comb_summary <- comb_overall %>%
 colnames(df)
 
 comb_items <- df %>% 
-  select(CAP_1:aut_mot_1_4 & !c(att_1, ref_mot_1_2, ref_mot_1_5, ref_mot_2_4, ref_mot_2_5), fw_total_log, fw_total, stock_hs:sense_hs) %>% 
+  select(CAP_1:aut_mot_1_4 & !c(att_1, ref_mot_1_2, ref_mot_1_5, ref_mot_2_4, ref_mot_2_5), fw_total_log, fw_total, stock_hs:sense_hs, psycap:autmot) %>% 
   drop_na()
 
 colnames(comb_items)
@@ -326,7 +326,7 @@ comb_items %>%
   alpha(na.rm=TRUE)
 
 comb_items %>% 
-  select(OPP_3:OPP_4, ref_mot_2_4) %>% 
+  select(OPP_3:OPP_4) %>% 
   alpha(na.rm=TRUE)
 
 comb_items %>% 

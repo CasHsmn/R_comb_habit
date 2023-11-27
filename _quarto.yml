@@ -10,6 +10,7 @@ website:
         text: Home
       - prelim_output.qmd
       - prelim_2.qmd
+      - regRender.qmd
     tools:
       - icon: github
         href: https://github.com/CasHsmn/R_comb_habit
