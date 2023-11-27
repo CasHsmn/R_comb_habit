@@ -1,21 +1,329 @@
 ---
-title: "Habit COM-B Analysis"
+title: "COM-B Scale Analysis"
+format: html
 editor: visual
 ---
-# Scale validation
-Remove items:
-* ref_mot_1_2 "I want to ensure I can always provide enough food for family and guests" because it negatively correlates with the other reflective motivation items.
-* ref_mot_2_4 "I don’t want to waste food because I’m afraid other people will think that I’m ungrateful" because alpha is increased if it is removed and it correlates very poorly with overall reflective motivation (item-rest r = 0.12).
-* ref_mot_2_5 "I believe that the risk of becoming ill as a result of avoiding food waste is high" ditto (item-rest r = .01)
-
-Increasing reflective motivation alpha to .87
-
-Factor Analysis to validate the scales is inconsistent
 
 ```{r}
-# | label: Factor Analysis
-# | echo: false
+#| label:  call libraries
+#| echo: false
+#| include: false
 
-comb_pca2 <- principal(combCor, nfactors = 5, rotate="varimax")
+library(lavaan)
+library(qualtRics)
+library(dplyr)
+library(careless)
+library(tibble)
+library(knitr)
+library(tidyr)
+library(kableExtra)
+library(broom)
+library(AER)
+library(patchwork)
+library(purrr)
+library(psych)
+library(corrplot)
+library(semPlot)
+library(seminr)
+```
 
-print.psych(comb_pca2, cut = .3)
+```{r}
+#| label: load and clean data
+#| echo: false
+#| include: false
+
+
+wd <- list()
+wd$data   <- "C:/MyData/paper 1/2_habit_comb_food/data/"
+wd$output <- "C:MyData/paper 1/2_habit_comb_food/output/"
+
+# LOAD RAW DATA
+raw_data <- read_survey(paste0(wd$data, "data_food_habit_comb.csv"))
+demUK <- read.csv(paste0(wd$data, "demo_UK.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+demES <- read.csv(paste0(wd$data, "demo_ES.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+demNL <- read.csv(paste0(wd$data, "demo_NL.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+demDE <- read.csv(paste0(wd$data, "demo_DE.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+demEL <- read.csv(paste0(wd$data, "demo_EL.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+demSV <- read.csv(paste0(wd$data, "demo_SV.csv")) %>%   select(Participant.id, Country.of.residence, Nationality)
+
+dfDem <- bind_rows(demUK,demES, demNL, demDE, demEL, demSV) %>% 
+ filter(!Country.of.residence == "CONSENT_REVOKED") 
+
+dfRaw <- raw_data %>% left_join(dfDem, by = join_by(PROLIFIC_PID == Participant.id))
+
+colnames(dfRaw)[colnames(dfRaw) == "Country.of.residence"] = "Country"
+
+
+# DATA CLEANING
+{df <- dfRaw %>% # filter no food handling, previews, non consent, failed att check
+  filter(is.na(Q2_6) & Status == 0 & consent != 0 & (att_1 == 4 & (att != 4 | att != 5))) %>% 
+  select(!c(Status, StartDate,EndDate,Progress,RecordedDate,ResponseId, DistributionChannel, Finished)) %>%
+  rowid_to_column(., "ID")
+  
+df[,c("CAP_3", "CAP_5", "ref_mot_1_2", "ref_mot_2_5")] <- 8 - df[,c("CAP_3", "CAP_5", "ref_mot_1_2", "ref_mot_2_5")] # reverse scores
+
+# rename and labels socdem
+df <- df %>% 
+  rename(gender = gen,
+         age = Q2,
+         adult = adu,
+         child = ch,
+         edu = Q6,
+         employ = Q7,
+         income = inc)
+
+df$int_b1 <- df$int_b1 - 5
+df$Q38 <- df$Q38 - 5
+df$Q43 <- df$Q43 - 5
+
+df$gender <- factor(df$gender, levels=c(1,2,3,4), labels=c("Male", "Female", "Non-binary/third-gender", "Prefer not to say"))
+
+df$income <- factor(df$income, levels=c(28:38,55), labels=c("Less than €1,000",
+                                                            "€1,000 - €1,999",
+                                                            "€2,000 - €2,999",
+                                                            "€3,000 - €3,999",
+                                                            "€4,000 - €4,999",
+                                                            "€5,000 - €5,999",
+                                                            "€6,000 - €6,999",
+                                                            "€7,000 - €7,999",
+                                                            "€8,000 - €8,999",
+                                                            "€9,000 - €9,999",
+                                                            "€10,000 - €14,999",
+                                                            "€15,000 or more"))
+
+df$employ <- factor(df$employ, levels=c(10,11,9,12,13,14,15,16,7), labels=c("Employed full-time",
+                                                                            "Employed part-time",
+                                                                            "Self employed",
+                                                                            "Unemployed looking for work",
+                                                                            "Unemployed not looking for work",
+                                                                            "Retired",
+                                                                            "Student",
+                                                                            "Inability to work",
+                                                                            "Other"))
+
+df$edu <- factor(df$edu, levels=c(1,9,10,12,11,13,14,15), labels=c("No formal education",
+                                                                   "Primary education",
+                                                                   "Secondary education (GCSE)",
+                                                                   "College or vocational qualifications (e.g. BTEC, NVQ)",
+                                                                   "A-levels or equivalent",
+                                                                   "Bachelor's degree or equivalent",
+                                                                    "Master's degree or equivalent",
+                                                                   "Doctorate or equivalent"))
+
+df[327,"Country"] <- "United Kingdom"
+}
+
+{irv <- df %>%  # Remove responses with very similar answers
+    select(CAP_1:aut_mot_1_4 & !att_1) %>% 
+    irv(., na.rm=TRUE)
+irv <- as.data.frame(irv)
+irv <- rowid_to_column(irv, "ID")
+
+irv_q1 <- quantile(irv$irv, 0.25, na.rm=TRUE)
+irv_q3 <- quantile(irv$irv, 0.75, na.rm=TRUE)
+irv_iqr <- irv_q3 - irv_q1
+
+lower_bound <- irv_q1 - 1.5 * irv_iqr
+upper_bound <- irv_q3 + 1.5 * irv_iqr
+outliers_rows <- irv %>% filter(irv < lower_bound | irv > upper_bound)
+
+df <- df %>% 
+ anti_join(outliers_rows, by="ID")}
+```
+
+# Correlation matrices by scale
+
+In this first scale validation I assume that my items are reflective indicators of a latent construct, which I already doubted in theory, and the statistics also do not really support it. I think I should look at them as formative indicators, like Howlett et al. (2021).
+
+**Reflective Motivation**
+
+-   The item ref_mot_1_2 is negatively correlated with the rest of the items. This is reverse scored item *"I want to ensure I can always provide enough food for family and guests"*. It is content-wise quite far from motivation to avoid waste. After removal alpha increases to .83.
+-   ref_mot_2_5, *"I believe that the risk of becoming ill as a result of avoiding food waste is high"*, has an item-rest correlation of .01. I think this item is confusing (a translator also asked clarification) and does not clearly correspond with motivation to avoid food waste. alpha after removal increases to .85.
+-   ref_mot_2_4, *"I don't want to waste food because I'm afraid other people will think that I'm ungrateful"*, quite poor item-rest correlation of 0.16. I think this may be a poor fit for reflective motivation, it is more social opportunity (though also fits poorly there). May be appropriate as a formative indicator? Removing it increases alpha to .87.
+-   ref_mot_1_5, *"I am convinced the food waste problem will be solved"*, now stands out with poorest item-rest correlation of .31 and alpha would increase if removed, but not as substantially (to .88).
+
+**Automatic Motivation**
+
+-   aut_mot_1_3, *"Avoiding food waste is something I do automatically, without thinking"*, has the poorest fit, but not too bad. I did add this one just to have habit somewhere, but it is not included in the TDF. Maybe habit does not fit inside the COM-B?
+-   aut_mot_1_4, *"It is important to avoid wasting food"*, is theoretically not a great fit for automatic motivation either, this is also outside the TDF and is a better fit for reflective motivation (where it does increase alpha to .89 with item-rest r of .66)
+-   aut_mot_1_1, *"When I avoid wasting food, I feel like I am making a difference"*, sounds more like beliefs about capabilities TDF construct rather than reinforcement, which is reflective motivation. Maybe the distinction between reflective and automatic motivation is not really feasible in self-report.
+
+The emotion question is the only one I do think fits this automatic motivation more than reflective.
+
+```{r}
+#| echo: false
+#| label: COM-B descriptives
+#| warning: false
+
+{
+df <- df %>% 
+  mutate(psycap = rowMeans(select(.,CAP_1:CAP_5)))
+df <- df %>% 
+  mutate(phyopp = rowMeans(select(.,OPP_1:OPP_2)))
+df <- df %>% 
+  mutate(socopp = rowMeans(select(.,OPP_3:OPP_4)))
+df <- df %>% 
+  mutate(refmot = rowMeans(select(.,ref_mot_1_1:ref_mot_2_7)))
+df <- df %>% 
+  mutate(autmot = rowMeans(select(.,aut_mot_1_1:aut_mot_1_4)))
+}
+
+comb_overall <- df %>% 
+  select(psycap:autmot)
+
+comb_summary <- comb_overall %>% 
+  describe() %>%
+  as.data.frame() %>% 
+  select(mean, sd, median, n)
+
+capalpha <- df %>% 
+  select(CAP_1:CAP_5) %>% 
+  alpha(na.rm=TRUE)
+
+phyoppalp <- df %>% 
+  select(OPP_1:OPP_2) %>% 
+  alpha(na.rm=TRUE)
+
+socoppalp <- df %>% 
+  select(OPP_3:OPP_4) %>% 
+  alpha(na.rm=TRUE)
+
+refmotalp <- df %>% 
+  select(ref_mot_1_1:ref_mot_2_7) %>% 
+  alpha(na.rm=TRUE)
+
+autmotalp <- df %>% 
+  select(aut_mot_1_1:aut_mot_1_4) %>% 
+  alpha(na.rm=TRUE) 
+
+comb_summary$alpha <- c(capalpha$total$raw_alpha, phyoppalp$total$raw_alpha, socoppalp$total$raw_alpha, refmotalp$total$raw_alpha, autmotalp$total$raw_alpha)
+
+rownames(comb_summary) <- c("Psychological Capability (5 items)", "Physical Opportunity (2 items)", "Social Opportunity (2 items)", "Reflective Motivation (15 items)", "Automatic Motivation (4 items)")
+
+kable(comb_summary, digits=2, col.names = c("M", "SD", "Median", "n", "Cronbach's Alpha"))
+
+capcor <- df %>% 
+  select(CAP_1:CAP_4) %>% 
+  cor(use="pairwise.complete.obs")
+refmotcor <- df %>% 
+  select(ref_mot_1_1:ref_mot_2_7) %>% 
+  cor(use="pairwise.complete.obs")
+autmotcor <- df %>% 
+  select(aut_mot_1_1:aut_mot_1_4) %>% 
+  cor(use="pairwise.complete.obs")
+
+```
+
+<details>
+<summary>Correlation matrices for the COM-B components</summary>
+```{r}
+#| code-fold: true
+#| label: corrplots
+#| echo: false
+
+corrplot(refmotcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
+corrplot(capcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
+corrplot(autmotcor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
+```
+</details>
+
+```{r}
+#| label: habit scores
+#| echo: false
+
+df <- df %>%
+  mutate(stock_hs = ifelse(int_b1 != 1 & freq_b1 != 1, rowMeans(select(., hs_b1_1:hs_b1_4), na.rm = TRUE), NA))
+df <- df %>%
+  mutate(left_hs = ifelse(Q38 != 1 & Q37 != 1, rowMeans(select(., Q40_1:Q40_4), na.rm = TRUE), NA))
+df <- df %>%
+  mutate(sense_hs = ifelse(Q43 != 1 & Q42 != 1, rowMeans(select(., Q45_1:Q45_4), na.rm = TRUE), NA))
+
+```
+
+# COM-B Scale validation
+
+Check reliability and do Confirmatory Factor Analysis.
+
+```{r}
+#| label: CFA
+#| echo: false
+#| warning: false
+
+
+comb_items <- df %>% 
+  select(CAP_1:aut_mot_1_4 & !c(att_1, ref_mot_1_2, ref_mot_1_5, ref_mot_2_4, ref_mot_2_5), left_hs) %>% 
+  drop_na()
+
+combCor <- cor(comb_items)
+
+cfa_comb <- '
+cap =~ CAP_1 + CAP_2 + CAP_3 + CAP_4 + CAP_5
+phyopp =~ OPP_1 + OPP_2
+socopp =~ OPP_3 + OPP_4
+refmot =~ ref_mot_1_1 + ref_mot_1_3 + ref_mot_1_4 + ref_mot_1_6 + ref_mot_1_7 + ref_mot_1_8 + ref_mot_2_1 + ref_mot_2_2 + ref_mot_2_3 + ref_mot_2_6 + ref_mot_2_7 aut_mot =~ aut_mot_1_1 + aut_mot_1_2 + aut_mot_1_3 + aut_mot_1_4
+'
+
+cfa_comb_fit <- cfa(cfa_comb, data=comb_items)
+semPaths(cfa_comb_fit, "std")
+kable(as_tibble_row(fitmeasures(cfa_comb_fit, c('chisq', 'df', 'pvalue', 'cfi', 'rmsea', 'srmr'))), digits=2)
+
+```
+
+This model does not fit well with CFA, none of the above values meet the required thresholds. RMSEA should be < .05 (or < .08), CFI > 0.9, SRMR < .08.
+
+## Formative model
+
+I also try assessing it as a formative model, as it makes theoretical sense that the reflective does not fit very well. I did check the data from Allison et al. (2022) where they fit it as a reflective model and the factor analysis also looks poor, but they only reported alpha.
+
+```{r}
+#| label: formative model 
+#| echo: false
+#| code-fold: true
+#| warning: false
+
+for_model <- constructs( composite("CAP", multi_items("CAP_", 1:5), weight = mode_B), composite("POPP", multi_items("OPP_", 1:2), weight = mode_B), composite("SOPP", multi_items("OPP_", 3:4), weight = mode_B), composite("RMOT", item_names = c("ref_mot_1_1", "ref_mot_1_3", "ref_mot_1_4", "ref_mot_1_6", "ref_mot_1_7", "ref_mot_1_8", "ref_mot_2_1", "ref_mot_2_2", "ref_mot_2_3", "ref_mot_2_6", "ref_mot_2_7"), weight = mode_B), composite("AMOT", multi_items("aut_mot_1_", 1:4), weight = mode_B), composite("HS", single_item("left_hs")) )
+
+for_struc <- relationships( paths(from = c("CAP", "POPP", "SOPP", "RMOT", "AMOT"), to = c("HS")) )
+
+for_sem <- estimate_pls( data = comb_items, measurement_model = for_model, structural_model = for_struc )
+
+boot_for_sem <- bootstrap_model( seminr_model = for_sem, nboot = 1000, cores = NULL, seed = 123 ) 
+sum_boot_for_sem <- summary(boot_for_sem)
+
+kable(sum_boot_for_sem$bootstrapped_weights)
+```
+
+but these weights are also not looking great, with only very few being significant.
+
+VIF is always low enough.
+
+Howlett et al. 2021 test a formative measurement model to predict sitting time based on a COM-B model with Theoretical Domains Framework formative indicators. His first full model also has SRMR of .7 (does not report any of the other fit statistics), and then trims it to only the significant ones. Suggesting that only those are relevant for the constructs. For me it would be:
+
+Capability:
+
+- behaviour regulation
+- memory, attention, decision making
+
+Opportunity:
+
+- physical opportunity (environmental context and resources)
+- descriptive norm
+
+Reflective motivation:
+
+- beliefs about capabilities/self-efficacy
+- intention
+
+Automatic motivation:
+
+- habit strength
+
+
+But this is all based on 1-item measures so that's not a very strong argument.
+
+# References
+
+Allison, A. L., Lorencatto, F., Michie, S., & Miodownik, M. (2022). Barriers and Enablers to Food Waste Recycling: A Mixed Methods Study amongst UK Citizens. International Journal of Environmental Research and Public Health, 19(5), Article 5. https://doi.org/10.3390/ijerph19052729
+
+Howlett, N., Schulz, J., Trivedi, D., Troop, N., & Chater, A. (2021). Determinants of weekly sitting time: Construct validation of an initial COM-B model and comparison of its predictive validity with the Theory of Planned Behaviour. Psychology & Health, 36(1), 96–114. https://doi.org/10.1080/08870446.2020.1763994
+

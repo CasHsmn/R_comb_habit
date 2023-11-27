@@ -38,10 +38,11 @@ library(lmtest)
 library(modelsummary)
 library(stats)
 library(GPArotation)
+library(lavaan)
+library(semPlot)
+library(seminr)
 
-install
-
- select <- dplyr::select
+select <- dplyr::select
 
 # Set WD
 wd <- list()
@@ -65,16 +66,13 @@ dfRaw <- raw_data %>% left_join(dfDem, by = join_by(PROLIFIC_PID == Participant.
 colnames(dfRaw)[colnames(dfRaw) == "Country.of.residence"] = "Country"
 }
 
-
-
-
 # DATA CLEANING
 {df <- dfRaw %>% # filter no food handling, previews, non consent, failed att check
   filter(is.na(Q2_6) & Status == 0 & consent != 0 & (att_1 == 4 & (att != 4 | att != 5))) %>% 
-  select(!c(Status, StartDate,EndDate,Progress,RecordedDate,ResponseId, DistributionChannel, Finished, ref_mot_1_2, ref_mot_2_4, ref_mot_2_5)) %>%
+  select(!c(Status, StartDate,EndDate,Progress,RecordedDate,ResponseId, DistributionChannel, Finished)) %>%
   rowid_to_column(., "ID")
   
-df[,c("CAP_3", "CAP_5")] <- 8 - df[,c("CAP_3", "CAP_5")] # reverse scores
+df[,c("CAP_3", "CAP_5", "ref_mot_1_2", "ref_mot_2_5")] <- 8 - df[,c("CAP_3", "CAP_5", "ref_mot_1_2", "ref_mot_2_5")] # reverse scores
 
 # rename and labels socdem
 df <- df %>% 

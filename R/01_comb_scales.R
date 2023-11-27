@@ -171,6 +171,7 @@ save_as_docx("Reflective Motivation Table" = refFlexOverall, "Automatic Motivati
   
 
 
+
 comb_summary <- comb_overall %>% 
   describe() %>%
   select(mean, sd, median, n)
@@ -178,21 +179,124 @@ comb_summary <- comb_overall %>%
 # calculate cornbach's alpha's
 
 # Factor analysis of COM-B scale
+# Confirmatory Factor Analysis
+colnames(df)
+
 comb_items <- df %>% 
-  select(CAP_1:aut_mot_1_4 & !att_1) %>% 
+  select(CAP_1:aut_mot_1_4 & !c(att_1, ref_mot_1_2, ref_mot_1_5, ref_mot_2_4, ref_mot_2_5), fw_total_log, fw_total, stock_hs:sense_hs) %>% 
   drop_na()
+
+colnames(comb_items)
+cfa_comb1 <- '
+cap =~ CAP_1 + CAP_2 + CAP_3 + CAP_4 + CAP_5
+phyopp =~ OPP_1 + OPP_2
+socopp =~ OPP_3 + OPP_4
+opp =~ phyopp + socopp
+refmot =~ ref_mot_1_1 + ref_mot_1_3 + ref_mot_1_4 + ref_mot_1_6 + ref_mot_1_7 + ref_mot_1_8 + ref_mot_2_1 + ref_mot_2_2 + ref_mot_2_3 + ref_mot_2_6 + ref_mot_2_7
+autmot =~  + aut_mot_1_1 + aut_mot_1_2 + aut_mot_1_3 + aut_mot_1_4
+mot =~ refmot + autmot
+'
+
+cfa_comb2 <- '
+cap =~ CAP_1 + CAP_2 + CAP_3 + CAP_4 + CAP_5
+opp =~ OPP_1 + OPP_2 + OPP_3 + OPP_4
+mot =~ ref_mot_1_1 + ref_mot_1_3 + ref_mot_1_4 + ref_mot_1_6 + ref_mot_1_7 + ref_mot_1_8 + ref_mot_2_1 + ref_mot_2_2 + ref_mot_2_3 + ref_mot_2_6 + ref_mot_2_7 + aut_mot_1_1 + aut_mot_1_2 + aut_mot_1_3 + aut_mot_1_4
+'
+
+cfa_comb3 <- '
+cap =~ CAP_1 + CAP_2 + CAP_3 + CAP_4 + CAP_5
+phyopp =~ OPP_1 + OPP_2
+socopp =~ OPP_3 + OPP_4
+refmot =~ ref_mot_1_1 + ref_mot_1_3 + ref_mot_1_4 + ref_mot_1_6 + ref_mot_1_7 + ref_mot_1_8 + ref_mot_2_1 + ref_mot_2_2 + ref_mot_2_3 + ref_mot_2_6 + ref_mot_2_7
+autmot =~  + aut_mot_1_1 + aut_mot_1_2 + aut_mot_1_3 + aut_mot_1_4
+'
+
+cfa_comb_fit1 <- cfa(cfa_comb1, data=comb_items)
+cfa_comb_fit2 <- cfa(cfa_comb2, data=comb_items)
+cfa_comb_fit3 <- cfa(cfa_comb3, data=comb_items)
+summary(cfa_comb_fit1, standardized = T, fit.measures = T)
+summary(cfa_comb_fit2, standardized = T, fit.measures = T)
+summary(cfa_comb_fit3, standardized = T, fit.measures = T)
+fitmeasures(cfa_comb_fit1, c('chisq', 'df', 'pvalue', 'cfi', 'rmsea', 'srmr', 'BIC'))
+fitmeasures(cfa_comb_fit2, c('chisq', 'df', 'pvalue', 'cfi', 'rmsea', 'srmr', 'BIC'))
+fitmeasures(cfa_comb_fit3, c('chisq', 'df', 'pvalue', 'cfi', 'rmsea', 'srmr', 'BIC'))
+
+
+
+# formative model construction
+for_model <- constructs(
+  composite("CAP", multi_items("CAP_", 1:5), weight = mode_B),
+  composite("POPP", multi_items("OPP_", 1:2), weight = mode_B),
+  composite("SOPP", multi_items("OPP_", 3:4), weight = mode_B),
+  composite("RMOT", item_names = c("ref_mot_1_1", "ref_mot_1_3", "ref_mot_1_4", "ref_mot_1_6", "ref_mot_1_7", "ref_mot_1_8", "ref_mot_2_1", "ref_mot_2_2", "ref_mot_2_3", "ref_mot_2_6", "ref_mot_2_7"), weight = mode_B),
+  composite("AMOT", multi_items("aut_mot_1_", 1:4), weight = mode_B),
+  composite("HS", single_item("left_hs"))
+  )
+
+for_struc <- relationships(
+  paths(from = c("CAP", "POPP", "SOPP", "RMOT", "AMOT"), to = c("HS"))
+)
+
+for_sem <- estimate_pls(
+  data = comb_items,
+  measurement_model = for_model,
+  structural_model = for_struc
+)
+
+boot_for_sem <- bootstrap_model(
+  seminr_model = for_sem,
+  nboot = 1000,
+  cores = NULL,
+  seed = 123
+)
+plot(boot_for_sem)
+
+sum_boot_for_sem <- summary(boot_for_sem)
+sum_boot_for_sem$bootstrapped_weights
+
+summ_for_sem <- summary(for_sem)
+summ_for_sem$validity$vif_items
+summ_for_sem$paths
+plot(boot_for_sem)
+
+?specify_model
+
+semPaths(cfa_comb_fit, "std")
+fit <- as_tibble_row(fitmeasures(cfa_comb_fit, c('chisq', 'df', 'pvalue', 'cfi', 'rmsea', 'srmr')))
+fit
+
+?fitmeasures
+
+residuals(cfa_comb_fit)$cov
+?residuals
+
+?cfa
+
+modificationindices(cfa_comb_fit) %>%
+  as_data_frame() %>%
+  arrange(-mi) %>%
+  filter(mi > 11) %>%
+  select(lhs, op, rhs, mi, epc)
+
+
 
 combCor <- cor(comb_items)
 round(combCor, 2)
+
+combCorrplot <- corrplot(combCor, method="color", addCoef.col = "black", diag=FALSE, type="lower", tl.srt=45, tl.col="black", number.cex = .7)
+
+colnames(df)
 
 cortest.bartlett(comb_items)
 KMO(comb_items)
 det(combCor)
 
-comb_pca <- principal(combCor, nfactors = 25, rotate="none")
+comb_pca <- principal(combCor, nfactors = 24, rotate="none")
 plot(comb_pca$values, type = "b")
 
-comb_pca2 <- principal(combCor, nfactors = 5, rotate="varimax")
+?principal
+
+comb_pca2 <- principal(combCor, nfactors = 3, rotate="oblimin")
 
 print.psych(comb_pca2, cut = .3)
 
@@ -203,7 +307,7 @@ sum(large.res)/nrow(comb_res)
 sqrt(mean(comb_res^2))
 hist(comb_res)
 
-comb_pca3 <- principal(combCor, nfactors = 4, rotate = "oblimin")
+comb_pca3 <- principal(combCor, nfactors = 5, rotate = "oblimin")
 print.psych(comb_pca3, cut = .3)
 
 comb_fa <- fa(comb_items, nfactors = 4, rotate = "varimax")
@@ -213,23 +317,23 @@ comb_fa
 
 print.psych(comb_fa, cut = .3)
 
-df %>% 
+comb_items %>% 
   select(CAP_1:CAP_5) %>% 
   alpha(na.rm=TRUE)
 
-df %>% 
+comb_items %>% 
   select(OPP_1:OPP_2) %>% 
   alpha(na.rm=TRUE)
 
-df %>% 
-  select(OPP_3:OPP_4) %>% 
+comb_items %>% 
+  select(OPP_3:OPP_4, ref_mot_2_4) %>% 
   alpha(na.rm=TRUE)
 
-df %>% 
-  select(ref_mot_1_1:ref_mot_2_7) %>% 
+comb_items %>% 
+  select(ref_mot_1_1:ref_mot_2_7, aut_mot_1_4, aut_mot_1_1) %>% 
   alpha(na.rm=TRUE)
 
-df %>% 
+comb_items %>% 
   select(aut_mot_1_1:aut_mot_1_4) %>% 
   alpha(na.rm=TRUE) 
 
@@ -241,7 +345,7 @@ comb_summary$alpha <- c(capalpha$total$raw_alpha, phyoppalp$total$raw_alpha, soc
 
 # correlation matrices ----
 capcor <- df %>% 
-  select(CAP_1:CAP_4) %>% 
+  select(CAP_1:CAP_5) %>% 
   cor(use="pairwise.complete.obs")
 phyoppcor <- df %>% 
   select(OPP_1, OPP_2) %>% 
