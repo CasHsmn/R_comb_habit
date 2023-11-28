@@ -113,9 +113,11 @@ label(df$fw_total) <- "Total food waste"
 units(df$fw_total) <-  "g"
 
 df$fw_total_log <- log(df$fw_total + 1)
+
+df$anywaste <- ifelse(!is.na(df$Q1_31), 0, 1)
 }
 
-
+?column_spec
 ##### fw quantification ####
 fw_num <- df %>% 
   select(Country, Q14:Q15)
@@ -292,6 +294,8 @@ dfc <- dfc[complete.cases(dfc), ]
 
 logifit1 <- glm(anywaste ~ adult + child + age, data=df, family="binomial")
 summary(logifit1)
+
+?glm
 
 logifit2 <- glm(anywaste ~ adult + child + age + psycap + socopp + phyopp + refmot + autmot, data=df, family="binomial")
 coef(summary(logifit2))

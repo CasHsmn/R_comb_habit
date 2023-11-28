@@ -41,6 +41,7 @@ library(GPArotation)
 library(lavaan)
 library(semPlot)
 library(seminr)
+library(splithalfr)
 
 select <- dplyr::select
 

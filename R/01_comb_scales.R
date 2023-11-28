@@ -183,7 +183,7 @@ comb_summary <- comb_overall %>%
 colnames(df)
 
 comb_items <- df %>% 
-  select(CAP_1:aut_mot_1_4 & !c(att_1, ref_mot_1_2, ref_mot_1_5, ref_mot_2_4, ref_mot_2_5), fw_total_log, fw_total, stock_hs:sense_hs, psycap:autmot) %>% 
+  select(CAP_1:aut_mot_1_4 & !c(att_1, ref_mot_1_2, ref_mot_1_5, ref_mot_2_4, ref_mot_2_5), fw_total_log, fw_total, stock_hs:sense_hs, psycap:autmot, age, adult, child, gender, edu, anywaste) %>% 
   drop_na()
 
 colnames(comb_items)
@@ -210,6 +210,8 @@ socopp =~ OPP_3 + OPP_4
 refmot =~ ref_mot_1_1 + ref_mot_1_3 + ref_mot_1_4 + ref_mot_1_6 + ref_mot_1_7 + ref_mot_1_8 + ref_mot_2_1 + ref_mot_2_2 + ref_mot_2_3 + ref_mot_2_6 + ref_mot_2_7
 autmot =~  + aut_mot_1_1 + aut_mot_1_2 + aut_mot_1_3 + aut_mot_1_4
 '
+
+cor(comb_items$OPP_3, comb_items$OPP_4)
 
 cfa_comb_fit1 <- cfa(cfa_comb1, data=comb_items)
 cfa_comb_fit2 <- cfa(cfa_comb2, data=comb_items)
@@ -321,13 +323,20 @@ comb_items %>%
   select(CAP_1:CAP_5) %>% 
   alpha(na.rm=TRUE)
 
+
 comb_items %>% 
   select(OPP_1:OPP_2) %>% 
-  alpha(na.rm=TRUE)
+  alpha()
+
+spearman_brown(comb_items$OPP_1, comb_items$OPP_2, short_icc, type="ICC1")
+
+?spearman_brown
 
 comb_items %>% 
   select(OPP_3:OPP_4) %>% 
   alpha(na.rm=TRUE)
+
+spearman_brown(comb_items$OPP_3, comb_items$OPP_4)
 
 comb_items %>% 
   select(ref_mot_1_1:ref_mot_2_7, aut_mot_1_4, aut_mot_1_1) %>% 

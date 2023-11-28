@@ -124,6 +124,8 @@ label(df$fw_total) <- "Total food waste"
 units(df$fw_total) <-  "g"
 
 df$fw_total_log <- log(df$fw_total + 1)
+
+df$anywaste <- ifelse(!is.na(df$Q1_31), 0, 1)
 }
 ```
 
@@ -152,7 +154,7 @@ df <- df %>%
   mutate(autmot = rowMeans(select(.,aut_mot_1_1:aut_mot_1_4)))
 
 comb_items <- df %>% 
-  select(CAP_1:aut_mot_1_4 & !c(att_1, ref_mot_1_2, ref_mot_1_5, ref_mot_2_4, ref_mot_2_5), fw_total_log, fw_total, stock_hs:sense_hs, psycap:autmot) %>% 
+  select(CAP_1:aut_mot_1_4 & !c(att_1, ref_mot_1_2, ref_mot_1_5, ref_mot_2_4, ref_mot_2_5), fw_total_log, fw_total, stock_hs:sense_hs, psycap:autmot, age, adult, child, gender, edu, anywaste) %>% 
   drop_na()
 
 stockcor <- df %>% 
@@ -171,37 +173,38 @@ stockdesc <- df %>%
   select(int_b1:hs_b1_4) %>% 
   describe() %>% 
   as_tibble(rownames = "item") %>% 
-  select(mean, sd, median, min, max) 
+  select(mean, sd, median) 
 
 leftdesc <- df %>% 
   select(Q38:Q40_4) %>% 
   describe() %>% 
   as_tibble(rownames = "item") %>% 
-  select(mean, sd, median, min, max)
+  select(mean, sd, median)
 
 sensedesc <- df %>% 
   select(Q43:Q45_4 & !att) %>% 
   describe() %>% 
   as_tibble(rownames = "item") %>% 
-  select(mean, sd, median, min, max)
+  select(mean, sd, median)
 
 stock_tab <- kable(cbind(stockdesc, stockcor), digits = 2) %>% 
-  add_header_above(c(" " = 1, "Descriptives" = 5, "Correlation matrix" = 6))
+  add_header_above(c(" " = 1, "Descriptives" = 3, "Correlation matrix" = 6))
 
 left_tab <- kable(cbind(leftdesc, leftcor), digits = 2) %>% 
-  add_header_above(c(" " = 1, "Descriptives" = 5, "Correlation matrix" = 6))
+  add_header_above(c(" " = 1, "Descriptives" = 3, "Correlation matrix" = 6))
 
 sense_tab <- kable(cbind(sensedesc, sensecor), digits = 2)%>% 
-  add_header_above(c(" " = 1, "Descriptives" = 5, "Correlation matrix" = 6))
+  add_header_above(c(" " = 1, "Descriptives" = 3, "Correlation matrix" = 6))
 
 ```
-The first question is always:
-- I do behaviour x (disagree - agree)
-- In a typical month I do behaviour x
-- behaviour x is something I do automatically
-- behaviour x is something I do without thinking
-- behaviour x  I do without having to consciously remember
-- behaviour x is something I start doing before I realise I am doing it
+The questions are the following:
+
+- I do behaviour x *(disagree - agree; 7pt)*
+- In a typical month I do behaviour x *(never - always; 5pt)*
+- behaviour x is something I do automatically *(disagree - agree; 7pt)*
+- behaviour x is something I do without thinking *(disagree - agree; 7pt)*
+- behaviour x  I do without having to consciously remember *(disagree - agree; 7pt)*
+- behaviour x is something I start doing before I realise I am doing it *(disagree - agree; 7pt)*
 
 **Stock taking items**
 ```{r}
@@ -225,11 +228,15 @@ sense_tab
 ```{r}
 #| label: leftover habit
 #| code-fold: true
-left_hs_fit <- lm(left_hs ~ phyopp + socopp + psycap + refmot + autmot, data = comb_items)
+left_hs_fit <- lm(left_hs ~ gender + edu, data = comb_items)
+left_hs_fit2 <- lm(left_hs ~ gender + edu + phyopp + socopp + psycap + refmot + autmot, data = comb_items)
 summary_left <- summary(left_hs_fit)
-kable(tidy(summary(left_hs_fit)), digits = 2)
+kable(tidy(anova(left_hs_fit, left_hs_fit2)))
+kable(tidy(anova(left_hs_fit2)), digits = 2)
 ```
+
 R squared = `r round(summary_left$r.squared,2)`
+R squared change = `r round(summary(left_hs_fit2)$r.squared - summary(left_hs_fit)$r.squared,2)`
 
 ### Using senses
 ```{r}
@@ -253,12 +260,46 @@ kable(tidy(summary(stock_hs_fit)), digits = 2)
 R squared = `r round(summ_stock$r.squared,2)`
 
 ## Predicting food waste
+
+Regression results dv log food waste, including people who waste nothing
 ```{r}
 #| label: fw habit
 #| code-fold: true
-fw_hs_fit <- lm(fw_total_log ~ left_hs + sense_hs + stock_hs, data = comb_items)
-summ_fw_hs <- summary(fw_hs_fit)
-kable(tidy(summary(fw_hs_fit)), digits = 2)
-plot(fw_hs_fit, 1)
+fw_hs_fit1 <- lm(fw_total_log ~ age + child + adult, data = comb_items)
+fw_hs_fit2 <- lm(fw_total_log ~ age + child + adult + left_hs + sense_hs + stock_hs, data = comb_items)
+summ_fw_hs <- summary(fw_hs_fit2)
+hmrfw <- anova(fw_hs_fit1, fw_hs_fit2)
+kable(tidy(summary(fw_hs_fit2)), digits = 2)
+kable(tidy(hmrfw))
+plot(fw_hs_fit1, 1)
 ```
-R squared = `r round(summ_fw_hs$r.squared,2)`
+R squared change = `r summary(fw_hs_fit2)$r.squared - summary(fw_hs_fit1)$r.squared`
+
+This has some problems, like the following durbin watson test results
+
+`r kable(tidy(dwt(fw_hs_fit2)))`
+
+<details>
+<summary>Regression excluding people who waste nothing</summary>
+
+```{r}
+fw_comb_filter <- comb_items %>% filter(fw_total_log != 0)
+fwf_hs_fit1 <- lm(fw_total_log ~ age + child + adult, data = fw_comb_filter)
+fwf_hs_fit2 <- lm(fw_total_log ~ age + child + adult + left_hs + sense_hs + stock_hs, data = fw_comb_filter)
+summ_fwf_hs <- summary(fwf_hs_fit2)
+kable(tidy(summary(fwf_hs_fit2)), digits = 2)
+kable(tidy(anova(fwf_hs_fit1, fwf_hs_fit2))) 
+p1 <- plot(fwf_hs_fit2, 1)
+```
+this one does not have dwt problems
+
+`r kable(tidy(dwt(fwf_hs_fit2)))`
+</details>
+
+<details>
+<summary>Regression with dependent variable if someone has wasted anything at all</summary>
+```{r}
+fwn_hs_fit2 <- glm(anywaste ~ age + child + adult + left_hs + sense_hs + stock_hs, family = "binomial", data = comb_items) 
+kable(tidy(fwn_hs_fit2), digits = 2)
+```
+</details>

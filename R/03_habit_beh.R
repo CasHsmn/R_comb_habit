@@ -254,3 +254,67 @@ comments <- df %>%
 write.csv(comments, paste0(wd$output, "openComments.txt"), row.names = F, quote = F)
 
 colnames(df)
+
+dem_hs_fit <- lm(left_hs ~ gender + edu + employ + income, data = df)
+summary(dem_hs_fit)
+anovadem <- anova(dem_hs_fit)
+TukeyHSD(anovadem)
+
+stock_freq_fit <- lm(int_b1 ~ gender + edu + employ + income + child + adult + age, data = df)
+left_freq_fit <- lm(Q38 ~ gender + edu + employ + income + child + adult + age, data = df)
+sense_freq_fit <- lm(Q43 ~ gender + edu + employ + income + child + adult + age, data = df)
+
+colnames(df)
+tidy(summary(beh_freq))
+
+anova(stock_freq_fit)
+anova(left_freq_fit)
+anova(sense_freq_fit)
+
+anova(beh_freq)
+
+summary(anovadem)
+
+??tukeyHSD
+
+df$age <- as.numeric(df$age)
+df$gender <- as.factor(df$gender)
+df$edu <- as.factor(df$edu)
+df$employ <- as.factor(df$employ)
+df$income <- as.factor(df$income)
+
+
+fw_hs_fit1 <- lm(fw_total_log ~ age + child + adult, data = comb_items)
+fw_hs_fit2 <- lm(fw_total_log ~ age + child + adult + left_hs + sense_hs + stock_hs, data = comb_items)
+summ_fw_hs <- summary(fw_hs_fit2)
+hmrfw <- anova(fw_hs_fit1, fw_hs_fit2)
+
+fw_comb_filter <- comb_items %>% filter(fw_total_log != 0)
+fwf_hs_fit1 <- lm(fw_total_log ~ age + child + adult, data = fw_comb_filter)
+fwf_hs_fit2 <- lm(fw_total_log ~ age + child + adult + left_hs + sense_hs + stock_hs, data = fw_comb_filter)
+summ_fwf_hs <- summary(fwf_hs_fit2)
+hmrfwf <- anova(fwf_hs_fit1, fwf_hs_fit2)
+
+fwn_hs_fit1 <- glm(anywaste ~ age + child + adult, family = "binomial", data = comb_items)
+fwn_hs_fit2 <- glm(anywaste ~ age + child + adult + left_hs + sense_hs + stock_hs, family = "binomial", data = comb_items) 
+summary(fwn_hs_fit2)
+tidy(fwn_hs_fit2)
+
+comb_items$res <- resid(fw_hs_fit2)
+comb_items$standardized.residuals<- rstandard(fw_hs_fit2)
+fw_comb_filter$studentized.residuals<-rstudent(fwf_hs_fit2)
+comb_items$cooks.distance<-cooks.distance(fw_hs_fit2)
+comb_items$dfbeta<-dfbeta(fw_hs_fit2)
+comb_items$dffit<-dffits(fw_hs_fit2)
+comb_items$leverage<-hatvalues(fw_hs_fit2)
+comb_items$covariance.ratios<-covratio(fw_hs_fit2)
+
+tidy(dwt(fwf_hs_fit2))
+vif(fwf_hs_fit2)
+hist(fw_comb_filter$studentized.residuals)
+
+comb_items$largeres <- comb_items$standardized.residuals > 2 | comb_items$standardized.residuals < -2
+sum(comb_items$largeres)
+
+comb_items[comb_items$largeres, c("fw_total_log", "left_hs","sense_hs", "stock_hs", "standardized.residuals")]
+
