@@ -42,13 +42,17 @@ library(lavaan)
 library(semPlot)
 library(seminr)
 library(splithalfr)
+library(MASS)
+library(ggeffects)
+library(censReg)
+library(rempsyc)
 
 select <- dplyr::select
 
 # Set WD
 wd <- list()
-wd$data   <- "C:/MyData/paper 1/2_habit_comb_food/data/"
-wd$output <- "C:/MyData/paper 1/2_habit_comb_food/output/"
+wd$data   <- "C:/Users/huism080/OneDrive - Wageningen University & Research/Research/Study 1/data/"
+wd$output <- "C:/Users/huism080/OneDrive - Wageningen University & Research/Research/Study 1/output/"
 
 # LOAD RAW DATA
 {raw_data <- read_survey(paste0(wd$data, "data_food_habit_comb.csv"))

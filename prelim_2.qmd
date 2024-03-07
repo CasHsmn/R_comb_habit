@@ -288,10 +288,15 @@ for_struc <- relationships( paths(from = c("CAP", "POPP", "SOPP", "RMOT", "AMOT"
 for_sem <- estimate_pls( data = comb_items, measurement_model = for_model, structural_model = for_struc )
 
 boot_for_sem <- bootstrap_model( seminr_model = for_sem, nboot = 1000, cores = NULL, seed = 123 ) 
+
 sum_boot_for_sem <- summary(boot_for_sem)
 
 kable(sum_boot_for_sem$bootstrapped_weights)
 ```
+
+<details><summary>SEM model plot</summary>
+`r plot(boot_for_sem)`
+</details>
 
 but these weights are also not looking great, with only very few being significant.
 

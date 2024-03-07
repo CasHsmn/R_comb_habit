@@ -19,7 +19,7 @@ df <- df %>%
 # table COM-B construct descriptives -----
 # Capability
 comb_overall <- df %>% 
-  select(psycap:autmot)
+  select(psycap:autmot & !totopp)
 
 cap_summ_lang <- df %>%
   select(CAP_1:CAP_5, Country) 
@@ -30,10 +30,49 @@ capSummNa <- describeBy(cap_summ_lang, cap_summ_lang$Country, mat=T)  %>%
 
 melted_df <- melt(capSummNa, id.vars = c("group1", "vars"))
 
+comb_allitems <- df %>% 
+  select(CAP_1:aut_mot_1_4)
+
 # Use dcast to pivot the data to the desired format
 result_df <- dcast(melted_df, vars ~ group1 + variable, value.var = "value")
 
 result_df <- result_df[-6,]
+
+combcor <- cor(comb_overall, use = "pairwise.complete.obs")
+
+desccomb <- comb_overall %>% 
+  describe()
+
+descitems <- comb_allitems %>% 
+  describe() %>% 
+  as.data.frame() %>% 
+  select(mean, sd) %>%
+  rownames_to_column(var = "Item")
+
+?rownames_to_column
+
+print(nice_table(descitems), "docx")
+
+
+  
+combtable <- cbind(desccomb, combcor) %>% 
+  select(mean, sd, psycap:autmot)
+
+colnames(combtable) <- c("M", "SD", "Psychological Capability", "Physical Opportunity", "Social Opportunity", "Reflective Motivation", "Automatic Motivation")
+rownames(combtable) <- c("Psychological Capability", "Physical Opportunity", "Social Opportunity", "Reflective Motivation", "Automatic Motivation")
+?colnames
+
+
+apacomb <- nice_table(combtable, title = c("Table x", "Descriptives of COM-B Components"))
+
+print(apacomb, preview = "docx")
+
+?nice_table
+
+?describe
+
+corrplot(combcor, method = "color", type = "lower", diag = F, addCoef.col = T, tl.srt=45, tl.col = "#000000", tl.cex = .9, number.cex = .8)
+?corrplot
 
 
 unique_countries <- unique(gsub("_.*", "", colnames(result_df)[grep("_n", colnames(result_df))]))
@@ -631,3 +670,7 @@ plot(fitted(tobit_log_fw), dfc$restob)
 qqnorm(dfc$restob)
 
 df$restob
+
+# construct validity of com-b
+hist(df$Q42)
+ 

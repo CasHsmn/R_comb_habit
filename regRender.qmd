@@ -232,7 +232,7 @@ left_hs_fit <- lm(left_hs ~ gender + edu, data = comb_items)
 left_hs_fit2 <- lm(left_hs ~ gender + edu + phyopp + socopp + psycap + refmot + autmot, data = comb_items)
 summary_left <- summary(left_hs_fit)
 kable(tidy(anova(left_hs_fit, left_hs_fit2)))
-kable(tidy(anova(left_hs_fit2)), digits = 2)
+kable(tidy(summary(left_hs_fit2)), digits = 2)
 ```
 
 R squared = `r round(summary_left$r.squared,2)`

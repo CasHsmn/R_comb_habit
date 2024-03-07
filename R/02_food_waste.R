@@ -127,6 +127,11 @@ fw_num[is.na(fw_num)] <- 0
 fw_summ_num <- fw_num %>% 
   summarise(across(Q14:Q15, ~sum(., na.rm=TRUE)))
 
+fw_summ_long <- fw_summ_num %>% 
+  pivot_longer(cols = everything(), names_to="category")
+
+?pivot_longer
+
 fw_mean_num <- fw_num %>% 
   summarise(across(Q14:Q15, ~mean(., na.rm=TRUE)))
 
@@ -144,6 +149,10 @@ fw_na_mean <- fw_num %>%
 
 ?across
 
+summary(df$fw_total)
+142/586
+sd(df$fw_total)
+
 # Convert the dataframe to a long format
 food_label <- data.frame(
   Variable = c("Q1_28", "Q1_17", "Q1_18", "Q1_19", "Q1_22", "Q1_23", "Q1_24", "Q1_26", "Q1_27", "Q1_29", "Q1_31"),
@@ -151,6 +160,19 @@ food_label <- data.frame(
     "Cooked Food", "Vegetables", "Fruit", "Potato",
     "Meat (substitute), fish", "Sandwich fillings", "Bread",
     "Dairy", "Eggs", "Condiments and sauces", "None of the above"))
+
+summary(df$meat)
+colnames(df)
+
+table(df$Q1_31)
+
+fw_num %>% 
+  select(Q14:Q15) %>% 
+  psych::describe()
+
+df %>% 
+  select(Q1_28:Q1_31) %>% 
+  summarise(across(everything(), ~sum(is.na(.))))
 
 # Convert the dataframe to a long format
 amount_food_label <- data.frame(
@@ -182,7 +204,7 @@ ggplot(fw_summ_long, aes(x = reorder(Label, -Value), y = Value, fill = Label)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   guides(fill="none")
 
-fw_summ__na_long <- pivot_longer(fw_summ_na, everything(), names_to = "Variable", values_to = "Value") %>% 
+fw_summ_na_long <- pivot_longer(fw_summ_na, everything(), names_to = "Variable", values_to = "Value") %>% 
   left_join(food_label, by="Variable")
 
 
@@ -235,14 +257,14 @@ values = c("#264653", "#2a9d8f", "#8ab17d", "#e9c46a", "#f4a261", "#e76f51")
 ggplot(df, aes(x = fw_total, y = count)) +
   geom_bar(stat = "identity")
 
-ggplot(data = fw_total_long_avg_na, aes(x = reorder(Label, Value), y = Value, fill = Country)) +
-  geom_bar(stat = "identity", position=position_dodge2(reverse=TRUE)) +
+ggplot(data = fw_total_long_avg_na, aes(x = reorder(Label, Value), y = Value, fill=reorder(Label, Value))) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = c("#d9ed92", "#b5e48c", "#99d98c", "#76c893", "#52b69a", "#34a0a4", "#168aad", "#1a759f", "#1e6091", "#184e77")) +
   labs(title = "Average Grams of Wasted Food by Category", x = "Food Category", y = "Mean Grams of Waste / week / household") +
   theme_minimal() +
-  coord_flip() + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  guides(fill = guide_legend(title = "Country"))+
-  scale_fill_manual(labels = na_names, values = c("#264653", "#2a9d8f", "#8ab17d", "#e9c46a", "#f4a261", "#e76f51"))
+  coord_flip() +  
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
+
 
 ggsave("fwByCountry.png", plot = fwByCountry)
 
@@ -355,7 +377,7 @@ flexWaste2 <- flextable(fitWaste2Summ) %>%
 
 tobitFit1 <- censReg(fw_total_log ~ child + adult + age, data=df)
 tobitFit2 <- censReg(fw_total_log ~ child + adult + age + psycap + socopp + phyopp + refmot + autmot, data=df)
-
+summary(tobitFit2)
 
 fitbyCountry2 <- df %>% 
   group_by(Country) %>%  

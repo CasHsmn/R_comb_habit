@@ -160,9 +160,11 @@ df %>%
 stockdf <- df %>% 
   select(stock_hs, psycap:autmot) %>% 
   drop_na()
+df$gender <- as.factor(df$gender)
 stock_hs_model <- lm(log_stock_hs ~ psycap + socopp + phyopp + refmot + autmot, data = df)
-left_hs_model <- lm(left_hs ~ psycap + socopp + phyopp + refmot + autmot, data = df)
+left_hs_model <- lm(left_hs ~ gender + psycap + socopp + phyopp + refmot + autmot, data = df)
 sense_hs_model <- lm(sense_hs ~ psycap + socopp + phyopp + refmot + autmot, data = df)
+summary(left_hs_model)
 
 df$log_stock_hs <- sqrt(max(df$stock_hs+1, na.rm=T) - df$stock_hs)
 ?max
@@ -234,12 +236,14 @@ summary(lm_w_habit)
 plot(lm_w_habit)
 vif(lm_w_habit)
 
-fw_habit_tobit <- censReg(fw_total ~ stock_hs + left_hs + sense_hs, data = df)
+fw_habit_tobit <- censReg(fw_total_log ~ stock_hs + left_hs + sense_hs, data = df)
 summary(fw_habit_tobit)
 summary(fw_habit_lm)
 anova(fw_habit_lm, fw_habit_tobit)
 coef(stock_fw_tobit)
 plot(fw_habit_lm)
+
+hist(df$fw_total)
 
 logLik(fw_habit_lm)
 logLik(fw_habit_tobit)
@@ -285,7 +289,7 @@ df$income <- as.factor(df$income)
 
 
 fw_hs_fit1 <- lm(fw_total_log ~ age + child + adult, data = comb_items)
-fw_hs_fit2 <- lm(fw_total_log ~ age + child + adult + left_hs + sense_hs + stock_hs, data = comb_items)
+fw_hs_fit2 <- censReg(fw_total_log ~ age + child + adult + left_hs + sense_hs + stock_hs, data = comb_items)
 summ_fw_hs <- summary(fw_hs_fit2)
 hmrfw <- anova(fw_hs_fit1, fw_hs_fit2)
 
@@ -294,27 +298,84 @@ fwf_hs_fit1 <- lm(fw_total_log ~ age + child + adult, data = fw_comb_filter)
 fwf_hs_fit2 <- lm(fw_total_log ~ age + child + adult + left_hs + sense_hs + stock_hs, data = fw_comb_filter)
 summ_fwf_hs <- summary(fwf_hs_fit2)
 hmrfwf <- anova(fwf_hs_fit1, fwf_hs_fit2)
+plot(fwf_hs_fit2, 1)
+
+summary(fwf_hs_fit2)
 
 fwn_hs_fit1 <- glm(anywaste ~ age + child + adult, family = "binomial", data = comb_items)
 fwn_hs_fit2 <- glm(anywaste ~ age + child + adult + left_hs + sense_hs + stock_hs, family = "binomial", data = comb_items) 
 summary(fwn_hs_fit2)
 tidy(fwn_hs_fit2)
 
-comb_items$res <- resid(fw_hs_fit2)
-comb_items$standardized.residuals<- rstandard(fw_hs_fit2)
+fw_comb_filter$res <- resid(fwf_hs_fit2)
+fw_comb_filter$standardized.residuals<- rstandard(fwf_hs_fit2)
 fw_comb_filter$studentized.residuals<-rstudent(fwf_hs_fit2)
-comb_items$cooks.distance<-cooks.distance(fw_hs_fit2)
-comb_items$dfbeta<-dfbeta(fw_hs_fit2)
-comb_items$dffit<-dffits(fw_hs_fit2)
-comb_items$leverage<-hatvalues(fw_hs_fit2)
-comb_items$covariance.ratios<-covratio(fw_hs_fit2)
+fw_comb_filter$cooks.distance<-cooks.distance(fwf_hs_fit2)
+fw_comb_filter$dfbeta<-dfbeta(fwf_hs_fit2)
+fw_comb_filter$dffit<-dffits(fwf_hs_fit2)
+fw_comb_filter$leverage<-hatvalues(fwf_hs_fit2)
+fw_comb_filter$covariance.ratios<-covratio(fwf_hs_fit2)
+
+mean(vif(fwf_hs_fit2))
 
 tidy(dwt(fwf_hs_fit2))
 vif(fwf_hs_fit2)
 hist(fw_comb_filter$studentized.residuals)
 
-comb_items$largeres <- comb_items$standardized.residuals > 2 | comb_items$standardized.residuals < -2
-sum(comb_items$largeres)
+fw_comb_filter$largeres <- fw_comb_filter$standardized.residuals > 2 | fw_comb_filter$standardized.residuals < -2
+sum(fw_comb_filter$largeres)
 
-comb_items[comb_items$largeres, c("fw_total_log", "left_hs","sense_hs", "stock_hs", "standardized.residuals")]
+fw_comb_filter[fw_comb_filter$largeres, c("fw_total_log", "left_hs","sense_hs", "stock_hs", "standardized.residuals", "cooks.distance", "leverage", "covariance.ratios")]
 
+# predicting behaviour performance
+stock_fit <- lm(int_b1 ~ psycap + socopp + phyopp + refmot + autmot, data = df)
+stock_fit_freq <- lm(freq_b1 ~ psycap + socopp + phyopp + refmot + autmot, data = df)
+left_fit <- lm(Q38 ~ psycap + socopp + phyopp + refmot + autmot, data = df)
+left_fit_freq <- lm(Q37 ~ psycap + socopp + phyopp + refmot + autmot, data = df)
+sense_fit <- lm(Q43 ~ psycap + socopp + phyopp + refmot + autmot, data = df)
+sense_fit_freq <- lm(Q42 ~ psycap + socopp + phyopp + refmot + autmot, data = df)
+summary(sense_fit_freq)
+
+plot(left_fit)
+
+df$freq_b1 <- as.factor(df$freq_b1)
+ord_stockf <- polr(freq_b1 ~ psycap + socopp + phyopp + refmot + autmot, data = df, Hess=TRUE)
+
+boxplot(df$fw_total)
+?boxplot
+
+summary(ord_stockf)
+
+regdf <- df %>% 
+  select(fw_total_log, left_hs, sense_hs, stock_hs) %>% 
+  drop_na()
+
+plot(ggeffect(ord_stockf, terms = "refmot"))
+fw_habit <- censReg(fw_total_log ~ age + child + adult + left_hs + sense_hs + stock_hs, data = df)
+fw_habit_tobit <- vglm(fw_total_log ~ left_hs + sense_hs + stock_hs, VGAM::tobit, data = regdf)
+fw_habit_aer <- tobit(fw_total_log ~ left_hs + sense_hs + stock_hs, data = regdf)
+
+fw_behp_tobit <- censReg(fw_total_log ~ age + child + adult + int_b1 + Q38 + Q43, data = df)
+fw_behf_tobit <- censReg(fw_total_log ~ age + child + adult + freq_b1 + Q37 + Q42 + left_hs + sense_hs + stock_hs, data = df)
+coef(summary(fw_behp_tobit))
+coef(summary(fw_behf_tobit))
+vif(fw_behf_tobit)
+#int_b1 = stock taking; Q37/38 = leftovers; Q43/42 = senses
+
+# behaviour performance as IV, food waste log DV (tobit)
+coef(summary(fw_behp_tobit)) %>% as.data.frame() %>% rownames_to_column(var = " ") %>% nice_table()
+# behaviour frequency as IV, food waste log DV (tobit)
+coef(summary(fw_behf_tobit)) %>% as.data.frame() %>% rownames_to_column(var = " ") %>% nice_table()
+# habit strength as IV, food waste log DV (tobit)
+coef(summary(fw_habit)) %>% as.data.frame() %>% rownames_to_column(var = " ") %>% nice_table()
+
+
+hist(df$int_b1)
+summary(fw_habit)
+summary(fw_habit_tobit)
+summary(fw_habit_aer)
+
+regdf$yhat <- fitted(fw_habit_tobit)[,1]
+plot(regdf$fw_total_log, regdf$yhat)
+with(regdf, cor(yhat, fw_total_log))
+coef(fw_habit)
