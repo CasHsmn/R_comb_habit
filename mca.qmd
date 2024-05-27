@@ -7,8 +7,6 @@ format:
     
 ---
 
-This page outlines the multiple correspondence analysis of a survey where participants checked every food management behaviour they engaged in.
-
 ```{r}
 #| label: read_data_descriptives
 #| echo: false
@@ -68,6 +66,8 @@ behcata <- behcata %>%
 
 behfreq <- head(data.frame(Behaviour = names(behcata)[1:69], Frequency = colSums(behcata[,1:69] == 1, na.rm = T)), 10)
 ```
+In this survey I asked participants to check boxes for behaviours they engage in to subsequently rate the degree of automaticity for the ticked behaviours (0-100; very intentional - very automatic).
+
 The sample consists of `r nrow(cata_raw)` participants. `r sum(rowSums(phases == 1, na.rm=T) == 1)` have indicated they are involved in only 1 of the 5 stages from planning, shopping, storing, cooking, dealing with leftovers.
 
 # Multiple Correspondence Analysis 
@@ -76,6 +76,11 @@ I run the MCA with all the behaviours are active variables, income, gender, educ
 ```{r}
 #| label: mca
 #| tbl-cap: caption
+#| tbl-cap-location: top
+#| tbl-subcap: 
+#|  - number of people involved in each stage
+#|  - co-occurences of involvement in stage
+#|  - Frequency of planning behaviours (n =~ 270)
 #| warning: false
 #| layout-ncol: 2
 #| layout-nrow: 2
@@ -108,6 +113,8 @@ mca_scree
 ```
 The scree plot is very different from those I see in all the examples of an MCA/PCA, with not one dimension having a very high explained variance compared to the others. But the first 4 are all quite high which is why the maps below are for the first 4 dimensions.
 
+I think this happens because of the way I asked the questions. People only had to answer the CATA and automaticity questions for 2 stages out of the ones they selected. These two were randomly and evenly distributed. So every stages was asked about roughly 280 times. But because of this, looking at co-occurences of behaviours between the different stages is probably not useful.
+
 ```{r}
 plot(behMCA, invisible = c("var", "quali.sup", "quanti.sup"), cex=.7, title = "plot of individuals Dim1 & Dim2")
 plot(behMCA, invisible = c("ind", "quali.sup", "quanti.sup"), cex = .7, title = "plot of active variables Dim1 & Dim2")
@@ -116,8 +123,8 @@ plot(behMCA, invisible = c("var", "quali.sup", "quanti.sup"), cex=.7, axes = 3:4
 
 # An attempt at combining automaticity and frequency
 ```{r}
-#| echo: false
 #| warning: false
+#| include: true
  
 l_behcata <- behcata %>% 
   pivot_longer(c(1:69), names_to = "Behaviour", values_to = "frequency") %>% 
@@ -162,7 +169,7 @@ ggplot(data = as.data.frame(behautcata), aes(x = `Dim 1`, y = `Dim 2`, label =ro
   ylim(-1.5,1.5)
 ```
 ```{r}
-#| echo: false
+#| include: true
 
 createCataDF <- function(prefix, data){ # function to create separate CATA dfs by phase
   df <- data %>% 
