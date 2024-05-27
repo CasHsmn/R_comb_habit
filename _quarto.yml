@@ -1,6 +1,8 @@
 project:
   type: website
   output-dir: docs
+  render:
+    - mca.qmd
 
 website:
   title: "R Analysis"
@@ -8,9 +10,7 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - prelim_output.qmd
-      - prelim_2.qmd
-      - regRender.qmd
+      - mca.qmd
     tools:
       - icon: github
         href: https://github.com/CasHsmn/R_comb_habit
