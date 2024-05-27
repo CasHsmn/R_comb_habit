@@ -1,0 +1,225 @@
+---
+title: "Multiple Correspondence Analysis"
+author: Cas Huisman
+format:
+  html:
+    code-fold: true
+    
+---
+
+This page outlines the multiple correspondence analysis of a survey where participants checked every food management behaviour they engaged in.
+
+```{r}
+#| label: read_data_descriptives
+#| echo: false
+#| tbl-cap: "Behaviour frequencies of top 20 behaviours"
+#| warning: false
+
+library(dplyr)
+library(flextable)
+library(patchwork)
+library(grid)
+library(gridExtra)
+library(FactoMineR)
+library(factoextra)
+library(tidyr)
+library(ggrepel)
+library(flextable)
+library(tibble)
+
+wd <- list()
+wd$data   <- "C:/Users/huism080/OneDrive - Wageningen University & Research/Research/Study 1/data/"
+wd$output <- "C:/Users/huism080/OneDrive - Wageningen University & Research/Research/Study 1/output/"
+
+cata_raw <- read.csv(paste0(wd$data, "cata_data.csv"))
+cata_raw <- cata_raw %>% # rename, filter preview, nonconsent and att check fail
+  rename(plan_aut_1 = Q53_1,
+         plan_aut_2 = Q53_2,
+         plan_aut_3 = Q53_3,
+         plan_aut_4 = Q53_4,
+         plan_aut_5 = Q53_5,
+         plan_aut_6 = Q53_6,
+         plan_aut_7 = Q53_7) %>% 
+  filter(Status == 0 & consent == 1 & Q85 == 8)
+
+phases <- cata_raw %>% 
+  select(Q62_1:Q62_5) %>% 
+  slice(-c(1:2)) %>% 
+  mutate_all(as.numeric) %>% 
+  mutate(id = 1:nrow(.))
+
+phases[is.na(phases)] <- 0
+
+plan_label <- c("plan meals", "shopping list", "track stock", "check stock", "plan based on expiry", "shopping list based on meal plan", "follow meal plan")
+shop_label <- c("Buy same every time", "Buy far from expiry", "But close to expiry", "Buy vegetables in bulk", "Buy exact amount of vegatables needed", "Buy meat to freeze", "Buy frozen vegetables", "Buy more than needed", "Buy loose vegetables", "Plan how to use while buying", "Buy vegetables on discount", "Buy food on impulse", "Same route in supermarket", "Buy new foods", "Buy food others should eat", "Assess appearance of vegetables", "Assess appearance of meat", "Buy only from shopping list")
+stor_label <- c("Store vegetables specific place", "Store food visibly", "Store vegetables in drawer", "Store in freezer", "Store meat in freezer", "Mark contents of food", "Blanch or cook for freezing", "Store leftovers in freezer", "Store leftovers in fridge", "Closely follow expiration date", "Use senses to judge edibility", "Track opening of packaging", "Food close to expiry easy to access")
+cook_label <- c("Weigh ingredients", "Cook with leftovers", "Cook what is at home", "Closely follow recipe", "Cook without recipe", "Cook fixed set of meals", "Make new out of leftovers", "Cook more than needed", "Cook fresh meals", "Use frozen fruit of veg", "Use food based on expiry", "Finish veg before opening new", "Use every bit of veg or meat", "Reheat leftovers", "save part-used ingredients", "use up leftover ingredients")
+eat_label <- c("Eat leftovers", "Dish up self", "Finish plate", "Save food left on plate", "Throw away food left on plate", "save food in pan", "throw away food in pan", "Leftovers to animals", "Leftovers to others", "Compost leftovers", "Plan to use meal leftovers", "Throw away saved leftovers", "Throw away take-away/ready-made", "Throw away disliked", "Throw away partly rotten")
+all_labels <- c(plan_label, shop_label, stor_label, cook_label, eat_label)
+
+behcata <- cata_raw %>% 
+  select(contains("cata"), 161:166, 168) %>% 
+  slice(-c(1:2)) %>% 
+  mutate_all(as.numeric)
+colnames(behcata)[1:69] <- all_labels
+behcata[is.na(behcata)] <- 0
+behcata <- behcata %>% 
+  mutate_at(vars(c(1:69, 71,74,75,76)), factor)
+
+behfreq <- head(data.frame(Behaviour = names(behcata)[1:69], Frequency = colSums(behcata[,1:69] == 1, na.rm = T)), 10)
+```
+The sample consists of `r nrow(cata_raw)` participants. `r sum(rowSums(phases == 1, na.rm=T) == 1)` have indicated they are involved in only 1 of the 5 stages from planning, shopping, storing, cooking, dealing with leftovers.
+
+# Multiple Correspondence Analysis 
+I run the MCA with all the behaviours are active variables, income, gender, education and employment status as qualitative supplementary and age, number of adults and number of children as quantitative supplementary.
+
+```{r}
+#| label: mca
+#| tbl-cap: caption
+#| warning: false
+#| layout-ncol: 2
+#| layout-nrow: 2
+
+
+behMCA <- MCA(behcata, quali.sup = c("income", "gender", "education", "employ"), quanti.sup = c("age", "adult", "child"), graph = F)
+freqtable <- flextable(behfreq)
+
+mca_scree <- fviz_screeplot(behMCA, addlabels = T)
+
+
+
+colnames(phases) <- c("planning", "shopping", "storing", "cooking", "leftovers", "id")
+
+phases_long <- pivot_longer(phases, cols = c(1:5), names_to = "phase")
+phasetable <- phases_long %>% 
+  select(!id) %>% 
+  group_by(phase) %>% 
+  summarise(freq = sum(value == 1)) %>% 
+  arrange(desc(freq))
+
+cooccur <- as.data.frame(crossprod(as.matrix(phases[1:5]))) %>% 
+  rownames_to_column(" ")
+
+flextable(phasetable)
+flextable(cooccur)
+# wrap_elements(gen_grob(freqtable, fit = "width")) + mca_scree
+freqtable
+mca_scree
+```
+The scree plot is very different from those I see in all the examples of an MCA/PCA, with not one dimension having a very high explained variance compared to the others. But the first 4 are all quite high which is why the maps below are for the first 4 dimensions.
+
+```{r}
+plot(behMCA, invisible = c("var", "quali.sup", "quanti.sup"), cex=.7, title = "plot of individuals Dim1 & Dim2")
+plot(behMCA, invisible = c("ind", "quali.sup", "quanti.sup"), cex = .7, title = "plot of active variables Dim1 & Dim2")
+plot(behMCA, invisible = c("var", "quali.sup", "quanti.sup"), cex=.7, axes = 3:4, title = "individual plot Dim3 & Dim4")
+```
+
+# An attempt at combining automaticity and frequency
+```{r}
+#| echo: false
+#| warning: false
+ 
+l_behcata <- behcata %>% 
+  pivot_longer(c(1:69), names_to = "Behaviour", values_to = "frequency") %>% 
+  separate(col = Behaviour, into = c("stage", "cata", "number"), sep = "_", remove = F) %>% 
+  select(-c(cata, number)) %>% 
+  mutate(Behaviour = all_labels[as.numeric(gsub(".*_", "", Behaviour))])
+
+l_summ <- l_behcata %>% 
+  group_by(stage, Behaviour) %>% 
+  summarise(true = sum(frequency == 1),
+            false = sum(frequency == 0),
+            N = n()) %>% 
+  mutate(t_pct = round(true/N*100, 2),
+         f_pct = round(false/N*100,2))
+
+behaut <- cata_raw %>% 
+  select(plan_aut_1:plan_aut_7, shop_aut_1:shop_aut_18, stor_aut_1:stor_aut_13, cook_aut_1:cook_aut_16, eat_aut_1:eat_aut_15) %>% 
+  slice(-c(1:2)) %>% 
+  mutate_all(as.numeric)
+
+l_behaut <- behaut %>% 
+  pivot_longer(c(1:69), names_to = "Behaviour", values_to = "automaticity") %>% 
+  separate(col = Behaviour, into = c("stage", "cata", "number"), sep = "_", remove = F) %>% 
+  select(-c(cata, number)) %>% 
+  mutate(Behaviour = all_labels[as.numeric(gsub(".*_", "", Behaviour))])
+
+l_autsumm <- l_behaut %>% 
+  group_by(stage, Behaviour) %>% 
+  summarise(automaticity = mean(automaticity, na.rm=T)) %>% 
+  mutate(normaut = scale(automaticity))
+
+selected_rows <- seq(0, nrow(behMCA$var$coord), by = 2)
+behautcata <- cbind(behMCA$var$coord[selected_rows,], l_autsumm$normaut, l_summ$true)
+
+ggplot(data = as.data.frame(behautcata), aes(x = `Dim 1`, y = `Dim 2`, label =rownames(behautcata))) +
+  geom_point(aes(color = l_autsumm$normaut, size = l_summ$true)) +
+  scale_color_gradient(low = "lightblue", high = "darkblue") +
+  labs(x = "CA Dimension 1", y = "CA Dimension 2", size = "Frequency", color = "Automaticity") +
+  theme_minimal() +
+  geom_text_repel(size = 3, force = 10) +
+  xlim(-1.5,1.5) + 
+  ylim(-1.5,1.5)
+```
+```{r}
+#| echo: false
+
+createCataDF <- function(prefix, data){ # function to create separate CATA dfs by phase
+  df <- data %>% 
+    select(starts_with(paste0(prefix, "_cata"))) %>% 
+    slice(-c(1:2)) %>% 
+    mutate_all(as.numeric) %>% 
+    mutate(id = 1:nrow(.))
+  return(df)
+}
+
+# MCA for planning
+plan_cata <- createCataDF("plan", cata_raw)
+plan_cata[is.na(plan_cata)] <- 0
+colnames(plan_cata)[1:7] <- plan_label
+plan_cata <- plan_cata %>% 
+  mutate_at(vars(c(1:7)), factor)
+
+planMCA <- MCA(plan_cata[1:7], graph=F)
+fviz_mca(planMCA, title = "factor map planning")
+
+# MCA for shopping
+shop_cata <- createCataDF("shop", cata_raw)
+shop_cata[is.na(shop_cata)] <- 0
+colnames(shop_cata)[1:18] <- shop_label
+shop_cata <- shop_cata %>% 
+  mutate_at(vars(c(1:7)), factor)
+
+shopMCA <- MCA(shop_cata[1:7], graph=F)
+fviz_mca(shopMCA, title = "factor map shopping")
+
+# MCA for storing
+stor_cata <- createCataDF("stor", cata_raw)
+stor_cata[is.na(stor_cata)] <- 0
+colnames(stor_cata)[1:13] <- stor_label
+stor_cata <- stor_cata %>% 
+  mutate_at(vars(c(1:7)), factor)
+
+storMCA <- MCA(stor_cata[1:7], graph=F)
+fviz_mca(storMCA, title = "factor map storing")
+
+# MCA for cooking
+cook_cata <- createCataDF("cook", cata_raw)
+cook_cata[is.na(cook_cata)] <- 0
+colnames(cook_cata)[1:16] <- cook_label
+cook_cata <- cook_cata %>% 
+  mutate_at(vars(c(1:7)), factor)
+
+cookMCA <- MCA(cook_cata[1:7], graph=F)
+fviz_mca(cookMCA, title = "factor map cooking")
+
+# MCA for dealing with leftovers
+eat_cata <- createCataDF("eat", cata_raw)
+eat_cata[is.na(eat_cata)] <- 0
+colnames(eat_cata)[1:15] <- eat_label
+eat_cata <- eat_cata %>% 
+  mutate_at(vars(c(1:7)), factor)
+
+eatMCA <- MCA(eat_cata[1:7], graph=F)
+fviz_mca(eatMCA, title = "factor map eating")
+```
