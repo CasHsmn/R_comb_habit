@@ -71,6 +71,42 @@ dfRaw <- raw_data %>% left_join(dfDem, by = join_by(PROLIFIC_PID == Participant.
 colnames(dfRaw)[colnames(dfRaw) == "Country.of.residence"] = "Country"
 }
 
+rand <- read.csv(paste0(wd$data, "comb_randomisation.csv"))
+
+randorder <- rand %>% 
+  select(172:176) %>% 
+  slice(-c(1:2))
+  
+  as.numeric() %>%
+  as.data.frame()
+
+unlist(randorder)
+randy <- as.numeric(randy)
+colSums(!is.na(rand[,172:176]))
+
+randy <- as.tibble(randorder)
+
+sum(nchar(randy$FL_8_DO_FL_54) > 0)
+
+randy <- randy %>% 
+  mutate_all(~ ifelse(. != "", 1, .)) %>%  # Replace non-empty values with 1
+  mutate_all(as.numeric)  # Convert all columns to numeric
+
+cooccurrand <- as.data.frame(crossprod(as.matrix(randy)))
+randy[is.na(randy)] <- 0
+
+cooccur <- as.data.frame(crossprod(as.matrix(phases[1:5])))
+
+flexrand <- flextable(cooccurrand)
+flexog <- flextable(cooccur)
+
+cooccurdoc <- read_docx()
+cooccurdoc <- cooccurdoc %>% 
+  body_add_flextable(flexog) %>% 
+  body_add_flextable(flexrand)
+
+print(cooccurdoc, paste0(wd$output,"cooccur_phase.docx"))
+
 # DATA CLEANING
 {df <- dfRaw %>% # filter no food handling, previews, non consent, failed att check
   filter(is.na(Q2_6) & Status == 0 & consent != 0 & (att_1 == 4 & (att != 4 | att != 5))) %>% 
