@@ -516,6 +516,7 @@ kable(coef(summary(fit)), digits = 2, caption = "Tobit model summary (Log transf
 ```
 
 ## Logistic Regression
+
 ```{r}
 df$anywaste <- ifelse(!is.na(df$Q1_31), 0, 1)
 

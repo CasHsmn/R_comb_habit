@@ -5,5 +5,82 @@
     "title": "Multiple Correspondence Analysis",
     "section": "",
     "text": "In this survey I asked participants to check boxes for behaviours they engage in to subsequently rate the degree of automaticity for the ticked behaviours (0-100; very intentional - very automatic).\nThe sample consists of 760 participants. 16 have indicated they are involved in only 1 of the 5 stages from planning, shopping, storing, cooking, dealing with leftovers.\n\nMultiple Correspondence Analysis\nI run the MCA with all the behaviours are active variables, income, gender, education and employment status as qualitative supplementary and age, number of adults and number of children as quantitative supplementary.\n\n\nCode\nbehMCA &lt;- MCA(behcata, quali.sup = c(\"income\", \"gender\", \"education\", \"employ\"), quanti.sup = c(\"age\", \"adult\", \"child\"), graph = F)\nfreqtable &lt;- flextable(behfreq)\n\nmca_scree &lt;- fviz_screeplot(behMCA, addlabels = T)\n\n\n\ncolnames(phases) &lt;- c(\"planning\", \"shopping\", \"storing\", \"cooking\", \"leftovers\", \"id\")\n\nphases_long &lt;- pivot_longer(phases, cols = c(1:5), names_to = \"phase\")\nphasetable &lt;- phases_long %&gt;% \n  select(!id) %&gt;% \n  group_by(phase) %&gt;% \n  summarise(freq = sum(value == 1)) %&gt;% \n  arrange(desc(freq))\n\ncooccur &lt;- as.data.frame(crossprod(as.matrix(phases[1:5]))) %&gt;% \n  rownames_to_column(\" \")\n\nflextable(phasetable)\nflextable(cooccur)\n# wrap_elements(gen_grob(freqtable, fit = \"width\")) + mca_scree\nfreqtable\nmca_scree\n\n\n\ncaption\n\n\n\n\nnumber of people involved in each stage phasefreqshopping696storing690planning639cooking628leftovers620\n\n\n\nco-occurences of involvement in stage  planningshoppingstoringcookingleftoversplanning639603597559554shopping603696644598584storing597644690587596cooking559598587628557leftovers554584596557620\n\n\n\n\n\nFrequency of planning behaviours (n =~ 270) BehaviourFrequencyplan meals225shopping list249track stock186check stock260plan based on expiry207shopping list based on meal plan151follow meal plan111Buy same every time202Buy far from expiry189But close to expiry57\n\n\n\n\n\n\n\nThe scree plot is very different from those I see in all the examples of an MCA/PCA, with not one dimension having a very high explained variance compared to the others. But the first 4 are all quite high which is why the maps below are for the first 4 dimensions.\nI think this happens because of the way I asked the questions. People only had to answer the CATA and automaticity questions for 2 stages out of the ones they selected. These two were randomly and evenly distributed. So every stages was asked about roughly 280 times. But because of this, looking at co-occurences of behaviours between the different stages is probably not useful.\n\n\nCode\nplot(behMCA, invisible = c(\"var\", \"quali.sup\", \"quanti.sup\"), cex=.7, title = \"plot of individuals Dim1 & Dim2\")\n\n\n\n\n\nCode\nplot(behMCA, invisible = c(\"ind\", \"quali.sup\", \"quanti.sup\"), cex = .7, title = \"plot of active variables Dim1 & Dim2\")\n\n\n\n\n\nCode\nplot(behMCA, invisible = c(\"var\", \"quali.sup\", \"quanti.sup\"), cex=.7, axes = 3:4, title = \"individual plot Dim3 & Dim4\")\n\n\n\n\n\n\n\nAn attempt at combining automaticity and frequency\n\n\nCode\nl_behcata &lt;- behcata %&gt;% \n  pivot_longer(c(1:69), names_to = \"Behaviour\", values_to = \"frequency\") %&gt;% \n  separate(col = Behaviour, into = c(\"stage\", \"cata\", \"number\"), sep = \"_\", remove = F) %&gt;% \n  select(-c(cata, number)) %&gt;% \n  mutate(Behaviour = all_labels[as.numeric(gsub(\".*_\", \"\", Behaviour))])\n\nl_summ &lt;- l_behcata %&gt;% \n  group_by(stage, Behaviour) %&gt;% \n  summarise(true = sum(frequency == 1),\n            false = sum(frequency == 0),\n            N = n()) %&gt;% \n  mutate(t_pct = round(true/N*100, 2),\n         f_pct = round(false/N*100,2))\n\nbehaut &lt;- cata_raw %&gt;% \n  select(plan_aut_1:plan_aut_7, shop_aut_1:shop_aut_18, stor_aut_1:stor_aut_13, cook_aut_1:cook_aut_16, eat_aut_1:eat_aut_15) %&gt;% \n  slice(-c(1:2)) %&gt;% \n  mutate_all(as.numeric)\n\nl_behaut &lt;- behaut %&gt;% \n  pivot_longer(c(1:69), names_to = \"Behaviour\", values_to = \"automaticity\") %&gt;% \n  separate(col = Behaviour, into = c(\"stage\", \"cata\", \"number\"), sep = \"_\", remove = F) %&gt;% \n  select(-c(cata, number)) %&gt;% \n  mutate(Behaviour = all_labels[as.numeric(gsub(\".*_\", \"\", Behaviour))])\n\nl_autsumm &lt;- l_behaut %&gt;% \n  group_by(stage, Behaviour) %&gt;% \n  summarise(automaticity = mean(automaticity, na.rm=T)) %&gt;% \n  mutate(normaut = scale(automaticity))\n\nselected_rows &lt;- seq(0, nrow(behMCA$var$coord), by = 2)\nbehautcata &lt;- cbind(behMCA$var$coord[selected_rows,], l_autsumm$normaut, l_summ$true)\n\nggplot(data = as.data.frame(behautcata), aes(x = `Dim 1`, y = `Dim 2`, label =rownames(behautcata))) +\n  geom_point(aes(color = l_autsumm$normaut, size = l_summ$true)) +\n  scale_color_gradient(low = \"lightblue\", high = \"darkblue\") +\n  labs(x = \"CA Dimension 1\", y = \"CA Dimension 2\", size = \"Frequency\", color = \"Automaticity\") +\n  theme_minimal() +\n  geom_text_repel(size = 3, force = 10) +\n  xlim(-1.5,1.5) + \n  ylim(-1.5,1.5)\n\n\n\n\n\n\n\nCode\ncreateCataDF &lt;- function(prefix, data){ # function to create separate CATA dfs by phase\n  df &lt;- data %&gt;% \n    select(starts_with(paste0(prefix, \"_cata\"))) %&gt;% \n    slice(-c(1:2)) %&gt;% \n    mutate_all(as.numeric) %&gt;% \n    mutate(id = 1:nrow(.))\n  return(df)\n}\n\n# MCA for planning\nplan_cata &lt;- createCataDF(\"plan\", cata_raw)\nplan_cata[is.na(plan_cata)] &lt;- 0\ncolnames(plan_cata)[1:7] &lt;- plan_label\nplan_cata &lt;- plan_cata %&gt;% \n  mutate_at(vars(c(1:7)), factor)\n\nplanMCA &lt;- MCA(plan_cata[1:7], graph=F)\nfviz_mca(planMCA, title = \"factor map planning\")\n\n\n\n\n\nCode\n# MCA for shopping\nshop_cata &lt;- createCataDF(\"shop\", cata_raw)\nshop_cata[is.na(shop_cata)] &lt;- 0\ncolnames(shop_cata)[1:18] &lt;- shop_label\nshop_cata &lt;- shop_cata %&gt;% \n  mutate_at(vars(c(1:7)), factor)\n\nshopMCA &lt;- MCA(shop_cata[1:7], graph=F)\nfviz_mca(shopMCA, title = \"factor map shopping\")\n\n\n\n\n\nCode\n# MCA for storing\nstor_cata &lt;- createCataDF(\"stor\", cata_raw)\nstor_cata[is.na(stor_cata)] &lt;- 0\ncolnames(stor_cata)[1:13] &lt;- stor_label\nstor_cata &lt;- stor_cata %&gt;% \n  mutate_at(vars(c(1:7)), factor)\n\nstorMCA &lt;- MCA(stor_cata[1:7], graph=F)\nfviz_mca(storMCA, title = \"factor map storing\")\n\n\n\n\n\nCode\n# MCA for cooking\ncook_cata &lt;- createCataDF(\"cook\", cata_raw)\ncook_cata[is.na(cook_cata)] &lt;- 0\ncolnames(cook_cata)[1:16] &lt;- cook_label\ncook_cata &lt;- cook_cata %&gt;% \n  mutate_at(vars(c(1:7)), factor)\n\ncookMCA &lt;- MCA(cook_cata[1:7], graph=F)\nfviz_mca(cookMCA, title = \"factor map cooking\")\n\n\n\n\n\nCode\n# MCA for dealing with leftovers\neat_cata &lt;- createCataDF(\"eat\", cata_raw)\neat_cata[is.na(eat_cata)] &lt;- 0\ncolnames(eat_cata)[1:15] &lt;- eat_label\neat_cata &lt;- eat_cata %&gt;% \n  mutate_at(vars(c(1:7)), factor)\n\neatMCA &lt;- MCA(eat_cata[1:7], graph=F)\nfviz_mca(eatMCA, title = \"factor map eating\")"
+  },
+  {
+    "objectID": "formatted_analysi.html",
+    "href": "formatted_analysi.html",
+    "title": "Analysis CATA",
+    "section": "",
+    "text": "Code\ninvolvement &lt;- cata_raw %&gt;% \n  select(Q62_1:Q62_5) %&gt;% \n  slice(-c(1:2)) %&gt;% \n  mutate_all(as.numeric)\n\ncolnames(involvement) &lt;- stage_labels\ninvolvement[is.na(involvement)] &lt;- 0\n\ninvolvementtable &lt;- data.frame(Stage = names(colSums(involvement)), Total = colSums(involvement))\nflextable(involvementtable)\n\n\n\nStageTotalPlanning639Shopping696Storing690Cooking628Leftovers620\n\n\nCode\nflextable(data.frame(t(as.matrix(involvement)) %*% as.matrix(involvement)) %&gt;% rownames_to_column(\"Stage\"))\n\n\n\nStagePlanningShoppingStoringCookingLeftoversPlanning639603597559554Shopping603696644598584Storing597644690587596Cooking559598587628557Leftovers554584596557620\n\nNumber of people engaged in each stage\n\nBut, this is not how many people also answered the questions for each stage, because people were randomly and evenly distributed over the CATA questions."
+  },
+  {
+    "objectID": "formatted_analysi.html#pca-for-planning",
+    "href": "formatted_analysi.html#pca-for-planning",
+    "title": "Analysis CATA",
+    "section": "PCA for planning",
+    "text": "PCA for planning\n\n\nCode\nplan_cor &lt;- cor(behcata[,2:8], use = \"pairwise.complete.obs\")\nplan_pca &lt;- PCA(plan_cor, graph = F)\nplot(plan_pca)\n\n\n\n\n\nCode\nfviz_screeplot(plan_pca)\n\n\n\n\n\nAs an example, this is a PCA result from the raw data instead of the correlation matrix. Why does it look so different?\n\n\nCode\nplan_raw_pca &lt;- PCA(behcata[,2:8], graph = F)\n\n\nWarning in PCA(behcata[, 2:8], graph = F): Missing values are imputed by the\nmean of the variable: you should use the imputePCA function of the missMDA\npackage\n\n\nCode\nfviz_pca(plan_raw_pca)"
+  },
+  {
+    "objectID": "formatted_analysi.html#pca-for-shopping",
+    "href": "formatted_analysi.html#pca-for-shopping",
+    "title": "Analysis CATA",
+    "section": "PCA for shopping",
+    "text": "PCA for shopping\n\n\nCode\nshop_cor &lt;- cor(behcata[,9:26], use = \"pairwise.complete.obs\")\nshop_pca &lt;- PCA(shop_cor, graph = F)\nplot(shop_pca)\n\n\n\n\n\nCode\nfviz_screeplot(shop_pca)"
+  },
+  {
+    "objectID": "formatted_analysi.html#pca-for-storing",
+    "href": "formatted_analysi.html#pca-for-storing",
+    "title": "Analysis CATA",
+    "section": "PCA for storing",
+    "text": "PCA for storing\n\n\nCode\nstor_cor &lt;- cor(behcata[,27:39], use = \"pairwise.complete.obs\")\nstor_pca &lt;- PCA(stor_cor, graph = F)\nplot(stor_pca)\n\n\n\n\n\nCode\nfviz_screeplot(stor_pca)"
+  },
+  {
+    "objectID": "formatted_analysi.html#pca-for-cooking",
+    "href": "formatted_analysi.html#pca-for-cooking",
+    "title": "Analysis CATA",
+    "section": "PCA for cooking",
+    "text": "PCA for cooking\n\n\nCode\ncook_cor &lt;- cor(behcata[,40:55], use = \"pairwise.complete.obs\")\ncook_pca &lt;- PCA(cook_cor, graph = F)\nplot(cook_pca)\n\n\n\n\n\nCode\nfviz_screeplot(cook_pca)"
+  },
+  {
+    "objectID": "formatted_analysi.html#pca-for-dealing-with-leftovers",
+    "href": "formatted_analysi.html#pca-for-dealing-with-leftovers",
+    "title": "Analysis CATA",
+    "section": "PCA for dealing with leftovers",
+    "text": "PCA for dealing with leftovers\n\n\nCode\nleft_cor &lt;- cor(behcata[,56:70], use = \"pairwise.complete.obs\")\nleft_pca &lt;- PCA(left_cor, graph = F)\nplot(left_pca)\n\n\nWarning: ggrepel: 1 unlabeled data points (too many overlaps). Consider\nincreasing max.overlaps\n\n\n\n\n\nCode\nfviz_screeplot(left_pca)"
+  },
+  {
+    "objectID": "formatted_analysi.html#pca-planning-automaticity",
+    "href": "formatted_analysi.html#pca-planning-automaticity",
+    "title": "Analysis CATA",
+    "section": "PCA planning automaticity",
+    "text": "PCA planning automaticity\n\n\nCode\nplan_aut &lt;- cor(behaut[,2:8], use = \"pairwise.complete.obs\", method = \"pearson\")\nplan_aut_pca &lt;- PCA(plan_aut, graph = F)\nfviz_pca_ind(plan_aut_pca)\n\n\n\n\n\nCode\nfviz_screeplot(plan_aut_pca)"
+  },
+  {
+    "objectID": "formatted_analysi.html#pca-for-shopping-1",
+    "href": "formatted_analysi.html#pca-for-shopping-1",
+    "title": "Analysis CATA",
+    "section": "PCA for shopping",
+    "text": "PCA for shopping\n\n\nCode\nshop_aut &lt;- cor(behaut[,9:26], use = \"pairwise.complete.obs\")\nshop_aut_pca &lt;- PCA(shop_aut, graph = F)\nplot(shop_aut_pca)\n\n\n\n\n\nCode\nfviz_screeplot(shop_aut_pca)"
+  },
+  {
+    "objectID": "formatted_analysi.html#pca-for-storing-1",
+    "href": "formatted_analysi.html#pca-for-storing-1",
+    "title": "Analysis CATA",
+    "section": "PCA for storing",
+    "text": "PCA for storing\n\n\nCode\nstor_aut &lt;- cor(behaut[,27:39], use = \"pairwise.complete.obs\")\nstor_aut_pca &lt;- PCA(stor_aut, graph = F)\nplot(stor_aut_pca)\n\n\n\n\n\nCode\nfviz_screeplot(stor_aut_pca)"
+  },
+  {
+    "objectID": "formatted_analysi.html#pca-for-cooking-1",
+    "href": "formatted_analysi.html#pca-for-cooking-1",
+    "title": "Analysis CATA",
+    "section": "PCA for cooking",
+    "text": "PCA for cooking\n\n\nCode\ncook_aut &lt;- cor(behaut[,40:55], use = \"pairwise.complete.obs\")\ncook_aut_pca &lt;- PCA(cook_aut, graph = F)\nplot(cook_aut_pca)\n\n\n\n\n\nCode\nfviz_screeplot(cook_aut_pca)"
+  },
+  {
+    "objectID": "formatted_analysi.html#pca-for-dealing-with-leftovers-1",
+    "href": "formatted_analysi.html#pca-for-dealing-with-leftovers-1",
+    "title": "Analysis CATA",
+    "section": "PCA for dealing with leftovers",
+    "text": "PCA for dealing with leftovers\n\n\nCode\nleft_aut &lt;- cor(behaut[,56:70], use = \"pairwise.complete.obs\")\nleft_aut_pca &lt;- PCA(left_aut, graph = F)\nplot(left_aut_pca)\n\n\n\n\n\nCode\nfviz_screeplot(left_aut_pca)"
   }
 ]

@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>R Analysis - Analysis CATA</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<link href="site_libs/tabwid-1.1.3/tabwid.css" rel="stylesheet">
+<script src="site_libs/tabwid-1.1.3/tabwid.js"></script>
+
+
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">R Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.qmd" rel="" target="">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./mca.html" rel="" target="">
+ <span class="menu-text">Multiple Correspondence Analysis</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./formatted_analysi.html" rel="" target="" aria-current="page">
+ <span class="menu-text">Analysis CATA</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools ms-auto">
+    <a href="https://github.com/CasHsmn/R_comb_habit" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#descriptives" id="toc-descriptives" class="nav-link active" data-scroll-target="#descriptives">Descriptives</a></li>
+  <li><a href="#frequencies-of-behaviours-per-phase" id="toc-frequencies-of-behaviours-per-phase" class="nav-link" data-scroll-target="#frequencies-of-behaviours-per-phase">Frequencies of behaviours per phase</a></li>
+  <li><a href="#tetrachroic-correlation" id="toc-tetrachroic-correlation" class="nav-link" data-scroll-target="#tetrachroic-correlation">Tetrachroic correlation</a>
+  <ul class="collapse">
+  <li><a href="#pca-for-planning" id="toc-pca-for-planning" class="nav-link" data-scroll-target="#pca-for-planning">PCA for planning</a></li>
+  <li><a href="#pca-for-shopping" id="toc-pca-for-shopping" class="nav-link" data-scroll-target="#pca-for-shopping">PCA for shopping</a></li>
+  <li><a href="#pca-for-storing" id="toc-pca-for-storing" class="nav-link" data-scroll-target="#pca-for-storing">PCA for storing</a></li>
+  <li><a href="#pca-for-cooking" id="toc-pca-for-cooking" class="nav-link" data-scroll-target="#pca-for-cooking">PCA for cooking</a></li>
+  <li><a href="#pca-for-dealing-with-leftovers" id="toc-pca-for-dealing-with-leftovers" class="nav-link" data-scroll-target="#pca-for-dealing-with-leftovers">PCA for dealing with leftovers</a></li>
+  </ul></li>
+  <li><a href="#pca-of-automaticity-ratings" id="toc-pca-of-automaticity-ratings" class="nav-link" data-scroll-target="#pca-of-automaticity-ratings">PCA of automaticity ratings</a>
+  <ul class="collapse">
+  <li><a href="#pca-planning-automaticity" id="toc-pca-planning-automaticity" class="nav-link" data-scroll-target="#pca-planning-automaticity">PCA planning automaticity</a></li>
+  <li><a href="#pca-for-shopping-1" id="toc-pca-for-shopping-1" class="nav-link" data-scroll-target="#pca-for-shopping-1">PCA for shopping</a></li>
+  <li><a href="#pca-for-storing-1" id="toc-pca-for-storing-1" class="nav-link" data-scroll-target="#pca-for-storing-1">PCA for storing</a></li>
+  <li><a href="#pca-for-cooking-1" id="toc-pca-for-cooking-1" class="nav-link" data-scroll-target="#pca-for-cooking-1">PCA for cooking</a></li>
+  <li><a href="#pca-for-dealing-with-leftovers-1" id="toc-pca-for-dealing-with-leftovers-1" class="nav-link" data-scroll-target="#pca-for-dealing-with-leftovers-1">PCA for dealing with leftovers</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Analysis CATA</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="descriptives" class="level1">
+<h1>Descriptives</h1>
+<div class="cell tbl-cap-location-top">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>involvement <span class="ot">&lt;-</span> cata_raw <span class="sc">%&gt;%</span> </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Q62_1<span class="sc">:</span>Q62_5) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_all</span>(as.numeric)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(involvement) <span class="ot">&lt;-</span> stage_labels</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>involvement[<span class="fu">is.na</span>(involvement)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>involvementtable <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Stage =</span> <span class="fu">names</span>(<span class="fu">colSums</span>(involvement)), <span class="at">Total =</span> <span class="fu">colSums</span>(involvement))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">flextable</span>(involvementtable)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div class="tabwid"><style>.cl-815b50e4{}.cl-8126a920{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-813adecc{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-813adeea{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-813b6770{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-813b678e{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-813b6798{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-813b67a2{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-813b67ac{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-813b67ad{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-815b50e4"><thead><tr style="overflow-wrap:break-word;"><th class="cl-813b6770"><p class="cl-813adecc"><span class="cl-8126a920">Stage</span></p></th><th class="cl-813b678e"><p class="cl-813adeea"><span class="cl-8126a920">Total</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-813b6798"><p class="cl-813adecc"><span class="cl-8126a920">Planning</span></p></td><td class="cl-813b67a2"><p class="cl-813adeea"><span class="cl-8126a920">639</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-813b6798"><p class="cl-813adecc"><span class="cl-8126a920">Shopping</span></p></td><td class="cl-813b67a2"><p class="cl-813adeea"><span class="cl-8126a920">696</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-813b6798"><p class="cl-813adecc"><span class="cl-8126a920">Storing</span></p></td><td class="cl-813b67a2"><p class="cl-813adeea"><span class="cl-8126a920">690</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-813b6798"><p class="cl-813adecc"><span class="cl-8126a920">Cooking</span></p></td><td class="cl-813b67a2"><p class="cl-813adeea"><span class="cl-8126a920">628</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-813b67ac"><p class="cl-813adecc"><span class="cl-8126a920">Leftovers</span></p></td><td class="cl-813b67ad"><p class="cl-813adeea"><span class="cl-8126a920">620</span></p></td></tr></tbody></table></div>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">flextable</span>(<span class="fu">data.frame</span>(<span class="fu">t</span>(<span class="fu">as.matrix</span>(involvement)) <span class="sc">%*%</span> <span class="fu">as.matrix</span>(involvement)) <span class="sc">%&gt;%</span> <span class="fu">rownames_to_column</span>(<span class="st">"Stage"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div class="tabwid"><style>.cl-81cd1576{}.cl-81a14b30{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-81b56b7e{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-81b56b9c{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-81b5f72e{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-81b5f742{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-81b5f74c{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-81b5f756{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-81b5f760{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-81b5f76a{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-81cd1576"><thead><tr style="overflow-wrap:break-word;"><th class="cl-81b5f72e"><p class="cl-81b56b7e"><span class="cl-81a14b30">Stage</span></p></th><th class="cl-81b5f742"><p class="cl-81b56b9c"><span class="cl-81a14b30">Planning</span></p></th><th class="cl-81b5f742"><p class="cl-81b56b9c"><span class="cl-81a14b30">Shopping</span></p></th><th class="cl-81b5f742"><p class="cl-81b56b9c"><span class="cl-81a14b30">Storing</span></p></th><th class="cl-81b5f742"><p class="cl-81b56b9c"><span class="cl-81a14b30">Cooking</span></p></th><th class="cl-81b5f742"><p class="cl-81b56b9c"><span class="cl-81a14b30">Leftovers</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-81b5f74c"><p class="cl-81b56b7e"><span class="cl-81a14b30">Planning</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">639</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">603</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">597</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">559</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">554</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-81b5f74c"><p class="cl-81b56b7e"><span class="cl-81a14b30">Shopping</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">603</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">696</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">644</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">598</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">584</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-81b5f74c"><p class="cl-81b56b7e"><span class="cl-81a14b30">Storing</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">597</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">644</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">690</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">587</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">596</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-81b5f74c"><p class="cl-81b56b7e"><span class="cl-81a14b30">Cooking</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">559</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">598</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">587</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">628</span></p></td><td class="cl-81b5f756"><p class="cl-81b56b9c"><span class="cl-81a14b30">557</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-81b5f760"><p class="cl-81b56b7e"><span class="cl-81a14b30">Leftovers</span></p></td><td class="cl-81b5f76a"><p class="cl-81b56b9c"><span class="cl-81a14b30">554</span></p></td><td class="cl-81b5f76a"><p class="cl-81b56b9c"><span class="cl-81a14b30">584</span></p></td><td class="cl-81b5f76a"><p class="cl-81b56b9c"><span class="cl-81a14b30">596</span></p></td><td class="cl-81b5f76a"><p class="cl-81b56b9c"><span class="cl-81a14b30">557</span></p></td><td class="cl-81b5f76a"><p class="cl-81b56b9c"><span class="cl-81a14b30">620</span></p></td></tr></tbody></table></div>
+</div>
+<p>Number of people engaged in each stage</p>
+</div>
+<p>But, this is not how many people also answered the questions for each stage, because people were randomly and evenly distributed over the CATA questions.</p>
+</section>
+<section id="frequencies-of-behaviours-per-phase" class="level1">
+<h1>Frequencies of behaviours per phase</h1>
+<div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>cata_random <span class="ot">&lt;-</span> cata_raw <span class="sc">%&gt;%</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="dv">172</span><span class="sc">:</span><span class="dv">176</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(),as.numeric))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>cata_appear <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="sc">!</span><span class="fu">is.na</span>(cata_random[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>cata_appear_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Phase =</span> <span class="fu">names</span>(cata_appear), <span class="at">Count =</span> <span class="fu">as.numeric</span>(cata_appear))</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>createCataDF <span class="ot">&lt;-</span> <span class="cf">function</span>(prefix, data){ <span class="co"># function to create separate CATA dfs by phase</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="fu">starts_with</span>(<span class="fu">paste0</span>(prefix, <span class="st">"_cata"</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">slice</span>(<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate_all</span>(as.numeric) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(.))</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>plan_cata <span class="ot">&lt;-</span> <span class="fu">createCataDF</span>(<span class="st">"plan"</span>, cata_raw)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(plan_cata)[<span class="dv">1</span><span class="sc">:</span>(<span class="fu">ncol</span>(plan_cata)<span class="sc">-</span><span class="dv">1</span>)] <span class="ot">&lt;-</span> plan_label</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>plan_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(plan_cata, <span class="at">cols =</span> <span class="sc">!</span><span class="fu">last_col</span>(), <span class="at">names_to =</span> <span class="st">"plan_beh"</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>planfreqtable <span class="ot">&lt;-</span> plan_long <span class="sc">%&gt;%</span> </span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(plan_beh) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">freq =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(value))) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">percentage =</span> <span class="fu">paste0</span>(<span class="fu">round</span>((freq <span class="sc">/</span> cata_appear_df[<span class="dv">1</span>,<span class="dv">2</span>])<span class="sc">*</span><span class="dv">100</span>,<span class="dv">0</span>),<span class="st">"%"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(freq))</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="fu">flextable</span>(planfreqtable) <span class="sc">%&gt;%</span> <span class="fu">autofit</span>()</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Shopping behaviours cata</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>shop_cata <span class="ot">&lt;-</span> <span class="fu">createCataDF</span>(<span class="st">"shop"</span>, cata_raw)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(shop_cata)[<span class="dv">1</span><span class="sc">:</span>(<span class="fu">ncol</span>(shop_cata)<span class="sc">-</span><span class="dv">1</span>)] <span class="ot">&lt;-</span> shop_label</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>shop_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(shop_cata, <span class="at">cols =</span> <span class="sc">!</span><span class="fu">last_col</span>(), <span class="at">names_to =</span> <span class="st">"shop_beh"</span>)</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>shopfreqtable <span class="ot">&lt;-</span> shop_long <span class="sc">%&gt;%</span> </span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(shop_beh) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">freq =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(value))) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">percentage =</span> <span class="fu">paste0</span>(<span class="fu">round</span>((freq <span class="sc">/</span> cata_appear_df[<span class="dv">2</span>,<span class="dv">2</span>])<span class="sc">*</span><span class="dv">100</span>,<span class="dv">0</span>),<span class="st">"%"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(freq))</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="fu">flextable</span>(shopfreqtable) <span class="sc">%&gt;%</span> <span class="fu">autofit</span>()</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Shopping behaviours cata</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>stor_cata <span class="ot">&lt;-</span> <span class="fu">createCataDF</span>(<span class="st">"stor"</span>, cata_raw)</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(stor_cata)[<span class="dv">1</span><span class="sc">:</span>(<span class="fu">ncol</span>(stor_cata)<span class="sc">-</span><span class="dv">1</span>)] <span class="ot">&lt;-</span> stor_label</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>stor_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(stor_cata, <span class="at">cols =</span> <span class="sc">!</span><span class="fu">last_col</span>(), <span class="at">names_to =</span> <span class="st">"stor_beh"</span>)</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>storfreqtable <span class="ot">&lt;-</span> stor_long <span class="sc">%&gt;%</span> </span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(stor_beh) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">freq =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(value))) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">percentage =</span> <span class="fu">paste0</span>(<span class="fu">round</span>((freq <span class="sc">/</span> cata_appear_df[<span class="dv">3</span>,<span class="dv">2</span>])<span class="sc">*</span><span class="dv">100</span>,<span class="dv">0</span>),<span class="st">"%"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(freq))</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="fu">flextable</span>(storfreqtable) <span class="sc">%&gt;%</span> <span class="fu">autofit</span>()</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Shopping behaviours cata</span></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>cook_cata <span class="ot">&lt;-</span> <span class="fu">createCataDF</span>(<span class="st">"cook"</span>, cata_raw)</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(cook_cata)[<span class="dv">1</span><span class="sc">:</span>(<span class="fu">ncol</span>(cook_cata)<span class="sc">-</span><span class="dv">1</span>)] <span class="ot">&lt;-</span> cook_label</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>cook_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(cook_cata, <span class="at">cols =</span> <span class="sc">!</span><span class="fu">last_col</span>(), <span class="at">names_to =</span> <span class="st">"cook_beh"</span>)</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>cookfreqtable <span class="ot">&lt;-</span> cook_long <span class="sc">%&gt;%</span> </span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cook_beh) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">freq =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(value))) <span class="sc">%&gt;%</span></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">percentage =</span> <span class="fu">paste0</span>(<span class="fu">round</span>((freq <span class="sc">/</span> cata_appear_df[<span class="dv">4</span>,<span class="dv">2</span>])<span class="sc">*</span><span class="dv">100</span>,<span class="dv">0</span>),<span class="st">"%"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(freq))</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a><span class="fu">flextable</span>(cookfreqtable) <span class="sc">%&gt;%</span> <span class="fu">autofit</span>()</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a><span class="co"># Eating</span></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>eat_cata <span class="ot">&lt;-</span> <span class="fu">createCataDF</span>(<span class="st">"eat"</span>, cata_raw)</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(eat_cata)[<span class="dv">1</span><span class="sc">:</span>(<span class="fu">ncol</span>(eat_cata)<span class="sc">-</span><span class="dv">1</span>)] <span class="ot">&lt;-</span> eat_label</span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>eat_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(eat_cata, <span class="at">cols =</span> <span class="sc">!</span><span class="fu">last_col</span>(), <span class="at">names_to =</span> <span class="st">"eat_beh"</span>)</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>eatfreqtable <span class="ot">&lt;-</span> eat_long <span class="sc">%&gt;%</span> </span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(eat_beh) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">freq =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(value))) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">percentage =</span> <span class="fu">paste0</span>(<span class="fu">round</span>((freq <span class="sc">/</span> cata_appear_df[<span class="dv">5</span>,<span class="dv">2</span>])<span class="sc">*</span><span class="dv">100</span>,<span class="dv">0</span>),<span class="st">"%"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(freq))</span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a><span class="fu">flextable</span>(eatfreqtable) <span class="sc">%&gt;%</span> <span class="fu">autofit</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="tbl-anonymous-8733275" class="cell tbl-cap-location-top tbl-parent quarto-layout-panel anchored">
+<div class="panel-caption table-caption">
+<p>Food behaviour frequencies by stage</p>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div id="tbl-anonymous-8733275-1" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-anonymous-8733275" style="flex-basis: 33.3%;justify-content: center;">
+
+<div class="tabwid"><style>.cl-90027690{}.cl-8fbc5ce6{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-8fd1a8da{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-8fd1a8f8{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-8fd20e1a{width:2.51in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8fd20e2e{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8fd20e42{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8fd20e43{width:2.51in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8fd20e4c{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8fd20e6a{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8fd20e6b{width:2.51in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8fd20e74{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8fd20e7e{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8fd20e88{width:2.51in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8fd20e92{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8fd20e9c{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8fd20ea6{width:2.51in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8fd20ea7{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-8fd20eb0{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-90027690"><caption><p>Planning</p> </caption><thead><tr style="overflow-wrap:break-word;"><th class="cl-8fd20e1a"><p class="cl-8fd1a8da"><span class="cl-8fbc5ce6">plan_beh</span></p></th><th class="cl-8fd20e2e"><p class="cl-8fd1a8f8"><span class="cl-8fbc5ce6">freq</span></p></th><th class="cl-8fd20e42"><p class="cl-8fd1a8da"><span class="cl-8fbc5ce6">percentage</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-8fd20e43"><p class="cl-8fd1a8da"><span class="cl-8fbc5ce6">check stock</span></p></td><td class="cl-8fd20e4c"><p class="cl-8fd1a8f8"><span class="cl-8fbc5ce6">260</span></p></td><td class="cl-8fd20e6a"><p class="cl-8fd1a8da"><span class="cl-8fbc5ce6">87%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-8fd20e6b"><p class="cl-8fd1a8da"><span class="cl-8fbc5ce6">shopping list</span></p></td><td class="cl-8fd20e74"><p class="cl-8fd1a8f8"><span class="cl-8fbc5ce6">249</span></p></td><td class="cl-8fd20e7e"><p class="cl-8fd1a8da"><span class="cl-8fbc5ce6">83%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-8fd20e88"><p class="cl-8fd1a8da"><span class="cl-8fbc5ce6">plan meals</span></p></td><td class="cl-8fd20e92"><p class="cl-8fd1a8f8"><span class="cl-8fbc5ce6">225</span></p></td><td class="cl-8fd20e9c"><p class="cl-8fd1a8da"><span class="cl-8fbc5ce6">75%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-8fd20e6b"><p class="cl-8fd1a8da"><span class="cl-8fbc5ce6">plan based on expiry</span></p></td><td class="cl-8fd20e74"><p class="cl-8fd1a8f8"><span class="cl-8fbc5ce6">207</span></p></td><td class="cl-8fd20e7e"><p class="cl-8fd1a8da"><span class="cl-8fbc5ce6">69%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-8fd20e43"><p class="cl-8fd1a8da"><span class="cl-8fbc5ce6">track stock</span></p></td><td class="cl-8fd20e4c"><p class="cl-8fd1a8f8"><span class="cl-8fbc5ce6">186</span></p></td><td class="cl-8fd20e6a"><p class="cl-8fd1a8da"><span class="cl-8fbc5ce6">62%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-8fd20e6b"><p class="cl-8fd1a8da"><span class="cl-8fbc5ce6">shopping list based on meal plan</span></p></td><td class="cl-8fd20e74"><p class="cl-8fd1a8f8"><span class="cl-8fbc5ce6">151</span></p></td><td class="cl-8fd20e7e"><p class="cl-8fd1a8da"><span class="cl-8fbc5ce6">50%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-8fd20ea6"><p class="cl-8fd1a8da"><span class="cl-8fbc5ce6">follow meal plan</span></p></td><td class="cl-8fd20ea7"><p class="cl-8fd1a8f8"><span class="cl-8fbc5ce6">111</span></p></td><td class="cl-8fd20eb0"><p class="cl-8fd1a8da"><span class="cl-8fbc5ce6">37%</span></p></td></tr></tbody></table></div>
+</div>
+<div id="tbl-anonymous-8733275-2" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-anonymous-8733275" style="flex-basis: 33.3%;justify-content: center;">
+
+<div class="tabwid"><style>.cl-90ee9106{}.cl-90b4b5da{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-90ca16d2{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-90ca16f0{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-90ca8c66{width:5.1in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-90ca8c7a{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-90ca8c84{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-90ca8c85{width:5.1in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-90ca8c8e{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-90ca8c98{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-90ca8ca2{width:5.1in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-90ca8cac{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-90ca8cb6{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-90ca8cc0{width:5.1in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-90ca8cca{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-90ca8ccb{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-90ee9106"><caption><p>Shopping</p> </caption><thead><tr style="overflow-wrap:break-word;"><th class="cl-90ca8c66"><p class="cl-90ca16d2"><span class="cl-90b4b5da">shop_beh</span></p></th><th class="cl-90ca8c7a"><p class="cl-90ca16f0"><span class="cl-90b4b5da">freq</span></p></th><th class="cl-90ca8c84"><p class="cl-90ca16d2"><span class="cl-90b4b5da">percentage</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-90ca8c85"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Assess appearance of vegetables before buying</span></p></td><td class="cl-90ca8c8e"><p class="cl-90ca16f0"><span class="cl-90b4b5da">241</span></p></td><td class="cl-90ca8c98"><p class="cl-90ca16d2"><span class="cl-90b4b5da">81%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8ca2"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Buy the same items every time I go grocery shopping</span></p></td><td class="cl-90ca8cac"><p class="cl-90ca16f0"><span class="cl-90b4b5da">202</span></p></td><td class="cl-90ca8cb6"><p class="cl-90ca16d2"><span class="cl-90b4b5da">68%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8c85"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Buy food with a late as possible expiration date</span></p></td><td class="cl-90ca8c8e"><p class="cl-90ca16f0"><span class="cl-90b4b5da">189</span></p></td><td class="cl-90ca8c98"><p class="cl-90ca16d2"><span class="cl-90b4b5da">64%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8c85"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Assess appearance of meat before buying</span></p></td><td class="cl-90ca8c8e"><p class="cl-90ca16f0"><span class="cl-90b4b5da">182</span></p></td><td class="cl-90ca8c98"><p class="cl-90ca16d2"><span class="cl-90b4b5da">61%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8c85"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Buy the exact amount of vegetables I need</span></p></td><td class="cl-90ca8c8e"><p class="cl-90ca16f0"><span class="cl-90b4b5da">179</span></p></td><td class="cl-90ca8c98"><p class="cl-90ca16d2"><span class="cl-90b4b5da">60%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8ca2"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Plan how I will use vegetables as I am buying them</span></p></td><td class="cl-90ca8cac"><p class="cl-90ca16f0"><span class="cl-90b4b5da">163</span></p></td><td class="cl-90ca8cb6"><p class="cl-90ca16d2"><span class="cl-90b4b5da">55%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8c85"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Buy meat to freeze at home</span></p></td><td class="cl-90ca8c8e"><p class="cl-90ca16f0"><span class="cl-90b4b5da">160</span></p></td><td class="cl-90ca8c98"><p class="cl-90ca16d2"><span class="cl-90b4b5da">54%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8ca2"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Buy loose vegetables in the supermarket</span></p></td><td class="cl-90ca8cac"><p class="cl-90ca16f0"><span class="cl-90b4b5da">152</span></p></td><td class="cl-90ca8cb6"><p class="cl-90ca16d2"><span class="cl-90b4b5da">51%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8ca2"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Take the same route through the supermarket</span></p></td><td class="cl-90ca8cac"><p class="cl-90ca16f0"><span class="cl-90b4b5da">151</span></p></td><td class="cl-90ca8cb6"><p class="cl-90ca16d2"><span class="cl-90b4b5da">51%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8ca2"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Buy vegetables on discount</span></p></td><td class="cl-90ca8cac"><p class="cl-90ca16f0"><span class="cl-90b4b5da">146</span></p></td><td class="cl-90ca8cb6"><p class="cl-90ca16d2"><span class="cl-90b4b5da">49%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8c85"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Buy frozen vegetables</span></p></td><td class="cl-90ca8c8e"><p class="cl-90ca16f0"><span class="cl-90b4b5da">128</span></p></td><td class="cl-90ca8c98"><p class="cl-90ca16d2"><span class="cl-90b4b5da">43%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8c85"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Buy foods on impulse</span></p></td><td class="cl-90ca8c8e"><p class="cl-90ca16f0"><span class="cl-90b4b5da">121</span></p></td><td class="cl-90ca8c98"><p class="cl-90ca16d2"><span class="cl-90b4b5da">41%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8c85"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Buy foods because I think I or my household members should eat them</span></p></td><td class="cl-90ca8c8e"><p class="cl-90ca16f0"><span class="cl-90b4b5da">110</span></p></td><td class="cl-90ca8c98"><p class="cl-90ca16d2"><span class="cl-90b4b5da">37%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8c85"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Buy new foods I have never tried before</span></p></td><td class="cl-90ca8c8e"><p class="cl-90ca16f0"><span class="cl-90b4b5da">97</span></p></td><td class="cl-90ca8c98"><p class="cl-90ca16d2"><span class="cl-90b4b5da">33%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8c85"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Buy fresh vegetables in bulk</span></p></td><td class="cl-90ca8c8e"><p class="cl-90ca16f0"><span class="cl-90b4b5da">70</span></p></td><td class="cl-90ca8c98"><p class="cl-90ca16d2"><span class="cl-90b4b5da">24%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8c85"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Buy more food than I need</span></p></td><td class="cl-90ca8c8e"><p class="cl-90ca16f0"><span class="cl-90b4b5da">65</span></p></td><td class="cl-90ca8c98"><p class="cl-90ca16d2"><span class="cl-90b4b5da">22%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8ca2"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Buy only items on my shopping list</span></p></td><td class="cl-90ca8cac"><p class="cl-90ca16f0"><span class="cl-90b4b5da">63</span></p></td><td class="cl-90ca8cb6"><p class="cl-90ca16d2"><span class="cl-90b4b5da">21%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-90ca8cc0"><p class="cl-90ca16d2"><span class="cl-90b4b5da">Buy food close to expiration date</span></p></td><td class="cl-90ca8cca"><p class="cl-90ca16f0"><span class="cl-90b4b5da">57</span></p></td><td class="cl-90ca8ccb"><p class="cl-90ca16d2"><span class="cl-90b4b5da">19%</span></p></td></tr></tbody></table></div>
+</div>
+<div id="tbl-anonymous-8733275-3" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-anonymous-8733275" style="flex-basis: 33.3%;justify-content: center;">
+
+<div class="tabwid"><style>.cl-91c596d8{}.cl-9181b472{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-91a470ca{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-91a470e8{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-91a4c872{width:2.705in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-91a4c886{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-91a4c890{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-91a4c89a{width:2.705in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-91a4c8a4{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-91a4c8ae{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-91a4c8b8{width:2.705in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-91a4c8c2{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-91a4c8cc{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-91a4c8d6{width:2.705in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-91a4c8e0{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-91a4c8ea{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-91a4c8eb{width:2.705in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-91a4c8f4{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-91a4c8fe{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-91c596d8"><caption><p>Storing</p> </caption><thead><tr style="overflow-wrap:break-word;"><th class="cl-91a4c872"><p class="cl-91a470ca"><span class="cl-9181b472">stor_beh</span></p></th><th class="cl-91a4c886"><p class="cl-91a470e8"><span class="cl-9181b472">freq</span></p></th><th class="cl-91a4c890"><p class="cl-91a470ca"><span class="cl-9181b472">percentage</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-91a4c89a"><p class="cl-91a470ca"><span class="cl-9181b472">Store leftovers in fridge</span></p></td><td class="cl-91a4c8a4"><p class="cl-91a470e8"><span class="cl-9181b472">261</span></p></td><td class="cl-91a4c8ae"><p class="cl-91a470ca"><span class="cl-9181b472">87%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-91a4c89a"><p class="cl-91a470ca"><span class="cl-9181b472">Store vegetables in drawer</span></p></td><td class="cl-91a4c8a4"><p class="cl-91a470e8"><span class="cl-9181b472">259</span></p></td><td class="cl-91a4c8ae"><p class="cl-91a470ca"><span class="cl-9181b472">86%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-91a4c89a"><p class="cl-91a470ca"><span class="cl-9181b472">Store vegetables specific place</span></p></td><td class="cl-91a4c8a4"><p class="cl-91a470e8"><span class="cl-9181b472">252</span></p></td><td class="cl-91a4c8ae"><p class="cl-91a470ca"><span class="cl-9181b472">84%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-91a4c8b8"><p class="cl-91a470ca"><span class="cl-9181b472">Use senses to judge edibility</span></p></td><td class="cl-91a4c8c2"><p class="cl-91a470e8"><span class="cl-9181b472">246</span></p></td><td class="cl-91a4c8cc"><p class="cl-91a470ca"><span class="cl-9181b472">82%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-91a4c8d6"><p class="cl-91a470ca"><span class="cl-9181b472">Store meat in freezer</span></p></td><td class="cl-91a4c8e0"><p class="cl-91a470e8"><span class="cl-9181b472">204</span></p></td><td class="cl-91a4c8ea"><p class="cl-91a470ca"><span class="cl-9181b472">68%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-91a4c8d6"><p class="cl-91a470ca"><span class="cl-9181b472">Store in freezer</span></p></td><td class="cl-91a4c8e0"><p class="cl-91a470e8"><span class="cl-9181b472">193</span></p></td><td class="cl-91a4c8ea"><p class="cl-91a470ca"><span class="cl-9181b472">64%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-91a4c89a"><p class="cl-91a470ca"><span class="cl-9181b472">Store food visibly</span></p></td><td class="cl-91a4c8a4"><p class="cl-91a470e8"><span class="cl-9181b472">171</span></p></td><td class="cl-91a4c8ae"><p class="cl-91a470ca"><span class="cl-9181b472">57%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-91a4c8d6"><p class="cl-91a470ca"><span class="cl-9181b472">Store leftovers in freezer</span></p></td><td class="cl-91a4c8e0"><p class="cl-91a470e8"><span class="cl-9181b472">151</span></p></td><td class="cl-91a4c8ea"><p class="cl-91a470ca"><span class="cl-9181b472">50%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-91a4c89a"><p class="cl-91a470ca"><span class="cl-9181b472">Closely follow expiration date</span></p></td><td class="cl-91a4c8a4"><p class="cl-91a470e8"><span class="cl-9181b472">130</span></p></td><td class="cl-91a4c8ae"><p class="cl-91a470ca"><span class="cl-9181b472">43%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-91a4c8b8"><p class="cl-91a470ca"><span class="cl-9181b472">Food close to expiry easy to access</span></p></td><td class="cl-91a4c8c2"><p class="cl-91a470e8"><span class="cl-9181b472">129</span></p></td><td class="cl-91a4c8cc"><p class="cl-91a470ca"><span class="cl-9181b472">43%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-91a4c89a"><p class="cl-91a470ca"><span class="cl-9181b472">Track opening of packaging</span></p></td><td class="cl-91a4c8a4"><p class="cl-91a470e8"><span class="cl-9181b472">53</span></p></td><td class="cl-91a4c8ae"><p class="cl-91a470ca"><span class="cl-9181b472">18%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-91a4c8d6"><p class="cl-91a470ca"><span class="cl-9181b472">Mark contents of food</span></p></td><td class="cl-91a4c8e0"><p class="cl-91a470e8"><span class="cl-9181b472">52</span></p></td><td class="cl-91a4c8ea"><p class="cl-91a470ca"><span class="cl-9181b472">17%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-91a4c8eb"><p class="cl-91a470ca"><span class="cl-9181b472">Blanch or cook for freezing</span></p></td><td class="cl-91a4c8f4"><p class="cl-91a470e8"><span class="cl-9181b472">34</span></p></td><td class="cl-91a4c8fe"><p class="cl-91a470ca"><span class="cl-9181b472">11%</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div id="tbl-anonymous-8733275-4" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-anonymous-8733275" style="flex-basis: 50.0%;justify-content: center;">
+
+<div class="tabwid"><style>.cl-92c87a00{}.cl-9262d0ce{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-9286c1f0{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-9286c20e{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-92875868{width:2.366in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-92875886{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-92875890{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9287589a{width:2.366in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-928758ae{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-928758b8{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-928758b9{width:2.366in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-928758c2{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-928758c3{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-928758cc{width:2.366in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-928758d6{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-928758e0{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-928758e1{width:2.366in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-928758ea{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-928758f4{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-928758f5{width:2.366in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-928758fe{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-92875908{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-92c87a00"><caption><p>Cooking</p> </caption><thead><tr style="overflow-wrap:break-word;"><th class="cl-92875868"><p class="cl-9286c1f0"><span class="cl-9262d0ce">cook_beh</span></p></th><th class="cl-92875886"><p class="cl-9286c20e"><span class="cl-9262d0ce">freq</span></p></th><th class="cl-92875890"><p class="cl-9286c1f0"><span class="cl-9262d0ce">percentage</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-9287589a"><p class="cl-9286c1f0"><span class="cl-9262d0ce">Cook what is at home</span></p></td><td class="cl-928758ae"><p class="cl-9286c20e"><span class="cl-9262d0ce">262</span></p></td><td class="cl-928758b8"><p class="cl-9286c1f0"><span class="cl-9262d0ce">87%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9287589a"><p class="cl-9286c1f0"><span class="cl-9262d0ce">Cook fresh meals</span></p></td><td class="cl-928758ae"><p class="cl-9286c20e"><span class="cl-9262d0ce">240</span></p></td><td class="cl-928758b8"><p class="cl-9286c1f0"><span class="cl-9262d0ce">80%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9287589a"><p class="cl-9286c1f0"><span class="cl-9262d0ce">Reheat leftovers</span></p></td><td class="cl-928758ae"><p class="cl-9286c20e"><span class="cl-9262d0ce">240</span></p></td><td class="cl-928758b8"><p class="cl-9286c1f0"><span class="cl-9262d0ce">80%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-928758b9"><p class="cl-9286c1f0"><span class="cl-9262d0ce">use up leftover ingredients</span></p></td><td class="cl-928758c2"><p class="cl-9286c20e"><span class="cl-9262d0ce">213</span></p></td><td class="cl-928758c3"><p class="cl-9286c1f0"><span class="cl-9262d0ce">71%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-928758cc"><p class="cl-9286c1f0"><span class="cl-9262d0ce">save part-used ingredients</span></p></td><td class="cl-928758d6"><p class="cl-9286c20e"><span class="cl-9262d0ce">211</span></p></td><td class="cl-928758e0"><p class="cl-9286c1f0"><span class="cl-9262d0ce">70%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-928758b9"><p class="cl-9286c1f0"><span class="cl-9262d0ce">Finish veg before opening new</span></p></td><td class="cl-928758c2"><p class="cl-9286c20e"><span class="cl-9262d0ce">210</span></p></td><td class="cl-928758c3"><p class="cl-9286c1f0"><span class="cl-9262d0ce">70%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-928758b9"><p class="cl-9286c1f0"><span class="cl-9262d0ce">Use food based on expiry</span></p></td><td class="cl-928758c2"><p class="cl-9286c20e"><span class="cl-9262d0ce">206</span></p></td><td class="cl-928758c3"><p class="cl-9286c1f0"><span class="cl-9262d0ce">68%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9287589a"><p class="cl-9286c1f0"><span class="cl-9262d0ce">Cook with leftovers</span></p></td><td class="cl-928758ae"><p class="cl-9286c20e"><span class="cl-9262d0ce">195</span></p></td><td class="cl-928758b8"><p class="cl-9286c1f0"><span class="cl-9262d0ce">65%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-928758e1"><p class="cl-9286c1f0"><span class="cl-9262d0ce">Cook without recipe</span></p></td><td class="cl-928758ea"><p class="cl-9286c20e"><span class="cl-9262d0ce">195</span></p></td><td class="cl-928758f4"><p class="cl-9286c1f0"><span class="cl-9262d0ce">65%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-928758b9"><p class="cl-9286c1f0"><span class="cl-9262d0ce">Use frozen fruit of veg</span></p></td><td class="cl-928758c2"><p class="cl-9286c20e"><span class="cl-9262d0ce">167</span></p></td><td class="cl-928758c3"><p class="cl-9286c1f0"><span class="cl-9262d0ce">55%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9287589a"><p class="cl-9286c1f0"><span class="cl-9262d0ce">Cook more than needed</span></p></td><td class="cl-928758ae"><p class="cl-9286c20e"><span class="cl-9262d0ce">151</span></p></td><td class="cl-928758b8"><p class="cl-9286c1f0"><span class="cl-9262d0ce">50%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9287589a"><p class="cl-9286c1f0"><span class="cl-9262d0ce">Cook fixed set of meals</span></p></td><td class="cl-928758ae"><p class="cl-9286c20e"><span class="cl-9262d0ce">131</span></p></td><td class="cl-928758b8"><p class="cl-9286c1f0"><span class="cl-9262d0ce">44%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-928758b9"><p class="cl-9286c1f0"><span class="cl-9262d0ce">Closely follow recipe</span></p></td><td class="cl-928758c2"><p class="cl-9286c20e"><span class="cl-9262d0ce">121</span></p></td><td class="cl-928758c3"><p class="cl-9286c1f0"><span class="cl-9262d0ce">40%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9287589a"><p class="cl-9286c1f0"><span class="cl-9262d0ce">Make new out of leftovers</span></p></td><td class="cl-928758ae"><p class="cl-9286c20e"><span class="cl-9262d0ce">114</span></p></td><td class="cl-928758b8"><p class="cl-9286c1f0"><span class="cl-9262d0ce">38%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-928758cc"><p class="cl-9286c1f0"><span class="cl-9262d0ce">Weigh ingredients</span></p></td><td class="cl-928758d6"><p class="cl-9286c20e"><span class="cl-9262d0ce">102</span></p></td><td class="cl-928758e0"><p class="cl-9286c1f0"><span class="cl-9262d0ce">34%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-928758f5"><p class="cl-9286c1f0"><span class="cl-9262d0ce">Use every bit of veg or meat</span></p></td><td class="cl-928758fe"><p class="cl-9286c20e"><span class="cl-9262d0ce">46</span></p></td><td class="cl-92875908"><p class="cl-9286c1f0"><span class="cl-9262d0ce">15%</span></p></td></tr></tbody></table></div>
+</div>
+<div id="tbl-anonymous-8733275-5" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-anonymous-8733275" style="flex-basis: 50.0%;justify-content: center;">
+
+<div class="tabwid"><style>.cl-93766782{}.cl-932d8a3a{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-93453f72{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-93453fa4{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-934a062e{width:2.705in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a064c{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a0660{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a066a{width:2.705in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a066b{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a067e{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a0688{width:2.705in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a0692{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a069c{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a069d{width:2.705in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a06a6{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a06b0{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a06b1{width:2.705in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a06ce{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a06d8{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a06ec{width:2.705in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a06f6{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a06f7{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a0700{width:2.705in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a070a{width:0.548in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-934a0714{width:1.05in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-93766782"><caption><p>Leftovers</p> </caption><thead><tr style="overflow-wrap:break-word;"><th class="cl-934a062e"><p class="cl-93453f72"><span class="cl-932d8a3a">eat_beh</span></p></th><th class="cl-934a064c"><p class="cl-93453fa4"><span class="cl-932d8a3a">freq</span></p></th><th class="cl-934a0660"><p class="cl-93453f72"><span class="cl-932d8a3a">percentage</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-934a066a"><p class="cl-93453f72"><span class="cl-932d8a3a">Eat leftovers</span></p></td><td class="cl-934a066b"><p class="cl-93453fa4"><span class="cl-932d8a3a">264</span></p></td><td class="cl-934a067e"><p class="cl-93453f72"><span class="cl-932d8a3a">87%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-934a0688"><p class="cl-93453f72"><span class="cl-932d8a3a">Finish plate</span></p></td><td class="cl-934a0692"><p class="cl-93453fa4"><span class="cl-932d8a3a">258</span></p></td><td class="cl-934a069c"><p class="cl-93453f72"><span class="cl-932d8a3a">85%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-934a069d"><p class="cl-93453f72"><span class="cl-932d8a3a">Dish up self</span></p></td><td class="cl-934a06a6"><p class="cl-93453fa4"><span class="cl-932d8a3a">251</span></p></td><td class="cl-934a06b0"><p class="cl-93453f72"><span class="cl-932d8a3a">83%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-934a069d"><p class="cl-93453f72"><span class="cl-932d8a3a">save food in pan</span></p></td><td class="cl-934a06a6"><p class="cl-93453fa4"><span class="cl-932d8a3a">244</span></p></td><td class="cl-934a06b0"><p class="cl-93453f72"><span class="cl-932d8a3a">81%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-934a06b1"><p class="cl-93453f72"><span class="cl-932d8a3a">Throw away partly rotten</span></p></td><td class="cl-934a06ce"><p class="cl-93453fa4"><span class="cl-932d8a3a">234</span></p></td><td class="cl-934a06d8"><p class="cl-93453f72"><span class="cl-932d8a3a">77%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-934a066a"><p class="cl-93453f72"><span class="cl-932d8a3a">Plan to use meal leftovers</span></p></td><td class="cl-934a066b"><p class="cl-93453fa4"><span class="cl-932d8a3a">174</span></p></td><td class="cl-934a067e"><p class="cl-93453f72"><span class="cl-932d8a3a">58%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-934a069d"><p class="cl-93453f72"><span class="cl-932d8a3a">Save food left on plate</span></p></td><td class="cl-934a06a6"><p class="cl-93453fa4"><span class="cl-932d8a3a">157</span></p></td><td class="cl-934a06b0"><p class="cl-93453f72"><span class="cl-932d8a3a">52%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-934a06b1"><p class="cl-93453f72"><span class="cl-932d8a3a">Throw away disliked</span></p></td><td class="cl-934a06ce"><p class="cl-93453fa4"><span class="cl-932d8a3a">126</span></p></td><td class="cl-934a06d8"><p class="cl-93453f72"><span class="cl-932d8a3a">42%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-934a06ec"><p class="cl-93453f72"><span class="cl-932d8a3a">Throw away food left on plate</span></p></td><td class="cl-934a06f6"><p class="cl-93453fa4"><span class="cl-932d8a3a">123</span></p></td><td class="cl-934a06f7"><p class="cl-93453f72"><span class="cl-932d8a3a">41%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-934a06ec"><p class="cl-93453f72"><span class="cl-932d8a3a">Throw away saved leftovers</span></p></td><td class="cl-934a06f6"><p class="cl-93453fa4"><span class="cl-932d8a3a">88</span></p></td><td class="cl-934a06f7"><p class="cl-93453f72"><span class="cl-932d8a3a">29%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-934a066a"><p class="cl-93453f72"><span class="cl-932d8a3a">Leftovers to others</span></p></td><td class="cl-934a066b"><p class="cl-93453fa4"><span class="cl-932d8a3a">68</span></p></td><td class="cl-934a067e"><p class="cl-93453f72"><span class="cl-932d8a3a">23%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-934a066a"><p class="cl-93453f72"><span class="cl-932d8a3a">Leftovers to animals</span></p></td><td class="cl-934a066b"><p class="cl-93453fa4"><span class="cl-932d8a3a">61</span></p></td><td class="cl-934a067e"><p class="cl-93453f72"><span class="cl-932d8a3a">20%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-934a06ec"><p class="cl-93453f72"><span class="cl-932d8a3a">Throw away take-away/ready-made</span></p></td><td class="cl-934a06f6"><p class="cl-93453fa4"><span class="cl-932d8a3a">59</span></p></td><td class="cl-934a06f7"><p class="cl-93453f72"><span class="cl-932d8a3a">20%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-934a069d"><p class="cl-93453f72"><span class="cl-932d8a3a">Compost leftovers</span></p></td><td class="cl-934a06a6"><p class="cl-93453fa4"><span class="cl-932d8a3a">56</span></p></td><td class="cl-934a06b0"><p class="cl-93453f72"><span class="cl-932d8a3a">19%</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-934a0700"><p class="cl-93453f72"><span class="cl-932d8a3a">throw away food in pan</span></p></td><td class="cl-934a070a"><p class="cl-93453fa4"><span class="cl-932d8a3a">48</span></p></td><td class="cl-934a0714"><p class="cl-93453f72"><span class="cl-932d8a3a">16%</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="tetrachroic-correlation" class="level1">
+<h1>Tetrachroic correlation</h1>
+<p>After discussion with Ivo, he suggests that I should first create a correlation matrix out of my binary data, using tetrachoric correlations. Doing MCA (or PCA) with binary data is not a correct approach.</p>
+<p>Ivo also suggests that I can still look at a PCA of all of the behaviours, as eventhough I randomly and evenly distributed people over the behaviour categories, every pair appeared a similar amount of times, so all combinations are still present evenly.</p>
+<p>I should also <em>only</em> count 0s for behaviours people did see, but did not check. Behaviours people never saw should be missing values.</p>
+<p>Maybe use similarity coefficients instead if correlation, people mention Jaccard.</p>
+<p>First create a contingency table so it doesn’t have NAs.</p>
+<p>However, the PCA for all the behaviours together does not give any clear strucutre.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>beh_cor <span class="ot">&lt;-</span> <span class="fu">cor</span>(behcata[,<span class="dv">2</span><span class="sc">:</span><span class="dv">70</span>], <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>, <span class="at">method =</span> <span class="st">"pearson"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>corpca <span class="ot">&lt;-</span> <span class="fu">PCA</span>(beh_cor, <span class="at">graph =</span> F)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_ind</span>(corpca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/Overall PCA-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(corpca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/Overall PCA-2.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>behaut_cor <span class="ot">&lt;-</span> <span class="fu">cor</span>(behaut[,<span class="dv">2</span><span class="sc">:</span><span class="dv">70</span>], <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in cor(behaut[, 2:70], use = "pairwise.complete.obs"): the standard
+deviation is zero</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>behshopaut_cor <span class="ot">&lt;-</span> <span class="fu">cor</span>(behaut[,<span class="dv">9</span><span class="sc">:</span><span class="dv">26</span>], <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">PCA</span>(behshopaut_cor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/Overall PCA-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>**Results for the Principal Component Analysis (PCA)**
+The analysis was performed on 18 individuals, described by 18 variables
+*The results are available in the following objects:
+
+   name               description                          
+1  "$eig"             "eigenvalues"                        
+2  "$var"             "results for the variables"          
+3  "$var$coord"       "coord. for the variables"           
+4  "$var$cor"         "correlations variables - dimensions"
+5  "$var$cos2"        "cos2 for the variables"             
+6  "$var$contrib"     "contributions of the variables"     
+7  "$ind"             "results for the individuals"        
+8  "$ind$coord"       "coord. for the individuals"         
+9  "$ind$cos2"        "cos2 for the individuals"           
+10 "$ind$contrib"     "contributions of the individuals"   
+11 "$call"            "summary statistics"                 
+12 "$call$centre"     "mean of the variables"              
+13 "$call$ecart.type" "standard error of the variables"    
+14 "$call$row.w"      "weights for the individuals"        
+15 "$call$col.w"      "weights for the variables"          </code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>testshoppca <span class="ot">&lt;-</span> <span class="fu">PCA</span>(behaut[,<span class="dv">9</span><span class="sc">:</span><span class="dv">26</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in PCA(behaut[, 9:26]): Missing values are imputed by the mean of the
+variable: you should use the imputePCA function of the missMDA package</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/Overall PCA-4.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>?PCA</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>starting httpd help server ... done</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_var</span>(testshoppca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/Overall PCA-5.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The PCA per category is a little insightful, showing some behaviours go together more than others.</p>
+<section id="pca-for-planning" class="level2">
+<h2 class="anchored" data-anchor-id="pca-for-planning">PCA for planning</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>plan_cor <span class="ot">&lt;-</span> <span class="fu">cor</span>(behcata[,<span class="dv">2</span><span class="sc">:</span><span class="dv">8</span>], <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>plan_pca <span class="ot">&lt;-</span> <span class="fu">PCA</span>(plan_cor, <span class="at">graph =</span> F)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(plan_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(plan_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-6-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>As an example, this is a PCA result from the raw data instead of the correlation matrix. Why does it look so different?</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>plan_raw_pca <span class="ot">&lt;-</span> <span class="fu">PCA</span>(behcata[,<span class="dv">2</span><span class="sc">:</span><span class="dv">8</span>], <span class="at">graph =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in PCA(behcata[, 2:8], graph = F): Missing values are imputed by the
+mean of the variable: you should use the imputePCA function of the missMDA
+package</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca</span>(plan_raw_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="pca-for-shopping" class="level2">
+<h2 class="anchored" data-anchor-id="pca-for-shopping">PCA for shopping</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>shop_cor <span class="ot">&lt;-</span> <span class="fu">cor</span>(behcata[,<span class="dv">9</span><span class="sc">:</span><span class="dv">26</span>], <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>shop_pca <span class="ot">&lt;-</span> <span class="fu">PCA</span>(shop_cor, <span class="at">graph =</span> F)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(shop_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(shop_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="pca-for-storing" class="level2">
+<h2 class="anchored" data-anchor-id="pca-for-storing">PCA for storing</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>stor_cor <span class="ot">&lt;-</span> <span class="fu">cor</span>(behcata[,<span class="dv">27</span><span class="sc">:</span><span class="dv">39</span>], <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>stor_pca <span class="ot">&lt;-</span> <span class="fu">PCA</span>(stor_cor, <span class="at">graph =</span> F)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(stor_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(stor_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-9-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="pca-for-cooking" class="level2">
+<h2 class="anchored" data-anchor-id="pca-for-cooking">PCA for cooking</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>cook_cor <span class="ot">&lt;-</span> <span class="fu">cor</span>(behcata[,<span class="dv">40</span><span class="sc">:</span><span class="dv">55</span>], <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>cook_pca <span class="ot">&lt;-</span> <span class="fu">PCA</span>(cook_cor, <span class="at">graph =</span> F)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cook_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(cook_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="pca-for-dealing-with-leftovers" class="level2">
+<h2 class="anchored" data-anchor-id="pca-for-dealing-with-leftovers">PCA for dealing with leftovers</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>left_cor <span class="ot">&lt;-</span> <span class="fu">cor</span>(behcata[,<span class="dv">56</span><span class="sc">:</span><span class="dv">70</span>], <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>left_pca <span class="ot">&lt;-</span> <span class="fu">PCA</span>(left_cor, <span class="at">graph =</span> F)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(left_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: ggrepel: 1 unlabeled data points (too many overlaps). Consider
+increasing max.overlaps</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(left_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="pca-of-automaticity-ratings" class="level1">
+<h1>PCA of automaticity ratings</h1>
+<p>For a PCA of all of the behaviours i can do it directly. However, not every combination of behaviours occured so some correlations are missing.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>beh_aut <span class="ot">&lt;-</span> <span class="fu">cor</span>(behaut[,<span class="dv">2</span><span class="sc">:</span><span class="dv">70</span>], <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>, <span class="at">method =</span> <span class="st">"pearson"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in cor(behaut[, 2:70], use = "pairwise.complete.obs", method =
+"pearson"): the standard deviation is zero</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>aut_corpca <span class="ot">&lt;-</span> <span class="fu">PCA</span>(beh_aut, <span class="at">graph =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in PCA(beh_aut, graph = F): Missing values are imputed by the mean of
+the variable: you should use the imputePCA function of the missMDA package</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_ind</span>(aut_corpca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(aut_corpca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<section id="pca-planning-automaticity" class="level2">
+<h2 class="anchored" data-anchor-id="pca-planning-automaticity">PCA planning automaticity</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>plan_aut <span class="ot">&lt;-</span> <span class="fu">cor</span>(behaut[,<span class="dv">2</span><span class="sc">:</span><span class="dv">8</span>], <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>, <span class="at">method =</span> <span class="st">"pearson"</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>plan_aut_pca <span class="ot">&lt;-</span> <span class="fu">PCA</span>(plan_aut, <span class="at">graph =</span> F)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_ind</span>(plan_aut_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(plan_aut_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="pca-for-shopping-1" class="level2">
+<h2 class="anchored" data-anchor-id="pca-for-shopping-1">PCA for shopping</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>shop_aut <span class="ot">&lt;-</span> <span class="fu">cor</span>(behaut[,<span class="dv">9</span><span class="sc">:</span><span class="dv">26</span>], <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>shop_aut_pca <span class="ot">&lt;-</span> <span class="fu">PCA</span>(shop_aut, <span class="at">graph =</span> F)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(shop_aut_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(shop_aut_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="pca-for-storing-1" class="level2">
+<h2 class="anchored" data-anchor-id="pca-for-storing-1">PCA for storing</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>stor_aut <span class="ot">&lt;-</span> <span class="fu">cor</span>(behaut[,<span class="dv">27</span><span class="sc">:</span><span class="dv">39</span>], <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>stor_aut_pca <span class="ot">&lt;-</span> <span class="fu">PCA</span>(stor_aut, <span class="at">graph =</span> F)</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(stor_aut_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(stor_aut_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-15-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="pca-for-cooking-1" class="level2">
+<h2 class="anchored" data-anchor-id="pca-for-cooking-1">PCA for cooking</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>cook_aut <span class="ot">&lt;-</span> <span class="fu">cor</span>(behaut[,<span class="dv">40</span><span class="sc">:</span><span class="dv">55</span>], <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>cook_aut_pca <span class="ot">&lt;-</span> <span class="fu">PCA</span>(cook_aut, <span class="at">graph =</span> F)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cook_aut_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(cook_aut_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="pca-for-dealing-with-leftovers-1" class="level2">
+<h2 class="anchored" data-anchor-id="pca-for-dealing-with-leftovers-1">PCA for dealing with leftovers</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>left_aut <span class="ot">&lt;-</span> <span class="fu">cor</span>(behaut[,<span class="dv">56</span><span class="sc">:</span><span class="dv">70</span>], <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>left_aut_pca <span class="ot">&lt;-</span> <span class="fu">PCA</span>(left_aut, <span class="at">graph =</span> F)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(left_aut_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_screeplot</span>(left_aut_pca)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="formatted_analysi_files/figure-html/unnamed-chunk-17-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

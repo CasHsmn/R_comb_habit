@@ -1,0 +1,298 @@
+---
+title: "Analysis CATA"
+format:
+  html:
+    code-fold: true
+---
+```{r}
+#| label: init libraries
+#| include: false
+library(dplyr)
+library(tidyr)
+library(flextable)
+library(tibble)
+library(factoextra)
+library(FactoMineR)
+```
+
+```{r}
+#| label: Read and label
+#| echo: false
+#| include: false
+wd <- list()
+wd$data   <- "C:/Users/huism080/OneDrive - Wageningen University & Research/Research/Study 1/data/"
+wd$output <- "C:/Users/huism080/OneDrive - Wageningen University & Research/Research/Study 1/output/"
+
+cata_raw <- read.csv(paste0(wd$data, "cata_randomisation.csv"))
+cata_raw <- cata_raw %>% # rename, filter preview, nonconsent and att check fail
+  rename(plan_aut_1 = Q53_1,
+         plan_aut_2 = Q53_2,
+         plan_aut_3 = Q53_3,
+         plan_aut_4 = Q53_4,
+         plan_aut_5 = Q53_5,
+         plan_aut_6 = Q53_6,
+         plan_aut_7 = Q53_7) %>% 
+  filter(Status == 0 & consent == 1 & Q85 == 8)
+
+# labels
+stage_labels <- c("Planning", "Shopping", "Storing", "Cooking", "Leftovers")
+plan_label <- c("plan meals", "shopping list", "track stock", "check stock", "plan based on expiry", "shopping list based on meal plan", "follow meal plan")
+shop_label <- c("Buy the same items every time I go grocery shopping","Buy food with a late as possible expiration date","Buy food close to expiration date","Buy fresh vegetables in bulk","Buy the exact amount of vegetables I need","Buy meat to freeze at home","Buy frozen vegetables","Buy more food than I need","Buy loose vegetables in the supermarket","Plan how I will use vegetables as I am buying them","Buy vegetables on discount","Buy foods on impulse","Take the same route through the supermarket","Buy new foods I have never tried before","Buy foods because I think I or my household members should eat them","Assess appearance of vegetables before buying","Assess appearance of meat before buying","Buy only items on my shopping list")
+stor_label <- c("Store vegetables specific place", "Store food visibly", "Store vegetables in drawer", "Store in freezer", "Store meat in freezer", "Mark contents of food", "Blanch or cook for freezing", "Store leftovers in freezer", "Store leftovers in fridge", "Closely follow expiration date", "Use senses to judge edibility", "Track opening of packaging", "Food close to expiry easy to access")
+cook_label <- c("Weigh ingredients", "Cook with leftovers", "Cook what is at home", "Closely follow recipe", "Cook without recipe", "Cook fixed set of meals", "Make new out of leftovers", "Cook more than needed", "Cook fresh meals", "Use frozen fruit of veg", "Use food based on expiry", "Finish veg before opening new", "Use every bit of veg or meat", "Reheat leftovers", "save part-used ingredients", "use up leftover ingredients")
+eat_label <- c("Eat leftovers", "Dish up self", "Finish plate", "Save food left on plate", "Throw away food left on plate", "save food in pan", "throw away food in pan", "Leftovers to animals", "Leftovers to others", "Compost leftovers", "Plan to use meal leftovers", "Throw away saved leftovers", "Throw away take-away/ready-made", "Throw away disliked", "Throw away partly rotten")
+all_labels <- c(plan_label, shop_label, stor_label, cook_label, eat_label)
+
+# Create df of all the CATA variables and label
+behcata <- cata_raw %>% 
+  select(contains("cata"), 161:166, 168, 172:176) %>% 
+  slice(-c(1:2)) %>% 
+  mutate_all(as.numeric)
+colnames(behcata)[1:69] <- all_labels
+behcata <- behcata %>% 
+  mutate_at(vars(c(1:69, 71,74,75,76)), factor)
+
+behcata <- read.csv(paste0(wd$data, "behcata.csv"))
+behaut <- read.csv(paste0(wd$data, "behaut.csv"))
+```
+
+# Descriptives
+```{r}
+#| label: descriptives
+#| tbl-cap: Number of people engaged in each stage
+#| tbl-cap-location: top
+
+involvement <- cata_raw %>% 
+  select(Q62_1:Q62_5) %>% 
+  slice(-c(1:2)) %>% 
+  mutate_all(as.numeric)
+
+colnames(involvement) <- stage_labels
+involvement[is.na(involvement)] <- 0
+
+involvementtable <- data.frame(Stage = names(colSums(involvement)), Total = colSums(involvement))
+flextable(involvementtable)
+
+flextable(data.frame(t(as.matrix(involvement)) %*% as.matrix(involvement)) %>% rownames_to_column("Stage"))
+```
+But, this is not how many people also answered the questions for each stage, because people were randomly and evenly distributed over the CATA questions.
+
+# Frequencies of behaviours per phase
+
+```{r}
+#| label: "Behaviour_descriptives_per_phase"
+#| tbl-cap: "Food behaviour frequencies by stage"
+#| tbl-cap-location: top
+#| tbl-subcap:
+#|     - "Planning"
+#|     - "Shopping"
+#|     - "Storing"
+#|     - "Cooking"
+#|     - "Leftovers"
+#| layout: [[1,1,1],[1,1]]
+
+cata_random <- cata_raw %>% 
+  select(172:176) %>% 
+  slice(-c(1:2)) %>% 
+  mutate(across(everything(),as.numeric))
+
+cata_appear <- colSums(!is.na(cata_random[,1:5]))
+cata_appear_df <- data.frame(Phase = names(cata_appear), Count = as.numeric(cata_appear))
+
+createCataDF <- function(prefix, data){ # function to create separate CATA dfs by phase
+  df <- data %>% 
+    select(starts_with(paste0(prefix, "_cata"))) %>% 
+    slice(-c(1:2)) %>% 
+    mutate_all(as.numeric) %>% 
+    mutate(id = 1:nrow(.))
+  return(df)
+}
+
+plan_cata <- createCataDF("plan", cata_raw)
+colnames(plan_cata)[1:(ncol(plan_cata)-1)] <- plan_label
+
+plan_long <- pivot_longer(plan_cata, cols = !last_col(), names_to = "plan_beh")
+planfreqtable <- plan_long %>% 
+  group_by(plan_beh) %>% 
+  summarise(freq = sum(!is.na(value))) %>% 
+    mutate(percentage = paste0(round((freq / cata_appear_df[1,2])*100,0),"%")) %>% 
+  arrange(desc(freq))
+flextable(planfreqtable) %>% autofit()
+
+
+# Shopping behaviours cata
+shop_cata <- createCataDF("shop", cata_raw)
+colnames(shop_cata)[1:(ncol(shop_cata)-1)] <- shop_label
+
+shop_long <- pivot_longer(shop_cata, cols = !last_col(), names_to = "shop_beh")
+shopfreqtable <- shop_long %>% 
+  group_by(shop_beh) %>% 
+  summarise(freq = sum(!is.na(value))) %>% 
+    mutate(percentage = paste0(round((freq / cata_appear_df[2,2])*100,0),"%")) %>% 
+  arrange(desc(freq))
+flextable(shopfreqtable) %>% autofit()
+
+# Shopping behaviours cata
+stor_cata <- createCataDF("stor", cata_raw)
+colnames(stor_cata)[1:(ncol(stor_cata)-1)] <- stor_label
+
+stor_long <- pivot_longer(stor_cata, cols = !last_col(), names_to = "stor_beh")
+storfreqtable <- stor_long %>% 
+  group_by(stor_beh) %>% 
+  summarise(freq = sum(!is.na(value))) %>% 
+      mutate(percentage = paste0(round((freq / cata_appear_df[3,2])*100,0),"%")) %>% 
+  arrange(desc(freq))
+flextable(storfreqtable) %>% autofit()
+
+# Shopping behaviours cata
+cook_cata <- createCataDF("cook", cata_raw)
+colnames(cook_cata)[1:(ncol(cook_cata)-1)] <- cook_label
+
+cook_long <- pivot_longer(cook_cata, cols = !last_col(), names_to = "cook_beh")
+cookfreqtable <- cook_long %>% 
+  group_by(cook_beh) %>% 
+  summarise(freq = sum(!is.na(value))) %>%
+      mutate(percentage = paste0(round((freq / cata_appear_df[4,2])*100,0),"%")) %>% 
+  arrange(desc(freq))
+flextable(cookfreqtable) %>% autofit()
+
+# Eating
+eat_cata <- createCataDF("eat", cata_raw)
+colnames(eat_cata)[1:(ncol(eat_cata)-1)] <- eat_label
+
+eat_long <- pivot_longer(eat_cata, cols = !last_col(), names_to = "eat_beh")
+eatfreqtable <- eat_long %>% 
+  group_by(eat_beh) %>% 
+  summarise(freq = sum(!is.na(value))) %>% 
+      mutate(percentage = paste0(round((freq / cata_appear_df[5,2])*100,0),"%")) %>% 
+  arrange(desc(freq))
+flextable(eatfreqtable) %>% autofit()
+```
+
+# Tetrachroic correlation
+After discussion with Ivo, he suggests that I should first create a correlation matrix out of my binary data, using tetrachoric correlations. Doing MCA (or PCA) with binary data is not a correct approach.
+
+Ivo also suggests that I can still look at a PCA of all of the behaviours, as eventhough I randomly and evenly distributed people over the behaviour categories, every pair appeared a similar amount of times, so all combinations are still present evenly.
+
+I should also *only* count 0s for behaviours people did see, but did not check. Behaviours people never saw should be missing values.
+
+Maybe use similarity coefficients instead if correlation, people mention Jaccard.
+
+First create a contingency table so it doesn't have NAs.
+
+However, the PCA for all the behaviours together does not give any clear strucutre. 
+
+```{r}
+#| label: Overall PCA
+beh_cor <- cor(behcata[,2:70], use = "pairwise.complete.obs", method = "pearson")
+corpca <- PCA(beh_cor, graph = F)
+fviz_pca_ind(corpca)
+fviz_screeplot(corpca)
+
+behaut_cor <- cor(behaut[,2:70], use = "pairwise.complete.obs")
+behshopaut_cor <- cor(behaut[,9:26], use = "pairwise.complete.obs")
+
+PCA(behshopaut_cor)
+testshoppca <- PCA(behaut[,9:26])
+?PCA
+fviz_pca_var(testshoppca)
+```
+
+The PCA per category is a little insightful, showing some behaviours go together more than others.
+
+## PCA for planning
+```{r}
+plan_cor <- cor(behcata[,2:8], use = "pairwise.complete.obs")
+plan_pca <- PCA(plan_cor, graph = F)
+plot(plan_pca)
+fviz_screeplot(plan_pca)
+```
+
+As an example, this is a PCA result from the raw data instead of the correlation matrix. Why does it look so different?
+```{r}
+plan_raw_pca <- PCA(behcata[,2:8], graph = F)
+fviz_pca(plan_raw_pca)
+```
+
+## PCA for shopping
+```{r}
+shop_cor <- cor(behcata[,9:26], use = "pairwise.complete.obs")
+shop_pca <- PCA(shop_cor, graph = F)
+plot(shop_pca)
+fviz_screeplot(shop_pca)
+```
+
+## PCA for storing
+```{r}
+stor_cor <- cor(behcata[,27:39], use = "pairwise.complete.obs")
+stor_pca <- PCA(stor_cor, graph = F)
+plot(stor_pca)
+fviz_screeplot(stor_pca)
+```
+
+## PCA for cooking
+```{r}
+cook_cor <- cor(behcata[,40:55], use = "pairwise.complete.obs")
+cook_pca <- PCA(cook_cor, graph = F)
+plot(cook_pca)
+fviz_screeplot(cook_pca)
+```
+## PCA for dealing with leftovers
+```{r}
+left_cor <- cor(behcata[,56:70], use = "pairwise.complete.obs")
+left_pca <- PCA(left_cor, graph = F)
+plot(left_pca)
+fviz_screeplot(left_pca)
+```
+
+# PCA of automaticity ratings
+
+For a PCA of all of the behaviours i can do it directly. However, not every combination of behaviours occured so some correlations are missing. 
+```{r}
+beh_aut <- cor(behaut[,2:70], use = "pairwise.complete.obs", method = "pearson")
+aut_corpca <- PCA(beh_aut, graph = F)
+fviz_pca_ind(aut_corpca)
+fviz_screeplot(aut_corpca)
+```
+
+## PCA planning automaticity
+```{r}
+plan_aut <- cor(behaut[,2:8], use = "pairwise.complete.obs", method = "pearson")
+plan_aut_pca <- PCA(plan_aut, graph = F)
+fviz_pca_ind(plan_aut_pca)
+fviz_screeplot(plan_aut_pca)
+```
+
+## PCA for shopping
+```{r}
+shop_aut <- cor(behaut[,9:26], use = "pairwise.complete.obs")
+shop_aut_pca <- PCA(shop_aut, graph = F)
+plot(shop_aut_pca)
+fviz_screeplot(shop_aut_pca)
+```
+
+## PCA for storing
+```{r}
+stor_aut <- cor(behaut[,27:39], use = "pairwise.complete.obs")
+stor_aut_pca <- PCA(stor_aut, graph = F)
+plot(stor_aut_pca)
+fviz_screeplot(stor_aut_pca)
+```
+
+## PCA for cooking
+```{r}
+cook_aut <- cor(behaut[,40:55], use = "pairwise.complete.obs")
+cook_aut_pca <- PCA(cook_aut, graph = F)
+plot(cook_aut_pca)
+fviz_screeplot(cook_aut_pca)
+```
+
+## PCA for dealing with leftovers
+```{r}
+left_aut <- cor(behaut[,56:70], use = "pairwise.complete.obs")
+left_aut_pca <- PCA(left_aut, graph = F)
+plot(left_aut_pca)
+fviz_screeplot(left_aut_pca)
+```
+
+

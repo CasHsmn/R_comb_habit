@@ -3,6 +3,7 @@ project:
   output-dir: docs
   render:
     - mca.qmd
+    - formatted_analysi.qmd
 
 website:
   title: "R Analysis"
@@ -11,6 +12,7 @@ website:
       - href: index.qmd
         text: Home
       - mca.qmd
+      - formatted_analysi.qmd
     tools:
       - icon: github
         href: https://github.com/CasHsmn/R_comb_habit
